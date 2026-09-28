@@ -4,6 +4,41 @@
 <html lang="en">
 
 <head>
+
+    {% load static %}
+
+    <link id="kounter-favicon" rel="icon" type="image/jpeg" data-light="{% static 'core/Kounter_light.jpg' %}"
+        data-dark="{% static 'core/Kounter_dark.jpg' %}" href="{% static 'core/Kounter_light.jpg' %}">
+
+    <script>
+        (function () {
+            const theme = localStorage.getItem("kounter-theme") || "light";
+
+            document.documentElement.setAttribute("data-theme", theme);
+
+            const favicon = document.getElementById("kounter-favicon");
+
+            if (favicon) {
+                favicon.href =
+                    theme === "dark"
+                        ? "{% static 'core/Kounter_dark.jpg' %}"
+                        : "{% static 'core/Kounter_light.jpg' %}";
+            }
+        })();
+    </script>
+
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem("kounter-theme");
+
+            if (savedTheme === "dark") {
+                document.documentElement.setAttribute("data-theme", "dark");
+            } else {
+                document.documentElement.setAttribute("data-theme", "light");
+            }
+        })();
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -1670,7 +1705,7 @@
            ========================================================= */
 
         const savedTheme =
-            localStorage.getItem("pos-theme") || "light";
+            localStorage.getItem("kounter-theme") || "light";
 
         applyTheme(savedTheme);
 
@@ -1689,7 +1724,7 @@
                         this.checked ? "dark" : "light";
 
                     localStorage.setItem(
-                        "pos-theme",
+                        "kounter-theme",
                         selectedTheme
                     );
 
@@ -1705,7 +1740,7 @@
 
         window.addEventListener("storage", function (event) {
 
-            if (event.key === "pos-theme") {
+            if (event.key === "kounter-theme") {
 
                 applyTheme(
                     event.newValue || "light"
@@ -1714,6 +1749,8 @@
             }
 
         });
+
+
 
 
         /* =========================================================
@@ -1756,7 +1793,7 @@
                  * Re-apply theme after navbar.html has been included.
                  */
                 applyTheme(
-                    localStorage.getItem("pos-theme") || "light"
+                    localStorage.getItem("kounter-theme") || "light"
                 );
             }
         );

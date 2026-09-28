@@ -1,5 +1,24 @@
 {% load static %}
 
+<head>
+
+    <link id="kounter-favicon" rel="icon" type="image/jpeg" data-light="{% static 'core/Kounter_light.jpg' %}"
+        data-dark="{% static 'core/Kounter_dark.jpg' %}" href="{% static 'core/Kounter_light.jpg' %}">
+
+
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem("kounter-theme");
+
+            if (savedTheme === "dark") {
+                document.documentElement.setAttribute("data-theme", "dark");
+            } else {
+                document.documentElement.setAttribute("data-theme", "light");
+            }
+        })();
+    </script>
+
+</head>
 <style>
     /* =========================================================
        KOUNTER THEME VARIABLES
@@ -15,7 +34,6 @@
 
         --k-border: #dfe4ec;
 
-        /* LIGHT NAVIGATION */
         --k-nav-text: #1f2937;
         --k-nav-hover-bg: #dbeafe;
         --k-nav-hover-text: #1d4ed8;
@@ -30,8 +48,23 @@
         --k-danger-hover-bg: #fee2e2;
         --k-danger-hover-border: #fca5a5;
 
+        --k-success: #16a34a;
+        --k-success-bg: #dcfce7;
+        --k-success-border: #86efac;
+
+        --k-warning: #2563eb;
+        --k-warning-bg: #dbeafe;
+        --k-warning-border: #93c5fd;
+
+        --k-subscription-expired: #dc2626;
+        --k-subscription-expired-bg: #fee2e2;
+        --k-subscription-expired-border: #fca5a5;
+
         --k-shadow:
             0 4px 18px rgba(15, 23, 42, 0.08);
+
+        --k-dropdown-shadow:
+            0 18px 45px rgba(15, 23, 42, 0.16);
     }
 
 
@@ -63,8 +96,23 @@
         --k-danger-hover-bg: rgba(248, 113, 113, .15);
         --k-danger-hover-border: rgba(248, 113, 113, .4);
 
+        --k-success: #4ade80;
+        --k-success-bg: rgba(74, 222, 128, .13);
+        --k-success-border: rgba(74, 222, 128, .35);
+
+        --k-warning: #60a5fa;
+        --k-warning-bg: rgba(96, 165, 250, .14);
+        --k-warning-border: rgba(96, 165, 250, .35);
+
+        --k-subscription-expired: #f87171;
+        --k-subscription-expired-bg: rgba(248, 113, 113, .14);
+        --k-subscription-expired-border: rgba(248, 113, 113, .35);
+
         --k-shadow:
             0 5px 25px rgba(0, 0, 0, .30);
+
+        --k-dropdown-shadow:
+            0 20px 50px rgba(0, 0, 0, .45);
     }
 
 
@@ -74,17 +122,13 @@
 
     .kounter-header {
         width: 100%;
-
         position: relative;
-
         z-index: 9999;
 
         background: var(--k-header-bg);
-
         color: var(--k-text);
 
         border-bottom: 1px solid var(--k-border);
-
         box-shadow: var(--k-shadow);
 
         box-sizing: border-box;
@@ -100,17 +144,13 @@
 
     .kounter-header-container {
         width: 100%;
-
         max-width: 1500px;
-
         min-height: 70px;
 
         margin: 0 auto;
-
         padding: 9px 20px;
 
         display: flex;
-
         align-items: center;
 
         gap: 15px;
@@ -128,7 +168,6 @@
         flex: 0 0 68px;
 
         display: flex;
-
         align-items: center;
         justify-content: center;
 
@@ -137,7 +176,6 @@
         border-radius: 15px;
 
         background: var(--k-card-bg);
-
         border: 1px solid var(--k-border);
 
         text-decoration: none;
@@ -197,7 +235,6 @@
 
     .kounter-store-info {
         min-width: 0;
-
         flex: 1;
     }
 
@@ -206,15 +243,11 @@
         color: var(--k-text);
 
         font-size: 18px;
-
         font-weight: 800;
-
         line-height: 1.2;
 
         white-space: nowrap;
-
         overflow: hidden;
-
         text-overflow: ellipsis;
     }
 
@@ -225,10 +258,250 @@
         color: var(--k-muted);
 
         font-size: 10px;
-
         font-weight: 800;
 
         letter-spacing: .09em;
+    }
+
+
+    /* =========================================================
+       SUBSCRIPTION STATUS
+    ========================================================= */
+
+    .kounter-subscription {
+        display: inline-flex;
+
+        align-items: center;
+        justify-content: center;
+
+        gap: 7px;
+
+        min-height: 38px;
+
+        padding: 6px 11px;
+
+        border-radius: 10px;
+
+        border: 1px solid transparent;
+
+        text-decoration: none;
+
+        white-space: nowrap;
+
+        flex-shrink: 0;
+
+        transition:
+            background-color .18s ease,
+            border-color .18s ease,
+            transform .15s ease,
+            box-shadow .18s ease;
+    }
+
+
+    .kounter-subscription:hover,
+    .kounter-subscription:focus-visible {
+        transform: translateY(-1px);
+        outline: none;
+    }
+
+
+    .kounter-subscription-dot {
+        width: 8px;
+        height: 8px;
+
+        flex: 0 0 8px;
+
+        border-radius: 50%;
+    }
+
+
+    .kounter-subscription-content {
+        display: flex;
+
+        flex-direction: column;
+        align-items: flex-start;
+
+        line-height: 1.1;
+    }
+
+
+    .kounter-subscription-label {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .02em;
+    }
+
+
+    .kounter-subscription-days {
+        margin-top: 2px;
+
+        font-size: 10px;
+        font-weight: 700;
+
+        opacity: .82;
+    }
+
+
+    /* =========================================================
+       ACTIVE SUBSCRIPTION
+    ========================================================= */
+
+    .kounter-subscription.active {
+        color: var(--k-success);
+
+        background: var(--k-success-bg);
+
+        border-color: var(--k-success-border);
+    }
+
+
+    .kounter-subscription.active .kounter-subscription-dot {
+        background: var(--k-success);
+    }
+
+
+    .kounter-subscription.active:hover,
+    .kounter-subscription.active:focus-visible {
+        box-shadow:
+            0 4px 12px rgba(22, 163, 74, .14);
+    }
+
+
+    /* =========================================================
+       FREE TRIAL
+    ========================================================= */
+
+    .kounter-subscription.trial {
+        color: var(--k-warning);
+
+        background: var(--k-warning-bg);
+
+        border-color: var(--k-warning-border);
+    }
+
+
+    .kounter-subscription.trial .kounter-subscription-dot {
+        background: var(--k-warning);
+    }
+
+
+    .kounter-subscription.trial:hover,
+    .kounter-subscription.trial:focus-visible {
+        box-shadow:
+            0 4px 12px rgba(37, 99, 235, .14);
+    }
+
+
+    /* =========================================================
+       EXPIRED
+    ========================================================= */
+
+    .kounter-subscription.expired {
+        color: var(--k-subscription-expired);
+
+        background: var(--k-subscription-expired-bg);
+
+        border-color: var(--k-subscription-expired-border);
+    }
+
+
+    .kounter-subscription.expired .kounter-subscription-dot {
+        background: var(--k-subscription-expired);
+
+        animation: kounterSubscriptionPulse 1.8s infinite;
+    }
+
+
+    .kounter-subscription.expired:hover,
+    .kounter-subscription.expired:focus-visible {
+        box-shadow:
+            0 4px 12px rgba(220, 38, 38, .16);
+    }
+
+
+    @keyframes kounterSubscriptionPulse {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: .45;
+        }
+    }
+
+
+    /* =========================================================
+       EXPIRED STATUS BESIDE MOBILE MENU
+    ========================================================= */
+
+    .kounter-mobile-expired {
+        display: none;
+
+        align-items: center;
+        justify-content: center;
+
+        gap: 7px;
+
+        min-height: 40px;
+
+        padding: 7px 10px;
+
+        border-radius: 10px;
+
+        color: var(--k-subscription-expired);
+
+        background: var(--k-subscription-expired-bg);
+
+        border: 1px solid var(--k-subscription-expired-border);
+
+        text-decoration: none;
+
+        white-space: nowrap;
+
+        font-size: 11px;
+        font-weight: 800;
+        line-height: 1;
+
+        flex-shrink: 0;
+
+        transition:
+            background-color .18s ease,
+            border-color .18s ease,
+            transform .15s ease,
+            box-shadow .18s ease;
+    }
+
+
+    .kounter-mobile-expired:hover,
+    .kounter-mobile-expired:focus-visible {
+        color: var(--k-subscription-expired);
+
+        background: var(--k-danger-hover-bg);
+
+        border-color: var(--k-danger-hover-border);
+
+        box-shadow:
+            0 4px 12px rgba(220, 38, 38, .14);
+
+        transform: translateY(-1px);
+
+        outline: none;
+    }
+
+
+    .kounter-mobile-expired-dot {
+        width: 7px;
+        height: 7px;
+
+        flex: 0 0 7px;
+
+        border-radius: 50%;
+
+        background: var(--k-subscription-expired);
+
+        animation: kounterSubscriptionPulse 1.8s infinite;
     }
 
 
@@ -240,7 +513,6 @@
         display: flex !important;
 
         align-items: center;
-
         justify-content: flex-end;
 
         gap: 5px;
@@ -263,7 +535,6 @@
         display: inline-flex !important;
 
         align-items: center;
-
         justify-content: center;
 
         border-radius: 9px;
@@ -277,7 +548,6 @@
         text-decoration: none !important;
 
         font-size: 13px;
-
         font-weight: 700;
 
         white-space: nowrap;
@@ -359,11 +629,9 @@
         flex: 0 0 42px;
 
         padding: 0;
-
         margin: 0 3px;
 
         border: 0;
-
         outline: none;
 
         background: transparent;
@@ -371,7 +639,6 @@
         display: inline-flex !important;
 
         align-items: center;
-
         justify-content: center;
 
         cursor: pointer;
@@ -466,7 +733,6 @@
         display: none;
 
         align-items: center;
-
         justify-content: center;
 
         flex-direction: column;
@@ -477,7 +743,9 @@
 
         transition:
             background-color .2s ease,
-            border-color .2s ease;
+            border-color .2s ease,
+            box-shadow .2s ease,
+            transform .15s ease;
     }
 
 
@@ -488,6 +756,14 @@
         border-color: var(--k-nav-hover-border);
 
         outline: none;
+
+        box-shadow:
+            0 4px 12px rgba(37, 99, 235, .12);
+    }
+
+
+    .kounter-mobile-button:active {
+        transform: scale(.97);
     }
 
 
@@ -498,6 +774,29 @@
         border-radius: 10px;
 
         background: var(--k-text);
+
+        transition:
+            transform .2s ease,
+            opacity .2s ease;
+    }
+
+
+    /* =========================================================
+       MOBILE BUTTON OPEN STATE
+    ========================================================= */
+
+    .kounter-mobile-button[aria-expanded="true"] span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+
+    .kounter-mobile-button[aria-expanded="true"] span:nth-child(2) {
+        opacity: 0;
+    }
+
+
+    .kounter-mobile-button[aria-expanded="true"] span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
     }
 
 
@@ -517,26 +816,64 @@
     .kounter-mobile-nav {
         display: none;
 
-        width: 100%;
+        position: absolute;
 
-        padding: 10px 14px 16px;
+        top: calc(100% + 8px);
+
+        right: 14px;
+
+        width: min(330px, calc(100vw - 28px));
+
+        max-height: calc(100vh - 95px);
+
+        overflow-y: auto;
+
+        padding: 10px;
+
+        flex-direction: column;
+
+        gap: 5px;
 
         background: var(--k-header-bg);
 
-        border-top: 1px solid var(--k-border);
+        border: 1px solid var(--k-border);
+
+        border-radius: 15px;
+
+        box-shadow: var(--k-dropdown-shadow);
 
         box-sizing: border-box;
+
+        z-index: 10000;
+
+        scrollbar-width: thin;
+
+        animation: kounterDropdownIn .16s ease-out;
     }
 
 
     .kounter-mobile-nav.open {
         display: flex;
-
-        flex-direction: column;
-
-        gap: 5px;
     }
 
+
+    @keyframes kounterDropdownIn {
+
+        from {
+            opacity: 0;
+            transform: translateY(-7px) scale(.98);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+
+    /* =========================================================
+       MOBILE NAVIGATION LINKS
+    ========================================================= */
 
     .kounter-mobile-nav a {
         width: 100%;
@@ -560,13 +897,13 @@
         text-decoration: none;
 
         font-size: 14px;
-
         font-weight: 700;
 
         transition:
             background-color .18s ease,
             color .18s ease,
-            border-color .18s ease;
+            border-color .18s ease,
+            transform .15s ease;
     }
 
 
@@ -579,6 +916,8 @@
         border-color: var(--k-nav-hover-border) !important;
 
         outline: none;
+
+        transform: translateX(1px);
     }
 
 
@@ -598,6 +937,86 @@
 
 
     /* =========================================================
+       MOBILE SUBSCRIPTION
+    ========================================================= */
+
+    .kounter-mobile-subscription {
+        width: 100%;
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+
+        min-height: 48px;
+
+        padding: 10px 14px;
+
+        margin-bottom: 4px;
+
+        border-radius: 10px;
+
+        text-decoration: none;
+
+        border: 1px solid transparent;
+
+        transition:
+            background-color .18s ease,
+            border-color .18s ease,
+            transform .15s ease;
+    }
+
+
+    .kounter-mobile-subscription:hover,
+    .kounter-mobile-subscription:focus-visible {
+        transform: translateY(-1px);
+
+        outline: none;
+    }
+
+
+    .kounter-mobile-subscription .kounter-subscription-dot {
+        width: 9px;
+        height: 9px;
+
+        flex-basis: 9px;
+    }
+
+
+    .kounter-mobile-subscription .kounter-subscription-content {
+        flex: 1;
+    }
+
+
+    .kounter-mobile-subscription.trial {
+        color: var(--k-warning);
+
+        background: var(--k-warning-bg);
+
+        border-color: var(--k-warning-border);
+    }
+
+
+    .kounter-mobile-subscription.active {
+        color: var(--k-success);
+
+        background: var(--k-success-bg);
+
+        border-color: var(--k-success-border);
+    }
+
+
+    .kounter-mobile-subscription.expired {
+        color: var(--k-subscription-expired);
+
+        background: var(--k-subscription-expired-bg);
+
+        border-color: var(--k-subscription-expired-border);
+    }
+
+
+    /* =========================================================
        MOBILE THEME ROW
     ========================================================= */
 
@@ -607,16 +1026,19 @@
         display: flex;
 
         align-items: center;
-
         justify-content: space-between;
 
         padding: 5px 3px;
 
+        margin-top: 2px;
+
         color: var(--k-muted);
 
         font-size: 13px;
-
         font-weight: 700;
+
+        border-top: 1px solid var(--k-border);
+        border-bottom: 1px solid var(--k-border);
     }
 
 
@@ -643,6 +1065,16 @@
 
         .kounter-mobile-button {
             display: flex !important;
+        }
+
+
+        .kounter-header-container>.kounter-subscription {
+            display: none;
+        }
+
+
+        .kounter-mobile-expired {
+            display: inline-flex;
         }
 
     }
@@ -702,6 +1134,42 @@
             flex-basis: 42px;
         }
 
+
+        .kounter-mobile-expired {
+            min-height: 39px;
+
+            padding: 6px 8px;
+
+            gap: 5px;
+
+            font-size: 10px;
+
+            border-radius: 9px;
+        }
+
+
+        .kounter-mobile-expired-dot {
+            width: 6px;
+            height: 6px;
+
+            flex-basis: 6px;
+        }
+
+
+        .kounter-mobile-nav {
+            top: calc(100% + 7px);
+
+            right: 10px;
+
+            width: min(320px, calc(100vw - 20px));
+
+            max-height: calc(100vh - 85px);
+
+            padding: 9px;
+
+            border-radius: 14px;
+        }
+
     }
 
 
@@ -726,6 +1194,24 @@
 
         .kounter-mobile-theme {
             transform: scale(.9);
+        }
+
+
+        .kounter-mobile-expired {
+            min-height: 37px;
+
+            padding: 5px 7px;
+
+            font-size: 9px;
+        }
+
+
+        .kounter-mobile-nav {
+            right: 8px;
+
+            width: calc(100vw - 16px);
+
+            max-height: calc(100vh - 80px);
         }
 
     }
@@ -782,7 +1268,7 @@
 
                 {% else %}
 
-                {{ request.user.store.name|default:"TRON HUB" }}
+                {{ request.user.store.name|default:"Kounter" }}
 
                 {% endif %}
 
@@ -815,29 +1301,111 @@
 
 
         <!-- =================================================
+             STORE SUBSCRIPTION STATUS
+             SUPER ADMIN DOES NOT SEE THIS BADGE
+        ================================================== -->
+
+        {% if not request.user.is_superuser and subscription %}
+
+        {% if subscription.status == "ACTIVE" %}
+
+        <a href="{% url 'subscription' %}" class="kounter-subscription active" title="Manage your subscription">
+
+            <span class="kounter-subscription-dot"></span>
+
+            <span class="kounter-subscription-content">
+
+                <span class="kounter-subscription-label">
+                    Subscription Active
+                </span>
+
+                <span class="kounter-subscription-days">
+                    {{ subscription.days_remaining }}
+                    day{{ subscription.days_remaining|pluralize }}
+                    remaining
+                </span>
+
+            </span>
+
+        </a>
+
+        {% elif subscription.status == "TRIAL" %}
+
+        <a href="{% url 'subscription' %}" class="kounter-subscription trial" title="View your free trial">
+
+            <span class="kounter-subscription-dot"></span>
+
+            <span class="kounter-subscription-content">
+
+                <span class="kounter-subscription-label">
+                    Free Trial
+                </span>
+
+                <span class="kounter-subscription-days">
+                    {{ subscription.days_remaining }}
+                    day{{ subscription.days_remaining|pluralize }}
+                    remaining
+                </span>
+
+            </span>
+
+        </a>
+
+        {% elif subscription.status == "EXPIRED" %}
+
+        <a href="{% url 'subscription' %}" class="kounter-subscription expired kounter-desktop-expired"
+            title="Activate your subscription">
+
+            <span class="kounter-subscription-dot"></span>
+
+            <span class="kounter-subscription-content">
+
+                <span class="kounter-subscription-label">
+                    Trial Expired
+                </span>
+
+                <span class="kounter-subscription-days">
+                    Activate Subscription
+                </span>
+
+            </span>
+
+        </a>
+
+        {% endif %}
+
+        {% endif %}
+
+
+        <!-- =================================================
              DESKTOP NAVIGATION
         ================================================== -->
 
         <nav class="kounter-desktop-nav" aria-label="Main navigation">
 
+            <!-- =================================================
+                 SUPER ADMIN NAVIGATION
+            ================================================== -->
 
             {% if request.user.is_superuser %}
 
-            <!-- =================================================
-                     SUPER ADMIN NAVIGATION
-                ================================================== -->
-
             <a href="{% url 'manage_stores' %}" class="kounter-nav-link">
-                Stores
+                🏪 Stores
             </a>
 
 
             <a href="{% url 'manage_users' %}" class="kounter-nav-link">
-                Users
+                👥 Users
+            </a>
+
+
+            <a href="{% url 'manage_subscriptions' %}" class="kounter-nav-link">
+                💳 Subscriptions
             </a>
 
 
             {% else %}
+
 
             <!-- =================================================
                      STORE USER NAVIGATION
@@ -863,14 +1431,10 @@
             </a>
 
 
-            <!-- PRODUCTS -->
-
             <a href="{% url 'active_products' %}" class="kounter-nav-link">
                 Products
             </a>
 
-
-            <!-- ADMIN / MANAGER ONLY -->
 
             {% if request.user.role == "ADMIN" or request.user.role == "MANAGER" %}
 
@@ -923,6 +1487,30 @@
 
 
         <!-- =================================================
+             MOBILE EXPIRED STATUS
+        ================================================== -->
+
+        {% if not request.user.is_superuser and subscription %}
+
+        {% if subscription.status == "EXPIRED" %}
+
+        <a href="{% url 'subscription' %}" class="kounter-mobile-expired" title="Activate Subscription"
+            aria-label="Trial expired. Activate subscription.">
+
+            <span class="kounter-mobile-expired-dot"></span>
+
+            <span>
+                Trial Expired
+            </span>
+
+        </a>
+
+        {% endif %}
+
+        {% endif %}
+
+
+        <!-- =================================================
              MOBILE THEME SWITCH
         ================================================== -->
 
@@ -953,17 +1541,17 @@
 
 
     <!-- =====================================================
-         MOBILE NAVIGATION
+         MOBILE FLOATING DROPDOWN
     ====================================================== -->
 
     <nav class="kounter-mobile-nav" id="kounterMobileNav" aria-label="Mobile navigation">
 
 
-        {% if request.user.is_superuser %}
-
         <!-- =================================================
-                 SUPER ADMIN MOBILE NAVIGATION
-            ================================================== -->
+             SUPER ADMIN MOBILE NAVIGATION
+        ================================================== -->
+
+        {% if request.user.is_superuser %}
 
         <a href="{% url 'manage_stores' %}">
             🏪 Manage Stores
@@ -975,7 +1563,88 @@
         </a>
 
 
+        <a href="{% url 'manage_subscriptions' %}">
+            💳 Subscriptions
+        </a>
+
+
         {% else %}
+
+
+        <!-- =================================================
+                 STORE USER MOBILE SUBSCRIPTION
+            ================================================== -->
+
+        {% if subscription %}
+
+        {% if subscription.status == "ACTIVE" %}
+
+        <a href="{% url 'subscription' %}" class="kounter-mobile-subscription active">
+
+            <span class="kounter-subscription-dot"></span>
+
+            <span class="kounter-subscription-content">
+
+                <span class="kounter-subscription-label">
+                    Subscription Active
+                </span>
+
+                <span class="kounter-subscription-days">
+                    {{ subscription.days_remaining }}
+                    day{{ subscription.days_remaining|pluralize }}
+                    remaining
+                </span>
+
+            </span>
+
+        </a>
+
+        {% elif subscription.status == "TRIAL" %}
+
+        <a href="{% url 'subscription' %}" class="kounter-mobile-subscription trial">
+
+            <span class="kounter-subscription-dot"></span>
+
+            <span class="kounter-subscription-content">
+
+                <span class="kounter-subscription-label">
+                    Free Trial
+                </span>
+
+                <span class="kounter-subscription-days">
+                    {{ subscription.days_remaining }}
+                    day{{ subscription.days_remaining|pluralize }}
+                    remaining
+                </span>
+
+            </span>
+
+        </a>
+
+        {% elif subscription.status == "EXPIRED" %}
+
+        <a href="{% url 'subscription' %}" class="kounter-mobile-subscription expired">
+
+            <span class="kounter-subscription-dot"></span>
+
+            <span class="kounter-subscription-content">
+
+                <span class="kounter-subscription-label">
+                    Trial Expired
+                </span>
+
+                <span class="kounter-subscription-days">
+                    Activate Subscription
+                </span>
+
+            </span>
+
+        </a>
+
+        {% endif %}
+
+        {% endif %}
+
 
         <!-- =================================================
                  STORE USER MOBILE NAVIGATION
@@ -1055,7 +1724,7 @@
 
 
         <!-- =================================================
-             MOBILE LOGOUT
+             LOGOUT
         ================================================== -->
 
         <a href="{% url 'logout' %}" class="kounter-logout">
@@ -1096,17 +1765,37 @@
 
 
         /* =====================================================
+           CLOSE MENU
+        ===================================================== */
+
+        function closeMobileMenu() {
+
+            mobileNav.classList.remove("open");
+
+            menuButton.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+            menuButton.setAttribute(
+                "aria-label",
+                "Open navigation menu"
+            );
+        }
+
+
+        /* =====================================================
            TOGGLE MENU
         ===================================================== */
 
         menuButton.addEventListener(
             "click",
-            function () {
+            function (event) {
+
+                event.stopPropagation();
 
                 const isOpen =
-                    mobileNav.classList.toggle(
-                        "open"
-                    );
+                    mobileNav.classList.toggle("open");
 
 
                 menuButton.setAttribute(
@@ -1138,21 +1827,7 @@
                     "click",
                     function () {
 
-                        mobileNav.classList.remove(
-                            "open"
-                        );
-
-
-                        menuButton.setAttribute(
-                            "aria-expanded",
-                            "false"
-                        );
-
-
-                        menuButton.setAttribute(
-                            "aria-label",
-                            "Open navigation menu"
-                        );
+                        closeMobileMenu();
 
                     }
                 );
@@ -1174,21 +1849,7 @@
                     !menuButton.contains(event.target)
                 ) {
 
-                    mobileNav.classList.remove(
-                        "open"
-                    );
-
-
-                    menuButton.setAttribute(
-                        "aria-expanded",
-                        "false"
-                    );
-
-
-                    menuButton.setAttribute(
-                        "aria-label",
-                        "Open navigation menu"
-                    );
+                    closeMobileMenu();
 
                 }
 
@@ -1209,24 +1870,27 @@
                     mobileNav.classList.contains("open")
                 ) {
 
-                    mobileNav.classList.remove(
-                        "open"
-                    );
-
-
-                    menuButton.setAttribute(
-                        "aria-expanded",
-                        "false"
-                    );
-
-
-                    menuButton.setAttribute(
-                        "aria-label",
-                        "Open navigation menu"
-                    );
-
+                    closeMobileMenu();
 
                     menuButton.focus();
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           CLOSE WHEN RESIZING TO DESKTOP
+        ===================================================== */
+
+        window.addEventListener(
+            "resize",
+            function () {
+
+                if (window.innerWidth > 1150) {
+
+                    closeMobileMenu();
 
                 }
 

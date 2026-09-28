@@ -1,558 +1,2205 @@
-<!doctype html>
+{% load static %}
+
+<!DOCTYPE html>
+
 <html lang="en">
 
 <head>
+
+    {% load static %}
+
+    <link id="kounter-favicon" rel="icon" type="image/jpeg" data-light="{% static 'core/Kounter_light.jpg' %}"
+        data-dark="{% static 'core/Kounter_dark.jpg' %}" href="{% static 'core/Kounter_light.jpg' %}">
+
+    <script>
+        (function () {
+            const theme = localStorage.getItem("kounter-theme") || "light";
+
+            document.documentElement.setAttribute("data-theme", theme);
+
+            const favicon = document.getElementById("kounter-favicon");
+
+            if (favicon) {
+                favicon.href =
+                    theme === "dark"
+                        ? "{% static 'core/Kounter_dark.jpg' %}"
+                        : "{% static 'core/Kounter_light.jpg' %}";
+            }
+        })();
+    </script>
+
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem("kounter-theme");
+
+            if (savedTheme === "dark") {
+                document.documentElement.setAttribute("data-theme", "dark");
+            } else {
+                document.documentElement.setAttribute("data-theme", "light");
+            }
+        })();
+    </script>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <script src="{% static 'core/js/theme.js' %}"></script>
+    <meta name="theme-color" content="#2563eb">
 
-    {% load static %}
+    <title>Kounter — Login</title>
 
-    <link rel="stylesheet" href="{% static 'core/css/phone_view.css' %}">
 
-    <title>Login — Provision POS</title>
+    <!-- =========================================================
+ THEME INITIALIZATION
+
+========================================================== -->
+
+    <script>
+        (function () {
+
+            const savedTheme =
+                localStorage.getItem("kounter-theme");
+
+            if (savedTheme === "dark") {
+
+                document.documentElement.setAttribute(
+                    "data-theme",
+                    "dark"
+                );
+
+            } else if (savedTheme === "light") {
+
+                document.documentElement.setAttribute(
+                    "data-theme",
+                    "light"
+                );
+
+            } else {
+
+                const prefersDark =
+                    window.matchMedia &&
+                    window.matchMedia(
+                        "(prefers-color-scheme: dark)"
+                    ).matches;
+
+                document.documentElement.setAttribute(
+                    "data-theme",
+                    prefersDark ? "dark" : "light"
+                );
+
+            }
+
+        })();
+    </script>
+
 
     <style>
+        /* =========================================================
+   KOUNTER VARIABLES
+========================================================= */
+
         :root {
+
             --primary: #2563eb;
             --primary-dark: #1d4ed8;
-            --accent: #60a5fa;
-            --text: #0f172a;
-            --muted: #64748b;
-            --surface: rgba(255, 255, 255, 0.94);
-            --input-bg: #f8fafc;
-            --border: #e2e8f0;
-            --danger-bg: #fef2f2;
-            --danger-text: #b91c1c;
-            --danger-border: #fecaca;
+            --primary-light: #eff6ff;
+
+            --page-bg: #f5f7fb;
+            --card-bg: #ffffff;
+            --surface-bg: #ffffff;
+            --surface-soft: #f8fafc;
+
+            --text: #111827;
+            --text-soft: #374151;
+            --muted: #6b7280;
+
+            --border: #dfe4ec;
+            --input-bg: #ffffff;
+            --input-border: #cbd5e1;
+
+            --danger: #dc2626;
+            --danger-bg: #fee2e2;
+
+            --success: #16a34a;
+            --success-bg: #dcfce7;
+
+            --shadow:
+                0 25px 70px rgba(15, 23, 42, .12);
+
+            --small-shadow:
+                0 8px 25px rgba(15, 23, 42, .08);
+
+            color-scheme: light;
         }
+
+
+        /* =========================================================
+   DARK THEME
+========================================================= */
+
+        html[data-theme="dark"] {
+
+            --primary: #60a5fa;
+            --primary-dark: #3b82f6;
+            --primary-light: #172554;
+
+            --page-bg: #0f172a;
+            --card-bg: #172033;
+            --surface-bg: #172033;
+            --surface-soft: #1e293b;
+
+            --text: #f8fafc;
+            --text-soft: #e2e8f0;
+            --muted: #94a3b8;
+
+            --border: #263449;
+            --input-bg: #111827;
+            --input-border: #475569;
+
+            --danger: #f87171;
+            --danger-bg: rgba(248, 113, 113, .14);
+
+            --success: #4ade80;
+            --success-bg: rgba(74, 222, 128, .14);
+
+            --shadow:
+                0 25px 70px rgba(0, 0, 0, .45);
+
+            --small-shadow:
+                0 10px 30px rgba(0, 0, 0, .28);
+
+            color-scheme: dark;
+        }
+
+
+        /* =========================================================
+   RESET
+========================================================= */
 
         * {
             box-sizing: border-box;
-        }
-
-        html,
-        body {
-            min-height: 100%;
-        }
-
-        body {
             margin: 0;
+            padding: 0;
+        }
+
+
+        html {
+            min-height: 100%;
+            background: var(--page-bg);
+        }
+
+
+        body {
+
             min-height: 100vh;
-            padding: 24px;
+
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Helvetica,
+                Arial,
+                sans-serif;
+
+            background: var(--page-bg);
+            color: var(--text);
+
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+
+            transition:
+                background-color .25s ease,
+                color .25s ease;
+        }
+
+
+        button,
+        input {
+            font: inherit;
+        }
+
+
+        button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        a {
+            text-decoration: none;
+        }
+
+
+        /* =========================================================
+   MAIN PAGE
+========================================================= */
+
+        .login-page {
+
+            min-height: 100vh;
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            background: var(--page-bg);
+
+            overflow: hidden;
+        }
+
+
+        /* =========================================================
+   BRAND PANEL
+========================================================= */
+
+        .brand-panel {
+
+            min-height: 100vh;
+
+            position: relative;
+
             display: flex;
+
             align-items: center;
             justify-content: center;
-            font-family: Inter, "Segoe UI", Arial, sans-serif;
-            color: var(--text);
-            background:
-                radial-gradient(circle at top left, rgba(96, 165, 250, 0.28), transparent 35%),
-                radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.18), transparent 35%),
-                #eef4ff;
-        }
 
-        .login-shell {
-            width: 100%;
-            max-width: 960px;
-            min-height: 570px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            padding: 60px;
+
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            border-radius: 28px;
-            background: var(--surface);
-            box-shadow: 0 25px 80px rgba(30, 64, 175, 0.16);
-            backdrop-filter: blur(16px);
-        }
 
-        .welcome-panel {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 48px;
-            overflow: hidden;
-            color: white;
+            color: #ffffff;
+
             background:
-                linear-gradient(145deg, rgba(37, 99, 235, 0.98), rgba(30, 64, 175, 0.98)),
-                #2563eb;
+                linear-gradient(145deg,
+                    #2563eb 0%,
+                    #1d4ed8 48%,
+                    #1e3a8a 100%);
         }
 
-        .welcome-panel::before,
-        .welcome-panel::after {
+
+        .brand-panel::before {
+
             content: "";
+
             position: absolute;
+
+            width: 520px;
+            height: 520px;
+
+            top: -240px;
+            right: -180px;
+
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.09);
+
+            background:
+                rgba(255, 255, 255, .08);
         }
 
-        .welcome-panel::before {
-            width: 300px;
-            height: 300px;
-            top: -120px;
-            right: -120px;
+
+        .brand-panel::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 430px;
+            height: 430px;
+
+            bottom: -230px;
+            left: -190px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(255, 255, 255, .07);
         }
 
-        .welcome-panel::after {
-            width: 240px;
-            height: 240px;
-            bottom: -120px;
-            left: -100px;
-        }
 
-        .brand-mark {
+        .brand-content {
+
+            width: 100%;
+
+            max-width: 520px;
+
             position: relative;
-            z-index: 1;
-            width: 64px;
-            height: 64px;
-            display: grid;
-            place-items: center;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.18);
-            border: 1px solid rgba(255, 255, 255, 0.28);
-            font-size: 32px;
-            box-shadow: 0 12px 25px rgba(15, 23, 42, 0.12);
+
+            z-index: 2;
         }
 
-        .welcome-content {
-            position: relative;
-            z-index: 1;
+
+        /* =========================================================
+   LOGO
+========================================================= */
+
+        .brand-logo-wrapper {
+
+            width: 82px;
+            height: 82px;
+
+            margin-bottom: 28px;
+
+            display: block;
+
+            overflow: hidden;
+
+            border-radius: 22px;
+
+            background: #ffffff;
+
+            border: 1px solid rgba(255, 255, 255, .35);
+
+            box-shadow:
+                0 18px 45px rgba(15, 23, 42, .22);
         }
 
-        .welcome-content h1 {
-            margin: 0 0 16px;
-            font-size: clamp(30px, 4vw, 44px);
-            line-height: 1.1;
-            letter-spacing: -1px;
+
+        .brand-logo {
+
+            width: 100%;
+            height: 100%;
+
+            display: block;
+
+            object-fit: cover;
+
+            padding: 2px;
+
+            border-radius: 22px;
         }
 
-        .welcome-content p {
-            max-width: 350px;
-            margin: 0;
-            color: rgba(255, 255, 255, 0.84);
+
+        /* =========================================================
+   LOGO THEME SWITCH
+========================================================= */
+
+        .logo-light {
+            display: block;
+        }
+
+
+        .logo-dark {
+            display: none;
+        }
+
+
+        html[data-theme="dark"] .logo-light {
+            display: none;
+        }
+
+
+        html[data-theme="dark"] .logo-dark {
+            display: block;
+        }
+
+
+        /* =========================================================
+   BRAND TEXT
+========================================================= */
+
+        .brand-title {
+
+            font-size:
+                clamp(46px, 5vw, 68px);
+
+            line-height: 1;
+
+            font-weight: 800;
+
+            letter-spacing: -3px;
+
+            margin-bottom: 22px;
+        }
+
+
+        .brand-description {
+
+            max-width: 470px;
+
+            font-size: 18px;
+
             line-height: 1.7;
-            font-size: 15px;
+
+            color:
+                rgba(255, 255, 255, .84);
+
+            margin-bottom: 38px;
         }
+
+
+        /* =========================================================
+   FEATURES
+========================================================= */
 
         .feature-list {
-            position: relative;
-            z-index: 1;
+
             display: grid;
-            gap: 12px;
-            margin-top: 30px;
+
+            gap: 15px;
         }
+
 
         .feature {
+
             display: flex;
+
             align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.92);
+
+            gap: 13px;
+
+            font-size: 15px;
+
+            color:
+                rgba(255, 255, 255, .92);
         }
 
-        .feature span {
+
+        .feature-icon {
+
+            width: 30px;
+            height: 30px;
+
+            flex: 0 0 30px;
+
             display: grid;
+
             place-items: center;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.18);
+
+            border-radius: 9px;
+
+            background:
+                rgba(255, 255, 255, .14);
+
+            font-size: 14px;
         }
 
-        .welcome-footer {
+
+        /* =========================================================
+   LOGIN PANEL
+========================================================= */
+
+        .login-panel {
+
+            min-height: 100vh;
+
             position: relative;
-            z-index: 1;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.68);
-        }
 
-        .form-panel {
             display: flex;
+
             align-items: center;
-            padding: 48px;
-            background: var(--surface);
+            justify-content: center;
+
+            padding: 50px 40px;
+
+            background: var(--page-bg);
         }
 
-        .form-content {
+
+        .login-container {
+
             width: 100%;
-            max-width: 360px;
-            margin: auto;
+
+            max-width: 450px;
         }
+
+
+        /* =========================================================
+   THEME TOGGLE
+========================================================= */
+
+        .theme-toggle {
+
+            position: absolute;
+
+            top: 25px;
+            right: 25px;
+
+            width: 44px;
+            height: 44px;
+
+            display: grid;
+
+            place-items: center;
+
+            border: 1px solid var(--border);
+
+            border-radius: 12px;
+
+            background: var(--card-bg);
+
+            color: var(--text);
+
+            cursor: pointer;
+
+            box-shadow: var(--small-shadow);
+
+            transition:
+                background-color .2s ease,
+                border-color .2s ease,
+                transform .15s ease;
+        }
+
+
+        .theme-toggle:hover {
+
+            transform:
+                translateY(-1px);
+        }
+
+
+        .theme-toggle:active {
+
+            transform:
+                translateY(0);
+        }
+
+
+        .theme-icon {
+
+            font-size: 18px;
+
+            line-height: 1;
+        }
+
+
+        .sun-icon {
+            display: none;
+        }
+
+
+        .moon-icon {
+            display: inline;
+        }
+
+
+        html[data-theme="dark"] .sun-icon {
+            display: inline;
+        }
+
+
+        html[data-theme="dark"] .moon-icon {
+            display: none;
+        }
+
+
+        /* =========================================================
+   MOBILE BRAND
+========================================================= */
 
         .mobile-brand {
+
             display: none;
+
             text-align: center;
+
+            margin-bottom: 28px;
+        }
+
+
+        .mobile-brand-icon {
+
+            width: 72px;
+            height: 72px;
+
+            margin:
+                0 auto 13px;
+
+            display: block;
+
+            overflow: hidden;
+
+            border-radius: 19px;
+
+            background: var(--card-bg);
+
+            border: 1px solid var(--border);
+
+            box-shadow: var(--small-shadow);
+        }
+
+
+        .mobile-brand-logo {
+
+            width: 100%;
+            height: 100%;
+
+            display: block;
+
+            object-fit: cover;
+
+            padding: 1px;
+
+            border-radius: 19px;
+        }
+
+
+        /* =========================================================
+   LOGIN HEADER
+========================================================= */
+
+        .login-header {
+
+            margin-bottom: 30px;
+        }
+
+
+        .login-title {
+
             font-size: 34px;
-            margin-bottom: 12px;
+
+            line-height: 1.15;
+
+            letter-spacing: -1.2px;
+
+            font-weight: 800;
+
+            color: var(--text);
+
+            margin-bottom: 9px;
         }
 
-        .form-heading h2 {
-            margin: 0 0 8px;
-            font-size: 30px;
-            letter-spacing: -0.8px;
-        }
 
-        .form-heading p {
-            margin: 0 0 30px;
+        .login-subtitle {
+
             color: var(--muted);
-            font-size: 14px;
+
+            font-size: 15px;
+
             line-height: 1.6;
         }
 
-        .error-box {
-            display: flex;
+
+        /* =========================================================
+   DJANGO MESSAGES
+========================================================= */
+
+        .messages {
+
+            display: grid;
+
             gap: 10px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .message {
+
+            display: flex;
+
             align-items: flex-start;
-            margin-bottom: 20px;
-            padding: 13px 14px;
-            border: 1px solid var(--danger-border);
-            border-radius: 12px;
-            background: var(--danger-bg);
-            color: var(--danger-text);
-            font-size: 13px;
+
+            gap: 10px;
+
+            padding: 13px 15px;
+
+            border-radius: 11px;
+
+            border: 1px solid var(--border);
+
+            background: var(--surface-soft);
+
+            color: var(--text-soft);
+
+            font-size: 14px;
+
             line-height: 1.5;
         }
 
+
+        .message.error {
+
+            color: var(--danger);
+
+            background: var(--danger-bg);
+
+            border-color:
+                rgba(220, 38, 38, .25);
+        }
+
+
+        .message.success {
+
+            color: var(--success);
+
+            background: var(--success-bg);
+
+            border-color:
+                rgba(22, 163, 74, .25);
+        }
+
+
+        /* =========================================================
+   LOGIN AUTHENTICATION ERROR
+========================================================= */
+
+        .login-error {
+
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 10px;
+
+            margin-bottom: 20px;
+
+            padding: 13px 15px;
+
+            border-radius: 11px;
+
+            border: 1px solid rgba(220, 38, 38, .25);
+
+            background: var(--danger-bg);
+
+            color: var(--danger);
+
+            font-size: 14px;
+
+            line-height: 1.5;
+        }
+
+
+        .error-icon {
+
+            width: 23px;
+            height: 23px;
+
+            min-width: 23px;
+
+            display: grid;
+
+            place-items: center;
+
+            border-radius: 50%;
+
+            background: var(--danger);
+
+            color: #ffffff;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            line-height: 1;
+        }
+
+
+        .login-error-content {
+            padding-top: 1px;
+        }
+
+
+        .login-error-title {
+
+            display: block;
+
+            margin-bottom: 2px;
+
+            font-weight: 750;
+        }
+
+
+        .login-error-text {
+
+            color: var(--danger);
+
+            opacity: .9;
+        }
+
+
+        /* =========================================================
+   FORM
+========================================================= */
+
+        .login-form {
+            width: 100%;
+        }
+
+
         .form-group {
+
             margin-bottom: 20px;
         }
 
-        .form-group label {
+
+        .form-label {
+
             display: block;
+
             margin-bottom: 8px;
+
             color: var(--text);
-            font-size: 13px;
+
+            font-size: 14px;
+
             font-weight: 700;
         }
+
 
         .input-wrapper {
             position: relative;
         }
 
-        .input-icon {
-            position: absolute;
-            top: 50%;
-            left: 14px;
-            transform: translateY(-50%);
-            color: var(--muted);
-            pointer-events: none;
-            font-size: 17px;
-        }
 
-        .form-group input {
+        .form-input {
+
             width: 100%;
-            min-height: 52px;
-            padding: 14px 44px;
-            border: 1px solid var(--border);
-            border-radius: 13px;
+
+            height: 54px;
+
+            padding:
+                0 16px;
+
+            border:
+                1px solid var(--input-border);
+
+            border-radius: 12px;
+
             outline: none;
+
             background: var(--input-bg);
+
             color: var(--text);
+
             font-size: 15px;
-            transition: 0.2s ease;
-            -webkit-appearance: none;
+
+            transition:
+                border-color .2s ease,
+                box-shadow .2s ease,
+                background-color .2s ease;
         }
 
-        .form-group input:focus {
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.11);
+
+        .form-input::placeholder {
+
+            color: var(--muted);
         }
+
+
+        .form-input:focus {
+
+            border-color:
+                var(--primary);
+
+            box-shadow:
+                0 0 0 4px rgba(37, 99, 235, .12);
+        }
+
+
+        .form-input.input-error {
+
+            border-color: var(--danger);
+        }
+
+
+        .form-input.input-error:focus {
+
+            border-color: var(--danger);
+
+            box-shadow:
+                0 0 0 4px rgba(220, 38, 38, .10);
+        }
+
+
+        .password-input {
+
+            padding-right: 55px;
+        }
+
+
+        /* =========================================================
+   PASSWORD TOGGLE
+========================================================= */
 
         .password-toggle {
+
             position: absolute;
+
             top: 50%;
-            right: 12px;
-            transform: translateY(-50%);
-            padding: 5px;
+            right: 6px;
+
+            transform:
+                translateY(-50%);
+
+            width: 42px;
+            height: 42px;
+
+            display: grid;
+
+            place-items: center;
+
             border: 0;
+
+            border-radius: 9px;
+
             background: transparent;
+
             color: var(--muted);
+
             cursor: pointer;
-            font-size: 16px;
         }
 
-        .submit-btn {
-            width: 100%;
-            min-height: 52px;
+
+        .password-toggle:hover {
+
+            background:
+                var(--surface-soft);
+
+            color: var(--text);
+        }
+
+
+        /* =========================================================
+   REMEMBER ME + FORGOT PASSWORD
+========================================================= */
+
+        .login-options {
+
             display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-top: -4px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .remember-me {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            user-select: none;
+        }
+
+
+        .remember-checkbox {
+
+            width: 17px;
+            height: 17px;
+
+            margin: 0;
+
+            accent-color: var(--primary);
+
+            cursor: pointer;
+        }
+
+
+        .remember-me:hover {
+
+            color: var(--text);
+        }
+
+
+        .forgot-password-link {
+
+            color: var(--primary);
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+
+            transition:
+                opacity .2s ease;
+        }
+
+
+        .forgot-password-link:hover {
+
+            opacity: .75;
+
+            text-decoration:
+                underline;
+        }
+
+
+        /* =========================================================
+   LOGIN BUTTON
+========================================================= */
+
+        .login-button {
+
+            width: 100%;
+
+            height: 54px;
+
+            margin-top: 5px;
+
+            display: flex;
+
             align-items: center;
             justify-content: center;
+
             gap: 10px;
-            margin-top: 8px;
+
             border: 0;
-            border-radius: 13px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
+
+            border-radius: 12px;
+
+            background:
+                linear-gradient(135deg,
+                    var(--primary),
+                    var(--primary-dark));
+
+            color: #ffffff;
+
             font-size: 15px;
-            font-weight: 700;
+
+            font-weight: 750;
+
             cursor: pointer;
-            box-shadow: 0 10px 22px rgba(37, 99, 235, 0.22);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+            box-shadow:
+                0 12px 28px rgba(37, 99, 235, .22);
+
+            transition:
+                transform .2s ease,
+                box-shadow .2s ease,
+                opacity .2s ease;
         }
 
-        .submit-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 13px 28px rgba(37, 99, 235, 0.3);
+
+        .login-button:hover {
+
+            transform:
+                translateY(-1px);
+
+            box-shadow:
+                0 16px 34px rgba(37, 99, 235, .28);
         }
 
-        .submit-btn:disabled {
-            cursor: wait;
-            opacity: 0.85;
+
+        .login-button:active {
+
+            transform:
+                translateY(0);
+        }
+
+
+        .login-button:disabled {
+
+            opacity: .7;
+
+            cursor: not-allowed;
+
             transform: none;
         }
 
-        .button-spinner,
-        .page-spinner {
-            width: 18px;
-            height: 18px;
-            border: 3px solid rgba(255, 255, 255, 0.35);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
 
-        .form-note {
-            margin-top: 24px;
-            text-align: center;
-            color: var(--muted);
-            font-size: 12px;
-        }
+        /* =========================================================
+   BUTTON SPINNER
+========================================================= */
 
-        .loading-screen {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
+        .button-spinner {
+
+            width: 17px;
+            height: 17px;
+
             display: none;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 16px;
-            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+
+            border:
+                2px solid rgba(255, 255, 255, .35);
+
+            border-top-color: #ffffff;
+
+            border-radius: 50%;
+
+            animation:
+                kounterLoginSpin .75s linear infinite;
         }
 
-        .loading-screen.show {
-            display: flex;
+
+        .login-button.loading .button-spinner {
+
+            display: block;
         }
 
-        .loading-logo {
-            width: 74px;
-            height: 74px;
-            display: grid;
-            place-items: center;
-            border-radius: 23px;
-            background: var(--primary);
-            color: white;
-            font-size: 36px;
-            box-shadow: 0 15px 35px rgba(37, 99, 235, 0.25);
+
+        .login-button.loading .button-text {
+
+            display: none;
         }
 
-        .loading-screen h2 {
-            margin: 0;
-            color: #0f172a;
-            font-size: 22px;
-        }
 
-        .loading-screen p {
-            margin: -5px 0 4px;
-            color: #64748b;
-            font-size: 14px;
-        }
+        @keyframes kounterLoginSpin {
 
-        @keyframes spin {
             to {
                 transform: rotate(360deg);
             }
         }
 
+
+        /* =========================================================
+   DIVIDER
+========================================================= */
+
+        .divider {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+
+            margin: 28px 0;
+        }
+
+
+        .divider::before,
+        .divider::after {
+
+            content: "";
+
+            height: 1px;
+
+            flex: 1;
+
+            background:
+                var(--border);
+        }
+
+
+        .divider span {
+
+            color: var(--muted);
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            letter-spacing: .08em;
+
+            text-transform: uppercase;
+        }
+
+
+        /* =========================================================
+   SIGN UP
+========================================================= */
+
+        .signup-text {
+
+            text-align: center;
+
+            color: var(--muted);
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+
+        .signup-link {
+
+            color: var(--primary);
+
+            font-weight: 750;
+
+            transition:
+                opacity .2s ease;
+        }
+
+
+        .signup-link:hover {
+
+            opacity: .75;
+
+            text-decoration:
+                underline;
+        }
+
+
+        /* =========================================================
+   FOOTER
+========================================================= */
+
+        .login-footer {
+
+            margin-top: 30px;
+
+            text-align: center;
+
+            color: var(--muted);
+
+            font-size: 12px;
+        }
+
+
+        /* =========================================================
+   LOADING OVERLAY
+========================================================= */
+
+        .loading-overlay {
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 99999;
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            flex-direction: column;
+
+            gap: 17px;
+
+            background:
+                rgba(245, 247, 251, .96);
+
+            backdrop-filter:
+                blur(10px);
+
+            -webkit-backdrop-filter:
+                blur(10px);
+        }
+
+
+        html[data-theme="dark"] .loading-overlay {
+
+            background:
+                rgba(15, 23, 42, .96);
+        }
+
+
+        .loading-overlay.active {
+
+            display: flex;
+        }
+
+
+        .loading-logo {
+
+            width: 76px;
+            height: 76px;
+
+            overflow: hidden;
+
+            border-radius: 21px;
+
+            background: var(--card-bg);
+
+            border: 1px solid var(--border);
+
+            box-shadow: var(--small-shadow);
+        }
+
+
+        .loading-logo-image {
+
+            width: 100%;
+            height: 100%;
+
+            display: block;
+
+            object-fit: cover;
+
+            padding: 1px;
+
+            border-radius: 21px;
+        }
+
+
+        .loading-spinner {
+
+            width: 25px;
+            height: 25px;
+
+            border:
+                3px solid var(--border);
+
+            border-top-color:
+                var(--primary);
+
+            border-radius: 50%;
+
+            animation:
+                kounterLoginSpin .8s linear infinite;
+        }
+
+
+        .loading-text {
+
+            color: var(--muted);
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+
+        /* =========================================================
+   TABLET
+========================================================= */
+
+        @media (max-width: 1000px) {
+
+            .login-page {
+
+                grid-template-columns:
+                    .85fr 1fr;
+            }
+
+
+            .brand-panel {
+
+                padding: 40px;
+            }
+
+
+            .login-panel {
+
+                padding:
+                    40px 30px;
+            }
+
+
+            .brand-title {
+
+                font-size: 48px;
+            }
+
+
+            .brand-description {
+
+                font-size: 16px;
+            }
+
+        }
+
+
+        /* =========================================================
+   MOBILE
+========================================================= */
+
         @media (max-width: 760px) {
-            body {
-                padding: 16px;
-            }
 
-            .login-shell {
+            .login-page {
+
                 display: block;
-                min-height: auto;
-                max-width: 430px;
-                border-radius: 24px;
+
+                min-height: 100vh;
             }
 
-            .welcome-panel {
+
+            .brand-panel {
+
                 display: none;
             }
 
-            .form-panel {
-                padding: 34px 25px;
+
+            .login-panel {
+
+                min-height: 100vh;
+
+                padding:
+                    35px 20px 30px;
+
+                align-items: center;
             }
 
+
+            .login-container {
+
+                max-width: 480px;
+
+                margin:
+                    0 auto;
+            }
+
+
             .mobile-brand {
+
                 display: block;
             }
 
-            .form-heading {
+
+            .login-header {
+
                 text-align: center;
+
+                margin-bottom: 28px;
             }
 
-            .form-heading h2 {
+
+            .login-title {
+
+                font-size: 30px;
+            }
+
+
+            .theme-toggle {
+
+                top: 18px;
+                right: 18px;
+
+                width: 42px;
+                height: 42px;
+            }
+
+        }
+
+
+        /* =========================================================
+   SMALL PHONES
+========================================================= */
+
+        @media (max-width: 400px) {
+
+            .login-panel {
+
+                padding:
+                    28px 16px 24px;
+            }
+
+
+            .mobile-brand-icon {
+
+                width: 62px;
+                height: 62px;
+
+                border-radius: 17px;
+            }
+
+
+            .mobile-brand-logo {
+
+                border-radius: 17px;
+            }
+
+
+            .login-title {
+
                 font-size: 27px;
             }
+
+
+            .form-input,
+            .login-button {
+
+                height: 52px;
+            }
+
+
+            .loading-logo {
+
+                width: 68px;
+                height: 68px;
+            }
+
         }
+
+
+        /* =========================================================
+   REDUCED MOTION
+========================================================= */
 
         @media (prefers-reduced-motion: reduce) {
 
             *,
             *::before,
             *::after {
-                animation-duration: 0.01ms !important;
-                transition-duration: 0.01ms !important;
+
+                animation-duration:
+                    .01ms !important;
+
+                animation-iteration-count:
+                    1 !important;
+
+                transition-duration:
+                    .01ms !important;
             }
-        }
 
-        .signup-link {
-            margin-top: 18px;
-            text-align: center;
-            font-size: 14px;
-            color: #6b7280;
-        }
-
-        .signup-link a {
-            color: #2563eb;
-            font-weight: 800;
-            text-decoration: none;
-        }
-
-        .signup-link a:hover {
-            text-decoration: underline;
         }
     </style>
+
 </head>
 
 <body>
-    <div class="login-shell">
-        <section class="welcome-panel">
-            <div class="brand-mark">🏪</div>
 
-            <div class="welcome-content">
-                <h1>Run your shop<br>with confidence.</h1>
-                <p>
-                    Manage products, track stock, and process sales smoothly
-                    from one simple point-of-sale system.
+    <!-- =========================================================
+ MAIN LOGIN PAGE
+
+========================================================= -->
+
+    <main class="login-page">
+
+
+        <!-- =====================================================
+     BRANDING
+====================================================== -->
+
+        <section class="brand-panel">
+
+            <div class="brand-content">
+
+
+                <div class="brand-logo-wrapper">
+
+                    <img src="{% static 'core/Kounter_light.jpg' %}" alt="Kounter" class="brand-logo logo-light">
+
+                    <img src="{% static 'core/Kounter_dark.jpg' %}" alt="Kounter" class="brand-logo logo-dark">
+
+                </div>
+
+
+                <h1 class="brand-title">
+                    Kounter
+                </h1>
+
+
+                <p class="brand-description">
+
+                    A simple and modern point-of-sale
+                    system designed to help you manage
+                    your shop, products, stock and sales
+                    with ease.
+
                 </p>
 
+
                 <div class="feature-list">
-                    <div class="feature"><span>✓</span> Quick and simple sales processing</div>
-                    <div class="feature"><span>✓</span> Easy inventory management</div>
-                    <div class="feature"><span>✓</span> Clear daily sales records</div>
+
+                    <div class="feature">
+
+                        <span class="feature-icon">
+                            ✓
+                        </span>
+
+                        <span>
+                            Manage products and stock easily
+                        </span>
+
+                    </div>
+
+
+                    <div class="feature">
+
+                        <span class="feature-icon">
+                            ✓
+                        </span>
+
+                        <span>
+                            Record sales quickly
+                        </span>
+
+                    </div>
+
+
+                    <div class="feature">
+
+                        <span class="feature-icon">
+                            ✓
+                        </span>
+
+                        <span>
+                            Monitor your shop from anywhere
+                        </span>
+
+                    </div>
+
+
+                    <div class="feature">
+
+                        <span class="feature-icon">
+                            ✓
+                        </span>
+
+                        <span>
+                            Keep your business organized
+                        </span>
+
+                    </div>
+
                 </div>
+
             </div>
 
-            <div class="welcome-footer">Provision POS · Smart shop management</div>
         </section>
 
-        <section class="form-panel">
-            <div class="form-content">
-                <div class="mobile-brand">🏪</div>
 
-                <div class="form-heading">
-                    <h2>Welcome back</h2>
-                    <p>Sign in to continue managing your shop.</p>
+
+        <!-- =====================================================
+     LOGIN
+====================================================== -->
+
+        <section class="login-panel">
+
+
+            <!-- THEME TOGGLE -->
+
+            <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode"
+                title="Toggle dark mode">
+
+                <span class="theme-icon moon-icon">
+                    🌙
+                </span>
+
+                <span class="theme-icon sun-icon">
+                    ☀️
+                </span>
+
+            </button>
+
+
+
+            <div class="login-container">
+
+
+                <!-- =================================================
+             MOBILE BRAND
+        ================================================== -->
+
+                <div class="mobile-brand">
+
+                    <div class="mobile-brand-icon">
+
+                        <img src="{% static 'core/Kounter_light.jpg' %}" alt="Kounter"
+                            class="mobile-brand-logo logo-light">
+
+                        <img src="{% static 'core/Kounter_dark.jpg' %}" alt="Kounter"
+                            class="mobile-brand-logo logo-dark">
+
+                    </div>
+
+
+                    <div style="
+                font-size:23px;
+                font-weight:800;
+                letter-spacing:-.5px;
+                color:var(--text);
+                margin-bottom:5px;
+            ">
+                        Kounter
+                    </div>
+
+
+                    <div style="
+                font-size:13px;
+                color:var(--muted);
+            ">
+                        Point-of-sale management
+                    </div>
+
                 </div>
 
-                {% if form.errors or error_message %}
-                <div class="error-box">
-                    <span>⚠️</span>
-                    <div>Invalid username or password. Please try again.</div>
+
+
+                <!-- =================================================
+             LOGIN HEADER
+        ================================================== -->
+
+                <div class="login-header">
+
+                    <h2 class="login-title">
+                        Welcome back
+                    </h2>
+
+
+                    <p class="login-subtitle">
+                        Sign in to your Kounter account
+                        to continue.
+                    </p>
+
                 </div>
+
+
+
+                <!-- =================================================
+             DJANGO MESSAGES
+        ================================================== -->
+
+                {% if messages %}
+
+                <div class="messages">
+
+                    {% for message in messages %}
+
+                    <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+
+                        {{ message }}
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
                 {% endif %}
 
-                <form method="post" action="{% url 'login' %}" id="loginForm">
+
+
+                <!-- =================================================
+             LOGIN FORM
+        ================================================== -->
+
+                <form method="post" action="{% url 'login' %}" class="login-form" id="loginForm">
+
                     {% csrf_token %}
 
-                    <div class="form-group">
-                        <label for="id_username">Username</label>
-                        <div class="input-wrapper">
-                            <span class="input-icon">👤</span>
-                            <input type="text" name="username" id="id_username" placeholder="Enter your username"
-                                required autofocus autocomplete="username">
+                    <!-- Preserve redirect destination -->
+
+                    <input type="hidden" name="next" value="{{ next }}" />
+
+
+                    <!-- =================================================
+                 AUTHENTICATION ERROR
+            ================================================== -->
+
+                    {% if form.non_field_errors %}
+
+                    <div class="login-error" role="alert" aria-live="assertive">
+
+                        <span class="error-icon">
+                            !
+                        </span>
+
+
+                        <div class="login-error-content">
+
+                            <span class="login-error-title">
+                                Login failed
+                            </span>
+
+
+                            <span class="login-error-text">
+
+                                {% for error in form.non_field_errors %}
+
+                                {{ error }}
+
+                                {% endfor %}
+
+                            </span>
+
                         </div>
+
                     </div>
 
-                    <div class="form-group">
-                        <label for="id_password">Password</label>
-                        <div class="input-wrapper">
-                            <span class="input-icon">🔒</span>
-                            <input type="password" name="password" id="id_password" placeholder="Enter your password"
-                                required autocomplete="current-password">
+                    {% endif %}
 
-                            <button type="button" class="password-toggle" id="togglePassword"
-                                aria-label="Show password">
+
+
+                    <!-- USERNAME -->
+
+                    <div class="form-group">
+
+                        <label for="username" class="form-label">
+                            Username
+                        </label>
+
+
+                        <div class="input-wrapper">
+
+                            <input type="text" id="username" name="username"
+                                class="form-input{% if form.non_field_errors %} input-error{% endif %}"
+                                placeholder="Enter your username" autocomplete="username"
+                                value="{{ form.username.value|default:'' }}" required autofocus>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="form-group">
+
+                        <label for="password" class="form-label">
+                            Password
+                        </label>
+
+
+                        <div class="input-wrapper">
+
+                            <input type="password" id="password" name="password"
+                                class="form-input password-input{% if form.non_field_errors %} input-error{% endif %}"
+                                placeholder="Enter your password" autocomplete="current-password" required>
+
+
+                            <button type="button" class="password-toggle" id="passwordToggle" aria-label="Show password"
+                                title="Show password">
                                 👁
                             </button>
+
                         </div>
+
                     </div>
 
-                    <button type="submit" class="submit-btn" id="submitButton">
-                        <span id="buttonText">Sign In</span>
+
+
+                    <!-- =================================================
+                 REMEMBER ME + FORGOT PASSWORD
+            ================================================== -->
+
+                    <div class="login-options">
+
+                        <label for="remember_me" class="remember-me">
+
+                            <input type="checkbox" id="remember_me" name="remember_me" value="1"
+                                class="remember-checkbox">
+
+                            <span>
+                                Remember me
+                            </span>
+
+                        </label>
+
+
+                        <a href="{% url 'password_reset' %}" class="forgot-password-link">
+                            Forgot password?
+                        </a>
+
+                    </div>
+
+
+
+                    <!-- LOGIN BUTTON -->
+
+                    <button type="submit" class="login-button" id="loginButton">
+
+                        <span class="button-text">
+                            Sign in
+                        </span>
+
+                        <span class="button-spinner" aria-hidden="true"></span>
+
                     </button>
 
-                    <div class="signup-link">
-                        Don't have an account?
-                        <a href="{% url 'signup' %}">
-                            Create an account
-                        </a>
-                    </div>
+
                 </form>
 
-                <div class="form-note">
-                    Secure access to your shop dashboard
+
+
+                <!-- =================================================
+             DIVIDER
+        ================================================== -->
+
+                <div class="divider">
+
+                    <span>
+                        Kounter
+                    </span>
+
                 </div>
+
+
+
+                <!-- =================================================
+             SIGN UP
+        ================================================== -->
+
+                <p class="signup-text">
+
+                    Don't have an account?
+
+                    <a href="{% url 'signup' %}" class="signup-link">
+                        Create an account
+                    </a>
+
+                </p>
+
+
+
+                <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+                <div class="login-footer">
+
+                    © {% now "Y" %} Kounter.
+                    All rights reserved.
+
+                </div>
+
+
             </div>
+
         </section>
+
+    </main>
+
+
+
+    <!-- =========================================================
+ LOGIN LOADING OVERLAY
+
+========================================================= -->
+
+    <div class="loading-overlay" id="loadingOverlay" aria-hidden="true">
+
+        <div class="loading-logo">
+
+            <img src="{% static 'core/Kounter_light.jpg' %}" alt="Kounter" class="loading-logo-image logo-light">
+
+            <img src="{% static 'core/Kounter_dark.jpg' %}" alt="Kounter" class="loading-logo-image logo-dark">
+
+        </div>
+
+
+        <div class="loading-spinner"></div>
+
+
+        <div class="loading-text">
+            Signing you in...
+        </div>
+
     </div>
 
-    <div class="loading-screen" id="loadingScreen" aria-live="polite" aria-busy="true">
-        <div class="loading-logo">🏪</div>
-        <div class="page-spinner"></div>
-        <h2>Signing you in...</h2>
-        <p>Please wait while we open your dashboard.</p>
-    </div>
+
+
+    <!-- =========================================================
+ JAVASCRIPT
+
+========================================================= -->
 
     <script>
-        const loginForm = document.getElementById("loginForm");
-        const submitButton = document.getElementById("submitButton");
-        const buttonText = document.getElementById("buttonText");
-        const loadingScreen = document.getElementById("loadingScreen");
-        const passwordInput = document.getElementById("id_password");
-        const togglePassword = document.getElementById("togglePassword");
 
-        togglePassword.addEventListener("click", function () {
-            const isPassword = passwordInput.type === "password";
-            passwordInput.type = isPassword ? "text" : "password";
-            togglePassword.textContent = isPassword ? "🙈" : "👁";
-            togglePassword.setAttribute(
-                "aria-label",
-                isPassword ? "Hide password" : "Show password"
-            );
-        });
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
 
-        loginForm.addEventListener("submit", function () {
-            if (!loginForm.checkValidity()) {
-                return;
+                "use strict";
+
+
+                /* =================================================
+                   ELEMENTS
+                ================================================== */
+
+                const themeToggle =
+                    document.getElementById("themeToggle");
+
+
+                const passwordToggle =
+                    document.getElementById("passwordToggle");
+
+
+                const passwordInput =
+                    document.getElementById("password");
+
+
+                const loginForm =
+                    document.getElementById("loginForm");
+
+
+                const loginButton =
+                    document.getElementById("loginButton");
+
+
+                const loadingOverlay =
+                    document.getElementById("loadingOverlay");
+
+
+
+                /* =================================================
+                   APPLY THEME
+                ================================================== */
+
+                function applyTheme(theme) {
+
+                    document.documentElement.setAttribute(
+                        "data-theme",
+                        theme
+                    );
+
+
+                    localStorage.setItem(
+                        "kounter-theme",
+                        theme
+                    );
+
+                }
+
+
+
+                /* =================================================
+                   THEME TOGGLE
+                ================================================== */
+
+                if (themeToggle) {
+
+                    themeToggle.addEventListener(
+                        "click",
+                        function () {
+
+                            const currentTheme =
+                                document.documentElement.getAttribute(
+                                    "data-theme"
+                                );
+
+
+                            const newTheme =
+                                currentTheme === "dark"
+                                    ? "light"
+                                    : "dark";
+
+
+                            applyTheme(newTheme);
+
+                        }
+                    );
+
+                }
+
+
+
+                /* =================================================
+                   PASSWORD VISIBILITY
+                ================================================== */
+
+                if (
+                    passwordToggle &&
+                    passwordInput
+                ) {
+
+                    passwordToggle.addEventListener(
+                        "click",
+                        function () {
+
+                            const isPassword =
+                                passwordInput.type === "password";
+
+
+                            if (isPassword) {
+
+                                passwordInput.type = "text";
+
+                                passwordToggle.textContent = "🙈";
+
+                                passwordToggle.setAttribute(
+                                    "aria-label",
+                                    "Hide password"
+                                );
+
+                                passwordToggle.setAttribute(
+                                    "title",
+                                    "Hide password"
+                                );
+
+                            } else {
+
+                                passwordInput.type = "password";
+
+                                passwordToggle.textContent = "👁";
+
+                                passwordToggle.setAttribute(
+                                    "aria-label",
+                                    "Show password"
+                                );
+
+                                passwordToggle.setAttribute(
+                                    "title",
+                                    "Show password"
+                                );
+
+                            }
+
+                        }
+                    );
+
+                }
+
+
+
+                /* =================================================
+                   LOGIN LOADING
+                ================================================== */
+
+                if (loginForm) {
+
+                    loginForm.addEventListener(
+                        "submit",
+                        function () {
+
+                            if (loginButton) {
+
+                                loginButton.classList.add(
+                                    "loading"
+                                );
+
+                                loginButton.disabled = true;
+
+                            }
+
+
+                            if (loadingOverlay) {
+
+                                loadingOverlay.classList.add(
+                                    "active"
+                                );
+
+                                loadingOverlay.setAttribute(
+                                    "aria-hidden",
+                                    "false"
+                                );
+
+                            }
+
+                        }
+                    );
+
+                }
+
+
+
+                /* =================================================
+                   KEYBOARD SHORTCUT
+                   CTRL/CMD + SHIFT + D
+                ================================================== */
+
+                document.addEventListener(
+                    "keydown",
+                    function (event) {
+
+                        if (
+                            (event.ctrlKey || event.metaKey) &&
+                            event.shiftKey &&
+                            event.key.toLowerCase() === "d"
+                        ) {
+
+                            event.preventDefault();
+
+
+                            if (themeToggle) {
+
+                                themeToggle.click();
+
+                            }
+
+                        }
+
+                    }
+                );
+
             }
+        );
 
-            submitButton.disabled = true;
-            buttonText.textContent = "Signing in...";
-
-            const spinner = document.createElement("span");
-            spinner.className = "button-spinner";
-            submitButton.prepend(spinner);
-
-            loadingScreen.classList.add("show");
-        });
     </script>
+
+
 </body>
 
 </html>

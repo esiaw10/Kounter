@@ -1,0 +1,1233 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% load static %}
+
+    <link id="kounter-favicon" rel="icon" type="image/jpeg" data-light="{% static 'core/Kounter_light.jpg' %}"
+        data-dark="{% static 'core/Kounter_dark.jpg' %}" href="{% static 'core/Kounter_light.jpg' %}">
+
+    <script>
+        (function () {
+            const theme = localStorage.getItem("kounter-theme") || "light";
+
+            document.documentElement.setAttribute("data-theme", theme);
+
+            const favicon = document.getElementById("kounter-favicon");
+
+            if (favicon) {
+                favicon.href =
+                    theme === "dark"
+                        ? "{% static 'core/Kounter_dark.jpg' %}"
+                        : "{% static 'core/Kounter_light.jpg' %}";
+            }
+        })();
+    </script>
+
+    <title>
+        Subscription — {{ store.name }}
+    </title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f5f7fb;
+            --text: #172033;
+            --muted: #667085;
+            --card: #ffffff;
+            --border: #e4e7ec;
+            --line: #eeeeee;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-text: #ffffff;
+            --dashboard-bg: #172033;
+            --icon-bg: #eef2ff;
+
+            --success-bg: #ecfdf3;
+            --success-text: #027a48;
+
+            --warning-bg: #fffaeb;
+            --warning-text: #b54708;
+
+            --danger-bg: #fef3f2;
+            --danger-text: #b42318;
+
+            --shadow: rgba(0, 0, 0, 0.06);
+        }
+
+        html.dark {
+            --bg: #0f172a;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --card: #1e293b;
+            --border: #334155;
+            --line: #334155;
+
+            --primary: #3b82f6;
+            --primary-hover: #60a5fa;
+            --primary-text: #ffffff;
+
+            --dashboard-bg: #334155;
+            --icon-bg: #273449;
+
+            --success-bg: #063b28;
+            --success-text: #6ee7b7;
+
+            --warning-bg: #422006;
+            --warning-text: #fbbf24;
+
+            --danger-bg: #450a0a;
+            --danger-text: #fca5a5;
+
+            --shadow: rgba(0, 0, 0, 0.30);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            background: var(--bg);
+            color: var(--text);
+
+            transition:
+                background 0.25s ease,
+                color 0.25s ease;
+        }
+
+        /* ==================================================
+           PAGE
+        ================================================== */
+
+        .page {
+            width: 100%;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 30px 20px 50px;
+        }
+
+        /* ==================================================
+           HEADER
+        ================================================== */
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            margin: 0 0 20px;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* ==================================================
+           DASHBOARD BUTTON
+        ================================================== */
+
+        .dashboard-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 44px;
+            padding: 11px 18px;
+
+            border-radius: 11px;
+
+            background: var(--dashboard-bg);
+            color: #ffffff;
+
+            text-decoration: none;
+
+            font-weight: 700;
+            font-size: 14px;
+
+            transition:
+                opacity 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .dashboard-button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* ==================================================
+           THEME SWITCH
+        ================================================== */
+
+        .theme-switch {
+            width: 52px;
+            height: 32px;
+
+            padding: 0;
+            border: 0;
+            border-radius: 999px;
+
+            background: #d1d5db;
+
+            cursor: pointer;
+            position: relative;
+
+            transition:
+                background 0.25s ease;
+        }
+
+        .theme-switch-track {
+            width: 100%;
+            height: 100%;
+
+            display: block;
+            position: relative;
+        }
+
+        .theme-switch-thumb {
+            width: 26px;
+            height: 26px;
+
+            position: absolute;
+            top: 3px;
+            left: 3px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: #ffffff;
+
+            font-size: 14px;
+
+            box-shadow:
+                0 2px 6px rgba(0, 0, 0, 0.20);
+
+            transition:
+                transform 0.25s ease;
+        }
+
+        html.dark .theme-switch {
+            background: #2563eb;
+        }
+
+        html.dark .theme-switch-thumb {
+            transform: translateX(20px);
+        }
+
+        /* ==================================================
+           CARD
+        ================================================== */
+
+        .card {
+            background: var(--card);
+
+            border-radius: 20px;
+
+            padding: 30px;
+            margin-bottom: 20px;
+
+            border: 1px solid var(--border);
+
+            box-shadow:
+                0 10px 30px var(--shadow);
+
+            transition:
+                background 0.25s ease,
+                border-color 0.25s ease,
+                box-shadow 0.25s ease;
+        }
+
+        /* ==================================================
+           CURRENT STATUS
+        ================================================== */
+
+        .status {
+            text-align: center;
+        }
+
+        .status-icon {
+            width: 72px;
+            height: 72px;
+
+            margin: 0 auto 18px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: var(--icon-bg);
+
+            font-size: 30px;
+        }
+
+        .status h2 {
+            margin: 0 0 10px;
+            font-size: 24px;
+        }
+
+        .status p {
+            margin: 8px auto;
+            max-width: 600px;
+
+            color: var(--muted);
+
+            line-height: 1.6;
+        }
+
+        .days {
+            margin: 15px 0 0;
+
+            font-size: 44px;
+            font-weight: 800;
+
+            line-height: 1;
+        }
+
+        .status-label {
+            margin-top: 10px !important;
+            font-size: 14px;
+        }
+
+        /* ==================================================
+           GENERAL BUTTON
+        ================================================== */
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 46px;
+            padding: 13px 22px;
+
+            border-radius: 11px;
+
+            background: var(--primary);
+            color: var(--primary-text);
+
+            text-decoration: none;
+
+            border: none;
+
+            font-weight: 700;
+            font-size: 14px;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease,
+                opacity 0.2s ease;
+        }
+
+        .button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .button:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status .button {
+            margin-top: 18px;
+        }
+
+        /* ==================================================
+           SECTION HEADER
+        ================================================== */
+
+        .section-title {
+            margin: 0 0 8px;
+            font-size: 22px;
+        }
+
+        .section-description {
+            margin: 0 0 24px;
+
+            color: var(--muted);
+
+            line-height: 1.6;
+        }
+
+        /* ==================================================
+           PLANS
+        ================================================== */
+
+        .plans {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 16px;
+        }
+
+        .plan {
+            position: relative;
+
+            display: flex;
+            flex-direction: column;
+
+            padding: 22px;
+
+            border: 1px solid var(--border);
+            border-radius: 17px;
+
+            background: var(--card);
+
+            text-align: center;
+
+            transition:
+                transform 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .plan:hover {
+            transform: translateY(-3px);
+
+            border-color: var(--primary);
+
+            box-shadow:
+                0 10px 25px var(--shadow);
+        }
+
+        .plan-badge {
+            display: inline-flex;
+            align-self: center;
+
+            padding: 5px 9px;
+            margin-bottom: 12px;
+
+            border-radius: 999px;
+
+            background: var(--icon-bg);
+            color: var(--primary);
+
+            font-size: 11px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .plan h3 {
+            margin: 0;
+            font-size: 19px;
+        }
+
+        .price {
+            margin: 15px 0 5px;
+
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+        .duration {
+            margin: 0 0 15px;
+
+            color: var(--muted);
+
+            font-size: 14px;
+        }
+
+        .plan-description {
+            min-height: 42px;
+
+            margin: 0 0 20px;
+
+            color: var(--muted);
+
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .plan form {
+            width: 100%;
+            margin-top: auto;
+        }
+
+        .plan .button {
+            width: 100%;
+        }
+
+        /* ==================================================
+           PAYMENT NOTE
+        ================================================== */
+
+        .payment-note {
+            margin-top: 22px;
+
+            padding: 13px 15px;
+
+            border-radius: 10px;
+
+            background: var(--success-bg);
+            color: var(--success-text);
+
+            font-size: 12px;
+            line-height: 1.6;
+
+            text-align: center;
+        }
+
+        /* ==================================================
+           HISTORY
+        ================================================== */
+
+        .history-wrapper {
+            width: 100%;
+            overflow-x: auto;
+
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .history {
+            width: 100%;
+            min-width: 600px;
+
+            border-collapse: collapse;
+        }
+
+        .history th,
+        .history td {
+            padding: 14px;
+
+            border-bottom:
+                1px solid var(--line);
+
+            text-align: left;
+
+            white-space: nowrap;
+        }
+
+        .history tr:last-child td {
+            border-bottom: none;
+        }
+
+        .history th {
+            background: var(--bg);
+
+            color: var(--muted);
+
+            font-size: 12px;
+
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .history td {
+            font-size: 14px;
+        }
+
+        /* ==================================================
+           STATUS BADGES
+        ================================================== */
+
+        .history-status {
+            display: inline-flex;
+            align-items: center;
+
+            padding: 5px 9px;
+
+            border-radius: 999px;
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .history-status.active {
+            background: var(--success-bg);
+            color: var(--success-text);
+        }
+
+        .history-status.pending {
+            background: var(--warning-bg);
+            color: var(--warning-text);
+        }
+
+        .history-status.expired,
+        .history-status.cancelled {
+            background: var(--danger-bg);
+            color: var(--danger-text);
+        }
+
+        /* ==================================================
+           FOOTER NOTE
+        ================================================== */
+
+        .secure-note {
+            margin-top: 20px;
+
+            text-align: center;
+
+            color: var(--muted);
+
+            font-size: 12px;
+        }
+
+        /* ==================================================
+           MOBILE
+        ================================================== */
+
+        @media (max-width: 760px) {
+
+            .page {
+                padding:
+                    22px 14px 40px;
+            }
+
+            .header h1 {
+                font-size: 26px;
+            }
+
+            .plans {
+                grid-template-columns: 1fr;
+            }
+
+            .plan-description {
+                min-height: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            .card {
+                padding: 22px 17px;
+                border-radius: 16px;
+            }
+
+            .status h2 {
+                font-size: 21px;
+            }
+
+            .days {
+                font-size: 38px;
+            }
+
+            .header-controls {
+                width: 100%;
+            }
+
+            .dashboard-button {
+                flex: 1;
+            }
+        }
+    </style>
+
+    <!-- ==================================================
+         APPLY SAVED THEME BEFORE PAGE LOAD
+    ================================================== -->
+
+    <script>
+        (function () {
+
+            const savedTheme =
+                localStorage.getItem("kounter-theme");
+
+            if (savedTheme === "dark") {
+
+                document.documentElement
+                    .classList
+                    .add("dark");
+            }
+
+        })();
+    </script>
+
+</head>
+
+<body>
+
+    <div class="page">
+
+        <!-- ==================================================
+         HEADER
+    ================================================== -->
+
+        <header class="header">
+
+            <h1>
+                {{ store.name }}
+            </h1>
+
+            <p>
+                Subscription Management
+            </p>
+
+            <div class="header-controls">
+
+                <a href="{% url 'dashboard' %}" class="dashboard-button">
+                    ← Dashboard
+                </a>
+
+                <button type="button" id="themeSwitch" class="theme-switch" aria-pressed="false"
+                    aria-label="Switch theme" title="Switch theme">
+
+                    <span class="theme-switch-track">
+
+                        <span class="theme-switch-thumb" id="themeSwitchThumb">
+                            ☀
+                        </span>
+
+                    </span>
+
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- ==================================================
+         CURRENT SUBSCRIPTION STATUS
+    ================================================== -->
+
+        <section class="card status">
+
+            {% if subscription.status == "TRIAL" %}
+
+            <div class="status-icon">
+                🎁
+            </div>
+
+            <h2>
+                Free Trial Active
+            </h2>
+
+            <p>
+                Your 30-day free trial is currently active.
+            </p>
+
+            <div class="days">
+                {{ subscription.days_remaining }}
+            </div>
+
+            <p class="status-label">
+                day{{ subscription.days_remaining|pluralize }}
+                remaining
+            </p>
+
+            <a href="#plans" class="button">
+                Subscribe Now
+            </a>
+
+
+            {% elif subscription.status == "ACTIVE" %}
+
+            <div class="status-icon">
+                ✓
+            </div>
+
+            <h2>
+                Subscription Active
+            </h2>
+
+            <p>
+                Your store subscription is currently active.
+            </p>
+
+            <div class="days">
+                {{ subscription.days_remaining }}
+            </div>
+
+            <p class="status-label">
+                day{{ subscription.days_remaining|pluralize }}
+                remaining
+            </p>
+
+
+            {% else %}
+
+            <div class="status-icon">
+                🔒
+            </div>
+
+            <h2>
+                Product Addition Locked
+            </h2>
+
+            <p>
+                Your 30-day free trial has expired.
+                Please subscribe to continue adding
+                new products.
+            </p>
+
+            <a href="#plans" class="button">
+                Subscribe Now
+            </a>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- ==================================================
+         SUBSCRIPTION PLANS
+    ================================================== -->
+
+        <section class="card" id="plans">
+
+            <h2 class="section-title">
+                Choose a Subscription
+            </h2>
+
+            <p class="section-description">
+                Select a plan to continue using product
+                management and inventory features.
+            </p>
+
+
+            <div class="plans">
+
+                <!-- ==================================================
+                 MONTHLY
+            ================================================== -->
+
+                <div class="plan">
+
+                    <span class="plan-badge">
+                        Flexible
+                    </span>
+
+                    <h3>
+                        Monthly
+                    </h3>
+
+                    <div class="price">
+                        GH₵50
+                    </div>
+
+                    <p class="duration">
+                        30 days
+                    </p>
+
+                    <p class="plan-description">
+                        Monthly access to product management
+                        and inventory features.
+                    </p>
+
+                    <form method="post" action="{% url 'paystack_initialize' %}">
+
+                        {% csrf_token %}
+
+                        <input type="hidden" name="plan" value="MONTHLY">
+
+                        <button type="submit" class="button">
+                            Pay GH₵50 — Monthly
+                        </button>
+
+                    </form>
+
+                </div>
+
+
+                <!-- ==================================================
+                 QUARTERLY
+            ================================================== -->
+
+                <div class="plan">
+
+                    <span class="plan-badge">
+                        Popular
+                    </span>
+
+                    <h3>
+                        Quarterly
+                    </h3>
+
+                    <div class="price">
+                        GH₵135
+                    </div>
+
+                    <p class="duration">
+                        90 days
+                    </p>
+
+                    <p class="plan-description">
+                        Three months of continuous product
+                        management access.
+                    </p>
+
+                    <form method="post" action="{% url 'paystack_initialize' %}">
+
+                        {% csrf_token %}
+
+                        <input type="hidden" name="plan" value="QUARTERLY">
+
+                        <button type="submit" class="button">
+                            Pay GH₵135 — Quarterly
+                        </button>
+
+                    </form>
+
+                </div>
+
+
+                <!-- ==================================================
+                 YEARLY
+            ================================================== -->
+
+                <div class="plan">
+
+                    <span class="plan-badge">
+                        Annual
+                    </span>
+
+                    <h3>
+                        Yearly
+                    </h3>
+
+                    <div class="price">
+                        GH₵500
+                    </div>
+
+                    <p class="duration">
+                        365 days
+                    </p>
+
+                    <p class="plan-description">
+                        One full year of product management
+                        access.
+                    </p>
+
+                    <form method="post" action="{% url 'paystack_initialize' %}">
+
+                        {% csrf_token %}
+
+                        <input type="hidden" name="plan" value="YEARLY">
+
+                        <button type="submit" class="button">
+                            Pay GH₵500 — Yearly
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================================
+             PAYMENT INFORMATION
+        ================================================== -->
+
+            <div class="payment-note">
+
+                <strong>Secure Payment</strong>
+                <br>
+
+                You will be redirected to Paystack to complete
+                your payment securely.
+
+                <br>
+
+                Your subscription will only be activated after
+                the payment has been verified by the server.
+
+            </div>
+
+            <p class="secure-note">
+                Payments are processed securely through Paystack.
+                Kounter does not store your card details.
+            </p>
+
+        </section>
+
+
+        <!-- ==================================================
+         SUBSCRIPTION HISTORY
+    ================================================== -->
+
+        {% if subscriptions %}
+
+        <section class="card">
+
+            <h2 class="section-title">
+                Subscription History
+            </h2>
+
+            <p class="section-description">
+                Previous and current subscription records
+                for {{ store.name }}.
+            </p>
+
+            <div class="history-wrapper">
+
+                <table class="history">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Plan
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Payment
+                            </th>
+
+                            <th>
+                                Start Date
+                            </th>
+
+                            <th>
+                                End Date
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in subscriptions %}
+
+                        <tr>
+
+                            <td>
+                                {{ item.get_plan_display }}
+                            </td>
+
+                            <td>
+                                GH₵{{ item.amount }}
+                            </td>
+
+                            <td>
+
+                                <span class="
+                                        history-status
+
+                                        {% if item.status == 'ACTIVE' %}
+                                            active
+                                        {% elif item.status == 'PENDING' %}
+                                            pending
+                                        {% elif item.status == 'EXPIRED' %}
+                                            expired
+                                        {% elif item.status == 'CANCELLED' %}
+                                            cancelled
+                                        {% endif %}
+                                    ">
+
+                                    {{ item.get_status_display }}
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                {% if item.payment_status == "PAID" %}
+
+                                <span class="history-status active">
+                                    Paid
+                                </span>
+
+                                {% elif item.payment_status == "PENDING" %}
+
+                                <span class="history-status pending">
+                                    Pending
+                                </span>
+
+                                {% else %}
+
+                                {{ item.payment_status }}
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {% if item.start_date %}
+
+                                {{ item.start_date|date:"d M Y" }}
+
+                                {% else %}
+
+                                —
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {% if item.end_date %}
+
+                                {{ item.end_date|date:"d M Y" }}
+
+                                {% else %}
+
+                                —
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ==================================================
+     THEME SWITCH JAVASCRIPT
+================================================== -->
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                const themeSwitch =
+                    document.getElementById(
+                        "themeSwitch"
+                    );
+
+                const themeThumb =
+                    document.getElementById(
+                        "themeSwitchThumb"
+                    );
+
+                const root =
+                    document.documentElement;
+
+
+                function updateThemeButton() {
+
+                    const isDark =
+                        root.classList.contains(
+                            "dark"
+                        );
+
+
+                    themeSwitch.setAttribute(
+                        "aria-pressed",
+                        isDark
+                            ? "true"
+                            : "false"
+                    );
+
+
+                    themeSwitch.setAttribute(
+                        "aria-label",
+                        isDark
+                            ? "Switch to light mode"
+                            : "Switch to dark mode"
+                    );
+
+
+                    themeSwitch.setAttribute(
+                        "title",
+                        isDark
+                            ? "Switch to light mode"
+                            : "Switch to dark mode"
+                    );
+
+
+                    themeThumb.textContent =
+                        isDark
+                            ? "☾"
+                            : "☀";
+                }
+
+
+                updateThemeButton();
+
+
+                themeSwitch.addEventListener(
+                    "click",
+                    function () {
+
+                        const isDark =
+                            root.classList.toggle(
+                                "dark"
+                            );
+
+
+                        localStorage.setItem(
+                            "kounter-theme",
+                            isDark
+                                ? "dark"
+                                : "light"
+                        );
+
+
+                        updateThemeButton();
+
+                    }
+                );
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

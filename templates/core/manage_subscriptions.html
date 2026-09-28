@@ -1,0 +1,1559 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% load static %}
+
+    <link id="kounter-favicon" rel="icon" type="image/jpeg" data-light="{% static 'core/Kounter_light.jpg' %}"
+        data-dark="{% static 'core/Kounter_dark.jpg' %}" href="{% static 'core/Kounter_light.jpg' %}">
+
+    <script>
+        (function () {
+            const theme = localStorage.getItem("kounter-theme") || "light";
+
+            document.documentElement.setAttribute("data-theme", theme);
+
+            const favicon = document.getElementById("kounter-favicon");
+
+            if (favicon) {
+                favicon.href =
+                    theme === "dark"
+                        ? "{% static 'core/Kounter_dark.jpg' %}"
+                        : "{% static 'core/Kounter_light.jpg' %}";
+            }
+        })();
+    </script>
+
+    <title>Kounter | Subscription Management</title>
+
+    <style>
+        :root {
+            --page-bg: #f5f7fb;
+            --card-bg: #ffffff;
+            --text: #111827;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+
+            --success: #16a34a;
+            --success-bg: #dcfce7;
+
+            --warning: #d97706;
+            --warning-bg: #fef3c7;
+
+            --danger: #dc2626;
+            --danger-bg: #fee2e2;
+
+            --shadow: 0 10px 30px rgba(15, 23, 42, .08);
+
+            --radius: 16px;
+        }
+
+
+        html[data-theme="dark"] {
+
+            --page-bg: #0f172a;
+            --card-bg: #172033;
+
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --border: #263449;
+
+            --success: #4ade80;
+            --success-bg: rgba(74, 222, 128, .13);
+
+            --warning: #fbbf24;
+            --warning-bg: rgba(251, 191, 36, .13);
+
+            --danger: #f87171;
+            --danger-bg: rgba(248, 113, 113, .13);
+
+            --shadow: 0 10px 30px rgba(0, 0, 0, .25);
+        }
+
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            background: var(--page-bg);
+
+            color: var(--text);
+
+            font-family:
+                Inter,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+        }
+
+
+        /* =====================================================
+           PAGE
+        ===================================================== */
+
+        .page {
+
+            width: 100%;
+
+            max-width: 1500px;
+
+            margin: 0 auto;
+
+            padding: 30px 22px 50px;
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .page-header {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .page-title {
+
+            margin: 0;
+
+            font-size: 30px;
+
+            font-weight: 850;
+
+            letter-spacing: -.03em;
+        }
+
+
+        .page-subtitle {
+
+            margin: 7px 0 0;
+
+            color: var(--muted);
+
+            font-size: 14px;
+
+            line-height: 1.5;
+        }
+
+
+        .back-button {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            min-height: 42px;
+
+            padding: 9px 15px;
+
+            border-radius: 10px;
+
+            color: var(--text);
+
+            background: var(--card-bg);
+
+            border: 1px solid var(--border);
+
+            text-decoration: none;
+
+            font-size: 13px;
+
+            font-weight: 750;
+
+            transition: .18s ease;
+        }
+
+
+        .back-button:hover {
+
+            color: var(--primary);
+
+            border-color: #93c5fd;
+
+            background: #eff6ff;
+
+            transform: translateY(-1px);
+        }
+
+
+        /* =====================================================
+           SUMMARY CARDS
+        ===================================================== */
+
+        .summary-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 16px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .summary-card {
+
+            padding: 20px;
+
+            background: var(--card-bg);
+
+            border: 1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            box-shadow: var(--shadow);
+        }
+
+
+        .summary-label {
+
+            color: var(--muted);
+
+            font-size: 12px;
+
+            font-weight: 750;
+
+            text-transform: uppercase;
+
+            letter-spacing: .06em;
+        }
+
+
+        .summary-value {
+
+            margin-top: 8px;
+
+            font-size: 28px;
+
+            font-weight: 850;
+        }
+
+
+        /* =====================================================
+           MAIN CARD
+        ===================================================== */
+
+        .main-card {
+
+            overflow: hidden;
+
+            background: var(--card-bg);
+
+            border: 1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            box-shadow: var(--shadow);
+        }
+
+
+        .card-header {
+
+            padding: 20px 22px;
+
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+        }
+
+
+        .card-header h2 {
+
+            margin: 0;
+
+            font-size: 18px;
+
+            font-weight: 800;
+        }
+
+
+        .card-header p {
+
+            margin: 4px 0 0;
+
+            color: var(--muted);
+
+            font-size: 12px;
+        }
+
+
+        /* =====================================================
+           TABLE
+        ===================================================== */
+
+        .table-wrapper {
+
+            width: 100%;
+
+            overflow-x: auto;
+        }
+
+
+        table {
+
+            width: 100%;
+
+            min-width: 1100px;
+
+            border-collapse: collapse;
+        }
+
+
+        th {
+
+            padding: 13px 16px;
+
+            color: var(--muted);
+
+            background: rgba(148, 163, 184, .07);
+
+            border-bottom: 1px solid var(--border);
+
+            text-align: left;
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            text-transform: uppercase;
+
+            letter-spacing: .05em;
+        }
+
+
+        td {
+
+            padding: 16px;
+
+            border-bottom: 1px solid var(--border);
+
+            vertical-align: middle;
+
+            font-size: 13px;
+        }
+
+
+        tbody tr:last-child td {
+
+            border-bottom: 0;
+        }
+
+
+        tbody tr:hover {
+
+            background: rgba(37, 99, 235, .025);
+        }
+
+
+        .store-name {
+
+            font-weight: 800;
+
+            font-size: 14px;
+        }
+
+
+        .store-id {
+
+            margin-top: 3px;
+
+            color: var(--muted);
+
+            font-size: 11px;
+        }
+
+
+        .plan {
+
+            font-weight: 750;
+        }
+
+
+        .amount {
+
+            font-weight: 800;
+        }
+
+
+        .muted {
+
+            color: var(--muted);
+        }
+
+
+        /* =====================================================
+           STATUS
+        ===================================================== */
+
+        .status {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+            padding: 6px 9px;
+
+            border-radius: 999px;
+
+            font-size: 11px;
+
+            font-weight: 800;
+        }
+
+
+        .status-dot {
+
+            width: 7px;
+
+            height: 7px;
+
+            border-radius: 50%;
+        }
+
+
+        .status-active {
+
+            color: var(--success);
+
+            background: var(--success-bg);
+        }
+
+
+        .status-active .status-dot {
+
+            background: var(--success);
+        }
+
+
+        .status-trial {
+
+            color: var(--primary);
+
+            background: #dbeafe;
+        }
+
+
+        .status-trial .status-dot {
+
+            background: var(--primary);
+        }
+
+
+        .status-expired {
+
+            color: var(--danger);
+
+            background: var(--danger-bg);
+        }
+
+
+        .status-expired .status-dot {
+
+            background: var(--danger);
+        }
+
+
+        /* =====================================================
+           ACTIONS
+        ===================================================== */
+
+        .actions {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 6px;
+        }
+
+
+        .action-form {
+
+            margin: 0;
+        }
+
+
+        .action-button {
+
+            min-height: 34px;
+
+            padding: 7px 10px;
+
+            border-radius: 8px;
+
+            border: 1px solid var(--border);
+
+            background: var(--card-bg);
+
+            color: var(--text);
+
+            cursor: pointer;
+
+            font-size: 11px;
+
+            font-weight: 750;
+
+            transition: .18s ease;
+        }
+
+
+        .action-button:hover {
+
+            transform: translateY(-1px);
+        }
+
+
+        .activate-button {
+
+            color: var(--success);
+
+            border-color: #86efac;
+
+            background: var(--success-bg);
+        }
+
+
+        .activate-button:hover {
+
+            border-color: var(--success);
+        }
+
+
+        .extend-button {
+
+            color: var(--primary);
+
+            border-color: #93c5fd;
+
+            background: #eff6ff;
+        }
+
+
+        .extend-button:hover {
+
+            border-color: var(--primary);
+        }
+
+
+        .expire-button {
+
+            color: var(--warning);
+
+            border-color: #fcd34d;
+
+            background: var(--warning-bg);
+        }
+
+
+        .expire-button:hover {
+
+            border-color: var(--warning);
+        }
+
+
+        .cancel-button {
+
+            color: var(--danger);
+
+            border-color: #fca5a5;
+
+            background: var(--danger-bg);
+        }
+
+
+        .cancel-button:hover {
+
+            border-color: var(--danger);
+        }
+
+
+        /* =====================================================
+           PLAN SELECT
+        ===================================================== */
+
+        .plan-select {
+
+            min-height: 34px;
+
+            padding: 6px 8px;
+
+            border-radius: 8px;
+
+            border: 1px solid var(--border);
+
+            background: var(--card-bg);
+
+            color: var(--text);
+
+            font-size: 11px;
+
+            font-weight: 650;
+        }
+
+
+        .plan-select:focus {
+
+            outline: none;
+
+            border-color: var(--primary);
+
+            box-shadow:
+                0 0 0 3px rgba(37, 99, 235, .12);
+        }
+
+
+        /* =====================================================
+           EMPTY STATE
+        ===================================================== */
+
+        .empty {
+
+            padding: 60px 20px;
+
+            text-align: center;
+        }
+
+
+        .empty-icon {
+
+            font-size: 42px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .empty h3 {
+
+            margin: 0;
+
+            font-size: 18px;
+        }
+
+
+        .empty p {
+
+            margin: 7px 0 0;
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           MOBILE TABLE HELP
+        ===================================================== */
+
+        .scroll-hint {
+
+            display: none;
+
+            padding: 10px 16px;
+
+            color: var(--muted);
+
+            background: rgba(148, 163, 184, .05);
+
+            border-bottom: 1px solid var(--border);
+
+            font-size: 11px;
+
+            text-align: center;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1000px) {
+
+            .summary-grid {
+
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .page {
+
+                padding:
+                    22px 12px 40px;
+            }
+
+
+            .page-header {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+            }
+
+
+            .page-title {
+
+                font-size: 25px;
+            }
+
+
+            .summary-grid {
+
+                grid-template-columns: 1fr;
+
+                gap: 10px;
+            }
+
+
+            .summary-card {
+
+                padding: 16px;
+            }
+
+
+            .scroll-hint {
+
+                display: block;
+            }
+
+
+            .card-header {
+
+                padding: 17px;
+            }
+
+
+            .card-header h2 {
+
+                font-size: 16px;
+            }
+
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    {% include "core/navbar.html" %}
+
+
+    <main class="page">
+
+
+        <!-- =================================================
+             PAGE HEADER
+        ================================================== -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1 class="page-title">
+                    Subscription Management
+                </h1>
+
+                <p class="page-subtitle">
+                    Manage store subscriptions, plans, payments and
+                    subscription periods from the Kounter Super Admin panel.
+                </p>
+
+            </div>
+
+
+            <a href="{% url 'manage_stores' %}" class="back-button">
+                ← Manage Stores
+            </a>
+
+        </div>
+
+
+        <!-- =================================================
+             SUMMARY
+        ================================================== -->
+
+        <div class="summary-grid">
+
+
+            <!-- TOTAL STORES -->
+
+            <div class="summary-card">
+
+                <div class="summary-label">
+                    Total Stores
+                </div>
+
+                <div class="summary-value">
+                    {{ store_data|length }}
+                </div>
+
+            </div>
+
+
+            <!-- ACTIVE SUBSCRIPTIONS -->
+
+            <div class="summary-card">
+
+                <div class="summary-label">
+                    Active Subscriptions
+                </div>
+
+                <div class="summary-value">
+                    {{ active_subscription_count|default:"0" }}
+                </div>
+
+            </div>
+
+
+            <!-- TRIAL STORES -->
+
+            <div class="summary-card">
+
+                <div class="summary-label">
+                    Trial Stores
+                </div>
+
+                <div class="summary-value">
+                    {{ trial_store_count|default:"0" }}
+                </div>
+
+            </div>
+
+
+            <!-- EXPIRED -->
+
+            <div class="summary-card">
+
+                <div class="summary-label">
+                    Expired
+                </div>
+
+                <div class="summary-value">
+                    {{ expired_store_count|default:"0" }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             SUBSCRIPTIONS TABLE
+        ================================================== -->
+
+        <section class="main-card">
+
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2>
+                        Store Subscriptions
+                    </h2>
+
+                    <p>
+                        Activate, extend, expire or cancel subscriptions.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            {% if store_data %}
+
+
+            <div class="scroll-hint">
+                ← Swipe horizontally to view all subscription information →
+            </div>
+
+
+            <div class="table-wrapper">
+
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Store
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Plan
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Start
+                            </th>
+
+                            <th>
+                                End
+                            </th>
+
+                            <th>
+                                Days
+                            </th>
+
+                            <th>
+                                Payment
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        {% for item in store_data %}
+
+
+                        <tr>
+
+
+                            <!-- =================================
+                                 STORE
+                            ================================== -->
+
+                            <td>
+
+                                <div class="store-name">
+                                    {{ item.store.name }}
+                                </div>
+
+                                <div class="store-id">
+                                    Store #{{ item.store.id }}
+                                </div>
+
+                            </td>
+
+
+                            <!-- =================================
+                                 STATUS
+                            ================================== -->
+
+                            <td>
+
+
+                                {% if item.status.status == "ACTIVE" %}
+
+
+                                <span class="status status-active">
+
+                                    <span class="status-dot"></span>
+
+                                    Active
+
+                                </span>
+
+
+                                {% elif item.status.status == "TRIAL" %}
+
+
+                                <span class="status status-trial">
+
+                                    <span class="status-dot"></span>
+
+                                    Free Trial
+
+                                </span>
+
+
+                                {% else %}
+
+
+                                <span class="status status-expired">
+
+                                    <span class="status-dot"></span>
+
+                                    Expired
+
+                                </span>
+
+
+                                {% endif %}
+
+
+                            </td>
+
+
+                            <!-- =================================
+                                 PLAN
+                            ================================== -->
+
+                            <td>
+
+
+                                {% if item.active_subscription %}
+
+
+                                <span class="plan">
+                                    {{ item.active_subscription.get_plan_display }}
+                                </span>
+
+
+                                {% elif item.latest_subscription %}
+
+
+                                <span class="plan">
+                                    {{ item.latest_subscription.get_plan_display }}
+                                </span>
+
+
+                                {% else %}
+
+
+                                <span class="muted">
+                                    No subscription
+                                </span>
+
+
+                                {% endif %}
+
+
+                            </td>
+
+
+                            <!-- =================================
+                                 AMOUNT
+                            ================================== -->
+
+                            <td>
+
+
+                                {% if item.active_subscription %}
+
+
+                                <span class="amount">
+                                    GH₵ {{ item.active_subscription.amount|floatformat:2 }}
+                                </span>
+
+
+                                {% elif item.latest_subscription %}
+
+
+                                <span class="amount">
+                                    GH₵ {{ item.latest_subscription.amount|floatformat:2 }}
+                                </span>
+
+
+                                {% else %}
+
+
+                                <span class="muted">
+                                    —
+                                </span>
+
+
+                                {% endif %}
+
+
+                            </td>
+
+
+                            <!-- =================================
+                                 START DATE
+                            ================================== -->
+
+                            <td>
+
+
+                                {% if item.active_subscription and item.active_subscription.start_date %}
+
+
+                                {{ item.active_subscription.start_date|date:"d M Y" }}
+
+
+                                {% elif item.latest_subscription and item.latest_subscription.start_date %}
+
+
+                                {{ item.latest_subscription.start_date|date:"d M Y" }}
+
+
+                                {% else %}
+
+
+                                <span class="muted">
+                                    —
+                                </span>
+
+
+                                {% endif %}
+
+
+                            </td>
+
+
+                            <!-- =================================
+                                 END DATE
+                            ================================== -->
+
+                            <td>
+
+
+                                {% if item.active_subscription and item.active_subscription.end_date %}
+
+
+                                {{ item.active_subscription.end_date|date:"d M Y" }}
+
+
+                                {% elif item.latest_subscription and item.latest_subscription.end_date %}
+
+
+                                {{ item.latest_subscription.end_date|date:"d M Y" }}
+
+
+                                {% else %}
+
+
+                                <span class="muted">
+                                    —
+                                </span>
+
+
+                                {% endif %}
+
+
+                            </td>
+
+
+                            <!-- =================================
+                                 DAYS
+                            ================================== -->
+
+                            <td>
+
+
+                                {% if item.active_subscription %}
+
+
+                                <strong>
+                                    {{ item.active_subscription.days_remaining }}
+                                </strong>
+
+
+                                {% elif item.status.status == "TRIAL" %}
+
+
+                                <strong>
+                                    {{ item.store.trial_days_remaining }}
+                                </strong>
+
+
+                                {% else %}
+
+
+                                <span class="muted">
+                                    0
+                                </span>
+
+
+                                {% endif %}
+
+
+                            </td>
+
+
+                            <!-- =================================
+                                 PAYMENT
+                            ================================== -->
+
+                            <td>
+
+
+                                {% if item.active_subscription %}
+
+
+                                {{ item.active_subscription.payment_status }}
+
+
+                                {% elif item.latest_subscription %}
+
+
+                                {{ item.latest_subscription.payment_status }}
+
+
+                                {% else %}
+
+
+                                <span class="muted">
+                                    —
+                                </span>
+
+
+                                {% endif %}
+
+
+                            </td>
+
+
+                            <!-- =================================
+                                 ACTIONS
+                            ================================== -->
+
+                            <td>
+
+
+                                <div class="actions">
+
+
+                                    <!-- =================================
+                                         ACTIVATE
+                                    ================================== -->
+
+
+                                    {% if not item.active_subscription %}
+
+
+                                    <form method="post" action="{% url 'admin_activate_subscription' item.store.id %}"
+                                        class="action-form">
+
+                                        {% csrf_token %}
+
+
+                                        <select name="plan" class="plan-select" required>
+
+                                            <option value="MONTHLY">
+                                                Monthly — GH₵50
+                                            </option>
+
+                                            <option value="QUARTERLY">
+                                                Quarterly — GH₵135
+                                            </option>
+
+                                            <option value="YEARLY">
+                                                Yearly — GH₵500
+                                            </option>
+
+                                        </select>
+
+
+                                        <button type="submit" class="action-button activate-button"
+                                            onclick="return confirm('Activate this subscription manually?');">
+                                            Activate
+                                        </button>
+
+                                    </form>
+
+
+                                    {% else %}
+
+
+                                    <!-- =================================
+                                         EXTEND
+                                    ================================== -->
+
+
+                                    <form method="post"
+                                        action="{% url 'admin_extend_subscription' item.active_subscription.id %}"
+                                        class="action-form">
+
+                                        {% csrf_token %}
+
+
+                                        <select name="plan" class="plan-select" required>
+
+                                            <option value="MONTHLY">
+                                                +30 Days
+                                            </option>
+
+                                            <option value="QUARTERLY">
+                                                +90 Days
+                                            </option>
+
+                                            <option value="YEARLY">
+                                                +365 Days
+                                            </option>
+
+                                        </select>
+
+
+                                        <button type="submit" class="action-button extend-button"
+                                            onclick="return confirm('Extend this subscription?');">
+                                            Extend
+                                        </button>
+
+                                    </form>
+
+
+                                    <!-- =================================
+                                         EXPIRE
+                                    ================================== -->
+
+
+                                    <form method="post"
+                                        action="{% url 'admin_expire_subscription' item.active_subscription.id %}"
+                                        class="action-form">
+
+                                        {% csrf_token %}
+
+
+                                        <button type="submit" class="action-button expire-button"
+                                            onclick="return confirm('Expire this subscription now?');">
+                                            Expire
+                                        </button>
+
+                                    </form>
+
+
+                                    <!-- =================================
+                                         CANCEL
+                                    ================================== -->
+
+
+                                    <form method="post"
+                                        action="{% url 'admin_cancel_subscription' item.active_subscription.id %}"
+                                        class="action-form">
+
+                                        {% csrf_token %}
+
+
+                                        <button type="submit" class="action-button cancel-button"
+                                            onclick="return confirm('Cancel this subscription?');">
+                                            Cancel
+                                        </button>
+
+                                    </form>
+
+
+                                    {% endif %}
+
+
+                                </div>
+
+
+                            </td>
+
+
+                        </tr>
+
+
+                        {% empty %}
+
+
+                        <tr>
+
+                            <td colspan="9">
+
+                                <div class="empty">
+
+                                    <div class="empty-icon">
+                                        💳
+                                    </div>
+
+                                    <h3>
+                                        No stores found
+                                    </h3>
+
+                                    <p>
+                                        Create a store before managing subscriptions.
+                                    </p>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                        {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+            {% else %}
+
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    💳
+                </div>
+
+                <h3>
+                    No stores found
+                </h3>
+
+                <p>
+                    Create a store before managing subscriptions.
+                </p>
+
+            </div>
+
+
+            {% endif %}
+
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         THEME SUPPORT
+    ====================================================== -->
+
+
+    <script>
+
+        (function () {
+
+            "use strict";
+
+
+            const switches =
+                document.querySelectorAll(".theme-switch");
+
+
+            function applyTheme(theme) {
+
+                document.documentElement
+                    .setAttribute("data-theme", theme);
+
+
+                switches.forEach(function (button) {
+
+                    button.setAttribute(
+                        "aria-pressed",
+                        theme === "dark"
+                            ? "true"
+                            : "false"
+                    );
+
+                });
+
+            }
+
+
+            let savedTheme =
+                localStorage.getItem("kounter-theme");
+
+
+            if (!savedTheme) {
+
+                savedTheme =
+                    window.matchMedia &&
+                        window.matchMedia(
+                            "(prefers-color-scheme: dark)"
+                        ).matches
+                        ? "dark"
+                        : "light";
+            }
+
+
+            applyTheme(savedTheme);
+
+
+            switches.forEach(function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        const current =
+                            document.documentElement
+                                .getAttribute("data-theme");
+
+
+                        const next =
+                            current === "dark"
+                                ? "light"
+                                : "dark";
+
+
+                        localStorage.setItem(
+                            "kounter-theme",
+                            next
+                        );
+
+
+                        applyTheme(next);
+
+                    }
+                );
+
+            });
+
+
+        })();
+
+    </script>
+
+
+</body>
+
+</html>

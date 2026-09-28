@@ -9,6 +9,27 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <link id="kounter-favicon" rel="icon" type="image/jpeg" data-light="{% static 'core/Kounter_light.jpg' %}"
+        data-dark="{% static 'core/Kounter_dark.jpg' %}" href="{% static 'core/Kounter_light.jpg' %}">
+
+    <script>
+        (function () {
+            const theme = localStorage.getItem("kounter-theme") || "light";
+
+            document.documentElement.setAttribute("data-theme", theme);
+
+            const favicon = document.getElementById("kounter-favicon");
+
+            if (favicon) {
+                favicon.href =
+                    theme === "dark"
+                        ? "{% static 'core/Kounter_dark.jpg' %}"
+                        : "{% static 'core/Kounter_light.jpg' %}";
+            }
+        })();
+    </script>
+
+
     <title>
         Manage Stores — {{ request.user.store.name|default:"TRON HUB" }}
     </title>

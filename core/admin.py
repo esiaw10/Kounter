@@ -1,30 +1,52 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.utils.translation import gettext_lazy as _
 
-from .models import Category, Product, Sale, StockMovement, Store, User
+from .models import (
+    Category,
+    Product,
+    Sale,
+    StockMovement,
+    Store,
+    User,
+    Subscription,
+)
+
+
+@admin.register(Store)
+class StoreAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "phone",
+        "address",
+        "active",
+        "created_at",
+    )
+    list_filter = ("active",)
+    search_fields = (
+        "name",
+        "phone",
+        "address",
+    )
+    readonly_fields = ("created_at",)
 
 
 @admin.register(User)
-class UserAdmin(BaseUserAdmin):
+class UserAdmin(admin.ModelAdmin):
     list_display = (
         "username",
-        "email",
         "first_name",
         "last_name",
+        "email",
         "role",
         "store",
+        "is_active",
         "is_staff",
     )
-
     list_filter = (
         "role",
         "store",
-        "is_staff",
-        "is_superuser",
         "is_active",
+        "is_staff",
     )
-
     search_fields = (
         "username",
         "first_name",
@@ -32,41 +54,10 @@ class UserAdmin(BaseUserAdmin):
         "email",
     )
 
-    ordering = ("username",)
-
-    fieldsets = BaseUserAdmin.fieldsets + (
-        (
-            _("Store Assignment & Roles"),
-            {
-                "fields": ("role", "store"),
-            },
-        ),
-    )
-
-    add_fieldsets = BaseUserAdmin.add_fieldsets + (
-        (
-            _("Store Assignment & Roles"),
-            {
-                "classes": ("wide",),
-                "fields": ("role", "store"),
-            },
-        ),
-    )
-
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ("name", "product_count")
-    search_fields = ("name",)
-
-    @admin.display(description="Total Products")
-    def product_count(self, obj):
-        return obj.product_set.count()
-
-
-@admin.register(Store)
-class StoreAdmin(admin.ModelAdmin):
-    list_display = ("name", "phone", "active")
+    list_display = ("name",)
     search_fields = ("name",)
 
 
@@ -76,31 +67,25 @@ class ProductAdmin(admin.ModelAdmin):
         "name",
         "store",
         "category",
-        "stock",
         "selling_price",
-        "low_stock_status",
+        "cost_price",
+        "stock",
+        "low_stock_threshold",
+        "active",
     )
-
-    list_filter = ("store", "category", "active")
-    search_fields = ("name", "barcode")
-
-    actions = ["reset_stock_to_hundred"]
-
-    @admin.display(description="Stock Health")
-    def low_stock_status(self, obj):
-        if obj.stock <= obj.low_stock_threshold:
-            return "⚠️ Low Stock Alert"
-
-        return "✅ Healthy"
-
-    @admin.action(description="Bulk restock selected items to 100 units")
-    def reset_stock_to_hundred(self, request, queryset):
-        queryset.update(stock=100)
-
-        self.message_user(
-            request,
-            "Selected inventory profiles updated successfully.",
-        )
+    list_filter = (
+        "store",
+        "category",
+        "active",
+    )
+    search_fields = (
+        "name",
+        "barcode",
+    )
+    list_select_related = (
+        "store",
+        "category",
+    )
 
 
 @admin.register(Sale)
@@ -110,23 +95,26 @@ class SaleAdmin(admin.ModelAdmin):
         "store",
         "quantity",
         "unit_price",
-        "calculated_total",
+        "total",
+        "sold_by",
         "sold_at",
     )
-
     list_filter = (
         "store",
         "sold_at",
+    )
+    search_fields = (
+        "product__name",
+        "sold_by__username",
+    )
+    readonly_fields = (
+        "sold_at",
+    )
+    list_select_related = (
+        "product",
+        "store",
         "sold_by",
     )
-
-    date_hierarchy = "sold_at"
-
-    readonly_fields = ("sold_at",)
-
-    @admin.display(description="Total (GH₵)")
-    def calculated_total(self, obj):
-        return f"GH₵ {obj.total:,.2f}"
 
 
 @admin.register(StockMovement)
@@ -139,13 +127,60 @@ class StockMovementAdmin(admin.ModelAdmin):
         "user",
         "created_at",
     )
-
     list_filter = (
         "store",
         "movement_type",
         "created_at",
     )
+    search_fields = (
+        "product__name",
+        "user__username",
+        "note",
+    )
+    readonly_fields = (
+        "created_at",
+    )
+    list_select_related = (
+        "product",
+        "store",
+        "user",
+    )
 
-    date_hierarchy = "created_at"
 
-    readonly_fields = ("created_at",)
+@admin.register(Subscription)
+class SubscriptionAdmin(admin.ModelAdmin):
+    list_display = (
+        "store",
+        "plan",
+        "amount",
+        "status",
+        "start_date",
+        "end_date",
+        "payment_status",
+        "payment_reference",
+        "created_at",
+    )
+
+    list_filter = (
+        "status",
+        "plan",
+        "payment_status",
+    )
+
+    search_fields = (
+        "store__name",
+        "payment_reference",
+    )
+
+    readonly_fields = (
+        "created_at",
+        "updated_at",
+    )
+
+    list_select_related = (
+        "store",
+    )
+
+    ordering = (
+        "-created_at",
+    )

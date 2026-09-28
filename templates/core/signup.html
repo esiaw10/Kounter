@@ -1,29 +1,43 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
 
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% load static %}
+
+    <link id="kounter-favicon" rel="icon" type="image/jpeg" data-light="{% static 'core/Kounter_light.jpg' %}"
+        data-dark="{% static 'core/Kounter_dark.jpg' %}" href="{% static 'core/Kounter_light.jpg' %}">
 
     <title>Create Account — Kounter</title>
 
+    <!-- =====================================================
+         APPLY SAVED THEME BEFORE PAGE RENDERS
+    ====================================================== -->
+    <script>
+        (function () {
+            const savedTheme =
+                localStorage.getItem("kounter-theme") || "light";
+
+            document.documentElement.setAttribute(
+                "data-theme",
+                savedTheme
+            );
+        })();
+    </script>
+
+
     <style>
+        /* =====================================================
+           GLOBAL
+        ====================================================== */
+
         * {
             box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --background: #f3f6fb;
-            --card: #ffffff;
-            --text: #111827;
-            --muted: #6b7280;
-            --border: #dbe1ea;
-            --danger: #dc2626;
-            --success: #16a34a;
         }
 
         html,
@@ -31,6 +45,109 @@
             margin: 0;
             padding: 0;
             min-height: 100%;
+        }
+
+
+        /* =====================================================
+           LIGHT THEME
+        ====================================================== */
+
+        :root {
+
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+
+            --background: #f3f6fb;
+            --card: #ffffff;
+
+            --text: #111827;
+            --heading: #111827;
+            --label: #374151;
+
+            --muted: #6b7280;
+
+            --border: #dbe1ea;
+            --input-bg: #ffffff;
+
+            --danger: #dc2626;
+            --success: #16a34a;
+
+            --warning-bg: #fff7ed;
+            --warning-border: #fed7aa;
+            --warning-text: #9a3412;
+
+            --info-bg: #eff6ff;
+            --info-border: #bfdbfe;
+            --info-text: #1e40af;
+
+            --placeholder: #9ca3af;
+
+            --logo-bg: #ffffff;
+            --logo-border: #e5e7eb;
+
+            --shadow: rgba(15, 23, 42, 0.10);
+
+            --focus-shadow: rgba(37, 99, 235, 0.12);
+        }
+
+
+        /* =====================================================
+           DARK THEME
+        ====================================================== */
+
+        html[data-theme="dark"] {
+
+            --primary: #60a5fa;
+            --primary-dark: #3b82f6;
+
+            --background: #0f172a;
+            --card: #1e293b;
+
+            --text: #f8fafc;
+            --heading: #f8fafc;
+            --label: #e2e8f0;
+
+            --muted: #94a3b8;
+
+            --border: #334155;
+            --input-bg: #0f172a;
+
+            --danger: #f87171;
+            --success: #4ade80;
+
+            --warning-bg: #431407;
+            --warning-border: #7c2d12;
+            --warning-text: #fdba74;
+
+            --info-bg: #172554;
+            --info-border: #1e40af;
+            --info-text: #93c5fd;
+
+            --placeholder: #64748b;
+
+            --logo-bg: #ffffff;
+            --logo-border: #475569;
+
+            --shadow: rgba(0, 0, 0, 0.35);
+
+            --focus-shadow: rgba(96, 165, 250, 0.18);
+        }
+
+
+        /* =====================================================
+           PAGE
+        ====================================================== */
+
+        body {
+
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 30px 16px;
+
             font-family:
                 Inter,
                 -apple-system,
@@ -38,270 +155,719 @@
                 "Segoe UI",
                 Arial,
                 sans-serif;
+
             background: var(--background);
             color: var(--text);
+
+            transition:
+                background-color 0.25s ease,
+                color 0.25s ease;
         }
 
-        body {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 30px 16px;
-        }
+
+        /* =====================================================
+           SIGNUP WRAPPER
+        ====================================================== */
 
         .signup-wrapper {
+
             width: 100%;
             max-width: 480px;
         }
 
+
+        /* =====================================================
+           SIGNUP CARD
+        ====================================================== */
+
         .signup-card {
+
+            width: 100%;
+
             background: var(--card);
-            border: 1px solid rgba(15, 23, 42, 0.08);
+
+            border: 1px solid var(--border);
+
             border-radius: 22px;
+
             padding: 32px;
+
             box-shadow:
-                0 20px 50px rgba(15, 23, 42, 0.10);
+                0 20px 50px var(--shadow);
+
+            transition:
+                background-color 0.25s ease,
+                border-color 0.25s ease,
+                box-shadow 0.25s ease;
         }
 
-        /* LOGO */
+
+        /* =====================================================
+           LOGO AREA
+        ====================================================== */
 
         .logo-area {
+
             text-align: center;
-            margin-bottom: 20px;
+
+            margin-bottom: 28px;
         }
+
+
+        /* =====================================================
+           FIXED LOGO CONTAINER
+        ====================================================== */
 
         .logo-box {
-            width: 76px;
-            height: 76px;
-            margin: 0 auto 14px;
-            border-radius: 18px;
+            width: fit-content;
+            height: fit-content;
+            min-width: 0;
+            min-height: 0;
+            margin: 0 auto 28px;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            padding: 2px;
+            border-radius: 22px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            box-shadow: var(--small-shadow);
         }
 
-        .logo-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+        .logo-image {
+            width: auto;
+            height: auto;
+            max-width: 82px;
+            max-height: 82px;
+            min-width: 0;
+            min-height: 0;
             display: block;
-            border-radius: 15px;
+            object-fit: contain;
+            border-radius: 16px;
         }
+
+
+        /* =====================================================
+           LIGHT / DARK LOGO
+        ====================================================== */
+
+        .logo-light {
+            display: block;
+        }
+
+        .logo-dark {
+            display: none;
+        }
+
+
+        html[data-theme="dark"] .logo-light {
+            display: none;
+        }
+
+        html[data-theme="dark"] .logo-dark {
+            display: block;
+        }
+
+
+        /* =====================================================
+           BRAND NAME
+        ====================================================== */
 
         .brand-name {
+
             margin: 0;
+
+            color: var(--heading);
+
             font-size: 25px;
+
+            line-height: 1.25;
+
             font-weight: 800;
-            letter-spacing: -0.5px;
+
+            letter-spacing: -0.4px;
         }
+
+
+        /* =====================================================
+           SUBTITLE
+        ====================================================== */
 
         .subtitle {
-            margin: 6px 0 0;
+
+            margin: 8px 0 0;
+
             color: var(--muted);
+
             font-size: 14px;
+
+            line-height: 1.5;
         }
 
-        /* SECTION */
 
-        .section-title {
-            margin: 26px 0 14px;
-            font-size: 14px;
-            font-weight: 800;
-            color: #374151;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* FORM */
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 7px;
-            font-size: 13px;
-            font-weight: 700;
-            color: #374151;
-        }
-
-        input {
-            width: 100%;
-            height: 48px;
-            padding: 0 14px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            background: #ffffff;
-            color: var(--text);
-            font-size: 15px;
-            outline: none;
-            transition: 0.2s ease;
-        }
-
-        input:focus {
-            border-color: var(--primary);
-            box-shadow:
-                0 0 0 3px rgba(37, 99, 235, 0.12);
-        }
-
-        input::placeholder {
-            color: #9ca3af;
-        }
-
-        /* PASSWORD */
-
-        .password-wrapper {
-            position: relative;
-        }
-
-        .password-wrapper input {
-            padding-right: 78px;
-        }
-
-        .show-password {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            border: none;
-            background: transparent;
-            color: var(--primary);
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            padding: 6px;
-        }
-
-        .password-wrapper input {
-            padding-right: 75px;
-        }
-
-        .password-status {
-            margin-top: 6px;
-            font-size: 12px;
-            min-height: 17px;
-        }
-
-        .password-status.match {
-            color: var(--success);
-        }
-
-        .password-status.no-match {
-            color: var(--danger);
-        }
-
-        /* MESSAGES */
+        /* =====================================================
+           MESSAGES
+        ====================================================== */
 
         .messages {
+
             margin-bottom: 18px;
         }
 
+
         .message {
+
             padding: 12px 14px;
+
             margin-bottom: 8px;
+
             border-radius: 10px;
-            background: #fef2f2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
+
             font-size: 13px;
+
+            line-height: 1.45;
+
+            border: 1px solid;
+        }
+
+
+        .message:last-child {
+            margin-bottom: 0;
+        }
+
+
+        .message.success {
+
+            background: #f0fdf4;
+
+            color: #166534;
+
+            border-color: #bbf7d0;
+        }
+
+
+        .message.error {
+
+            background: #fef2f2;
+
+            color: #991b1b;
+
+            border-color: #fecaca;
+        }
+
+
+        .message.warning {
+
+            background: var(--warning-bg);
+
+            color: var(--warning-text);
+
+            border-color: var(--warning-border);
+        }
+
+
+        .message.info {
+
+            background: var(--info-bg);
+
+            color: var(--info-text);
+
+            border-color: var(--info-border);
+        }
+
+
+        html[data-theme="dark"] .message.success {
+
+            background: #052e16;
+
+            color: #86efac;
+
+            border-color: #166534;
+        }
+
+
+        html[data-theme="dark"] .message.error {
+
+            background: #450a0a;
+
+            color: #fca5a5;
+
+            border-color: #991b1b;
+        }
+
+
+        /* =====================================================
+           SECTION TITLES
+        ====================================================== */
+
+        .section-title {
+
+            margin: 25px 0 14px;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            color: var(--label);
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.6px;
+        }
+
+
+        /* =====================================================
+           FORM
+        ====================================================== */
+
+        .form-group {
+
+            margin-bottom: 16px;
+        }
+
+
+        .form-row {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 12px;
+        }
+
+
+        label {
+
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color: var(--label);
+        }
+
+
+        .required {
+
+            color: var(--danger);
+        }
+
+
+        /* =====================================================
+           INPUTS
+        ====================================================== */
+
+        input {
+
+            width: 100%;
+
+            height: 48px;
+
+            padding: 0 14px;
+
+            border: 1px solid var(--border);
+
+            border-radius: 12px;
+
+            background: var(--input-bg);
+
+            color: var(--text);
+
+            font-size: 15px;
+
+            outline: none;
+
+            transition:
+                background-color 0.2s ease,
+                color 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+
+        input:hover {
+
+            border-color: var(--primary);
+        }
+
+
+        input:focus {
+
+            border-color: var(--primary);
+
+            box-shadow:
+                0 0 0 3px var(--focus-shadow);
+        }
+
+
+        input::placeholder {
+
+            color: var(--placeholder);
+        }
+
+
+        input.input-error {
+
+            border-color: var(--danger);
+
+            box-shadow:
+                0 0 0 3px rgba(220, 38, 38, 0.08);
+        }
+
+
+        input.input-success {
+
+            border-color: var(--success);
+
+            box-shadow:
+                0 0 0 3px rgba(22, 163, 74, 0.08);
+        }
+
+
+        /* =====================================================
+           FIELD HELP
+        ====================================================== */
+
+        .field-help {
+
+            margin-top: 5px;
+
+            font-size: 11px;
+
+            color: var(--muted);
+
             line-height: 1.4;
         }
 
-        /* BUTTON */
+
+        /* =====================================================
+           PASSWORD
+        ====================================================== */
+
+        .password-wrapper {
+
+            position: relative;
+        }
+
+
+        .password-wrapper input {
+
+            padding-right: 76px;
+        }
+
+
+        .show-password {
+
+            position: absolute;
+
+            right: 8px;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            border: none;
+
+            background: transparent;
+
+            color: var(--primary);
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            padding: 8px;
+        }
+
+
+        .show-password:hover {
+
+            color: var(--primary-dark);
+        }
+
+
+        .password-status {
+
+            min-height: 18px;
+
+            margin-top: 6px;
+
+            font-size: 12px;
+
+            font-weight: 600;
+        }
+
+
+        .password-status.match {
+
+            color: var(--success);
+        }
+
+
+        .password-status.no-match {
+
+            color: var(--danger);
+        }
+
+
+        .password-status.info {
+
+            color: var(--muted);
+        }
+
+
+        /* =====================================================
+           SIGNUP BUTTON
+        ====================================================== */
 
         .signup-button {
+
             width: 100%;
+
             height: 50px;
+
+            margin-top: 5px;
+
             border: none;
+
             border-radius: 13px;
-            background: linear-gradient(135deg,
+
+            background:
+                linear-gradient(135deg,
                     var(--primary),
                     var(--primary-dark));
-            color: white;
+
+            color: #ffffff;
+
             font-size: 15px;
+
             font-weight: 800;
+
             cursor: pointer;
-            transition: 0.2s ease;
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                opacity 0.2s ease;
+
             box-shadow:
                 0 8px 18px rgba(37, 99, 235, 0.22);
         }
 
+
         .signup-button:hover {
+
             transform: translateY(-1px);
+
             box-shadow:
                 0 12px 24px rgba(37, 99, 235, 0.28);
         }
 
+
         .signup-button:active {
+
             transform: translateY(0);
         }
 
-        /* LOGIN LINK */
+
+        .signup-button:disabled {
+
+            opacity: 0.65;
+
+            cursor: not-allowed;
+
+            transform: none;
+
+            box-shadow: none;
+        }
+
+
+        /* =====================================================
+           LOGIN LINK
+        ====================================================== */
 
         .login-link {
+
             text-align: center;
+
             margin-top: 22px;
+
             color: var(--muted);
+
             font-size: 14px;
         }
 
+
         .login-link a {
+
             color: var(--primary);
+
             text-decoration: none;
+
             font-weight: 800;
         }
 
+
         .login-link a:hover {
+
             text-decoration: underline;
         }
 
+
+        /* =====================================================
+           TERMS
+        ====================================================== */
+
         .terms {
+
             margin-top: 15px;
+
             text-align: center;
-            color: #9ca3af;
+
+            color: var(--muted);
+
             font-size: 11px;
+
             line-height: 1.5;
         }
 
-        /* MOBILE */
+
+        /* =====================================================
+           MOBILE
+        ====================================================== */
 
         @media (max-width: 520px) {
 
             body {
+
                 padding: 15px;
+
                 align-items: flex-start;
             }
 
+
             .signup-wrapper {
+
                 margin-top: 10px;
             }
 
+
             .signup-card {
+
                 padding: 24px 18px;
+
                 border-radius: 18px;
             }
 
+
             .form-row {
+
                 grid-template-columns: 1fr;
+
                 gap: 0;
             }
 
+
             .brand-name {
+
                 font-size: 22px;
             }
 
+
+            /*
+             * Keep logo fixed on mobile.
+             */
+
             .logo-box {
-                width: 68px;
-                height: 68px;
+
+                width: 82px;
+                height: 82px;
+
+                min-width: 82px;
+                max-width: 82px;
+
+                min-height: 82px;
+                max-height: 82px;
+
+                border-radius: 22px;
+            }
+
+
+            .logo-image {
+
+                width: 64px;
+                height: 64px;
+
+                min-width: 64px;
+                max-width: 64px;
+
+                min-height: 64px;
+                max-height: 64px;
+
+                flex: 0 0 64px;
+
+                object-fit: contain;
+            }
+        }
+
+
+        /* =====================================================
+           VERY SMALL PHONES
+        ====================================================== */
+
+        @media (max-width: 360px) {
+
+            .signup-card {
+
+                padding: 22px 15px;
+            }
+
+
+            .brand-name {
+
+                font-size: 20px;
+            }
+
+
+            .logo-box {
+
+                width: 72px;
+                height: 72px;
+
+                min-width: 72px;
+                max-width: 72px;
+
+                min-height: 72px;
+                max-height: 72px;
+
+                border-radius: 19px;
+            }
+
+
+            .logo-image {
+
+                width: 56px;
+                height: 56px;
+
+                min-width: 56px;
+                max-width: 56px;
+
+                min-height: 56px;
+                max-height: 56px;
+
+                flex: 0 0 56px;
+            }
+
+
+            input {
+
+                height: 46px;
             }
         }
     </style>
@@ -311,25 +877,31 @@
 
 <body>
 
+
     <div class="signup-wrapper">
 
         <div class="signup-card">
 
-            <!-- LOGO -->
+
+            <!-- =================================================
+                 LOGO
+            ================================================== -->
 
             <div class="logo-area">
 
                 <div class="logo-box">
 
-                    {% load static %}
+                    <img src="{% static 'core/Kounter_light.jpg' %}" alt="Kounter" class="logo-image logo-light">
 
-                    <img src="{% static 'core/Kounter_light.jpg' %}" alt="Kounter Logo">
+                    <img src="{% static 'core/Kounter_dark.jpg' %}" alt="Kounter" class="logo-image logo-dark">
 
                 </div>
+
 
                 <h1 class="brand-name">
                     Create your account
                 </h1>
+
 
                 <p class="subtitle">
                     Set up your shop and start using Kounter
@@ -338,7 +910,9 @@
             </div>
 
 
-            <!-- MESSAGES -->
+            <!-- =================================================
+                 DJANGO MESSAGES
+            ================================================== -->
 
             {% if messages %}
 
@@ -346,7 +920,7 @@
 
                 {% for message in messages %}
 
-                <div class="message">
+                <div class="message {{ message.tags }}">
                     {{ message }}
                 </div>
 
@@ -357,12 +931,18 @@
             {% endif %}
 
 
-            <form method="POST" autocomplete="off">
+            <!-- =================================================
+                 SIGNUP FORM
+            ================================================== -->
+
+            <form method="POST" id="signupForm" autocomplete="off" novalidate>
 
                 {% csrf_token %}
 
 
-                <!-- SHOP -->
+                <!-- =================================================
+                     SHOP INFORMATION
+                ================================================== -->
 
                 <div class="section-title">
                     Shop Information
@@ -372,8 +952,13 @@
                 <div class="form-group">
 
                     <label for="id_store_name">
+
                         Shop Name
+
+                        <span class="required">*</span>
+
                     </label>
+
 
                     <input type="text" id="id_store_name" name="store_name" placeholder="e.g. Tron Hub" required
                         autocomplete="organization">
@@ -381,7 +966,9 @@
                 </div>
 
 
-                <!-- PERSONAL -->
+                <!-- =================================================
+                     PERSONAL INFORMATION
+                ================================================== -->
 
                 <div class="section-title">
                     Your Information
@@ -390,11 +977,17 @@
 
                 <div class="form-row">
 
+
                     <div class="form-group">
 
                         <label for="id_first_name">
+
                             First Name
+
+                            <span class="required">*</span>
+
                         </label>
+
 
                         <input type="text" id="id_first_name" name="first_name" placeholder="First name" required
                             autocomplete="given-name">
@@ -408,6 +1001,7 @@
                             Last Name
                         </label>
 
+
                         <input type="text" id="id_last_name" name="last_name" placeholder="Last name"
                             autocomplete="family-name">
 
@@ -419,11 +1013,23 @@
                 <div class="form-group">
 
                     <label for="id_username">
+
                         Username
+
+                        <span class="required">*</span>
+
                     </label>
 
+
                     <input type="text" id="id_username" name="username" placeholder="Choose a username" required
-                        autocomplete="username">
+                        autocomplete="username" autocapitalize="none" spellcheck="false">
+
+
+                    <div class="field-help">
+
+                        This will be used when you sign in to Kounter.
+
+                    </div>
 
                 </div>
 
@@ -434,12 +1040,15 @@
                         Email Address
                     </label>
 
+
                     <input type="email" id="id_email" name="email" placeholder="you@example.com" autocomplete="email">
 
                 </div>
 
 
-                <!-- PASSWORD -->
+                <!-- =================================================
+                     SECURITY
+                ================================================== -->
 
                 <div class="section-title">
                     Security
@@ -449,13 +1058,19 @@
                 <div class="form-group">
 
                     <label for="id_password">
+
                         Password
+
+                        <span class="required">*</span>
+
                     </label>
+
 
                     <div class="password-wrapper">
 
                         <input type="password" id="id_password" name="password" placeholder="At least 8 characters"
                             required autocomplete="new-password">
+
 
                         <button type="button" class="show-password" onclick="togglePassword('id_password', this)">
                             Show
@@ -463,31 +1078,49 @@
 
                     </div>
 
+
+                    <div class="field-help">
+                        Use at least 8 characters.
+                    </div>
+
                 </div>
 
 
                 <div class="form-group">
 
-                    <label for="id_password_confirm">
+                    <label for="id_confirm_password">
+
                         Confirm Password
+
+                        <span class="required">*</span>
+
                     </label>
+
 
                     <div class="password-wrapper">
 
-                        <input type="password" id="id_password_confirm" name="password_confirm"
+                        <input type="password" id="id_confirm_password" name="confirm_password"
                             placeholder="Enter password again" required autocomplete="new-password">
 
-                        <button type="button" class="show-password"
-                            onclick="togglePassword('id_password_confirm', this)">
+
+                        <button type="button" class="show-password" onclick="togglePassword(
+                                'id_confirm_password',
+                                this
+                            )">
                             Show
                         </button>
 
                     </div>
 
-                    <div id="passwordStatus" class="password-status"></div>
+
+                    <div id="passwordStatus" class="password-status" aria-live="polite"></div>
 
                 </div>
 
+
+                <!-- =================================================
+                     SUBMIT
+                ================================================== -->
 
                 <button type="submit" class="signup-button" id="signupButton">
                     Create Shop Account
@@ -495,6 +1128,10 @@
 
             </form>
 
+
+            <!-- =================================================
+                 LOGIN LINK
+            ================================================== -->
 
             <div class="login-link">
 
@@ -507,9 +1144,15 @@
             </div>
 
 
+            <!-- =================================================
+                 TERMS
+            ================================================== -->
+
             <div class="terms">
+
                 By creating an account, you agree to use this system
                 responsibly and keep your account credentials secure.
+
             </div>
 
         </div>
@@ -519,47 +1162,166 @@
 
     <script>
 
+        /* =====================================================
+           THEME
+        ===================================================== */
+
+        function applyTheme(theme) {
+
+            if (
+                theme !== "dark" &&
+                theme !== "light"
+            ) {
+                theme = "light";
+            }
+
+            document.documentElement.setAttribute(
+                "data-theme",
+                theme
+            );
+
+            localStorage.setItem(
+                "kounter-theme",
+                theme
+            );
+        }
+
+
+        function loadSavedTheme() {
+
+            const savedTheme =
+                localStorage.getItem("kounter-theme");
+
+
+            if (savedTheme === "dark") {
+
+                applyTheme("dark");
+
+            } else {
+
+                applyTheme("light");
+
+            }
+        }
+
+
+        /*
+         * Use the same theme preference
+         * as the Kounter signin page.
+         */
+
+        loadSavedTheme();
+
+
+        /* =====================================================
+           PASSWORD VISIBILITY
+        ===================================================== */
+
         function togglePassword(inputId, button) {
 
-            const input = document.getElementById(inputId);
+            const input =
+                document.getElementById(inputId);
+
+
+            if (!input) {
+                return;
+            }
+
 
             if (input.type === "password") {
 
                 input.type = "text";
+
                 button.textContent = "Hide";
 
             } else {
 
                 input.type = "password";
+
                 button.textContent = "Show";
 
             }
-
         }
 
 
-        const password = document.getElementById("id_password");
+        /* =====================================================
+           PASSWORD ELEMENTS
+        ===================================================== */
+
+        const signupForm =
+            document.getElementById("signupForm");
+
+        const password =
+            document.getElementById("id_password");
+
         const confirmPassword =
-            document.getElementById("id_password_confirm");
+            document.getElementById(
+                "id_confirm_password"
+            );
 
         const passwordStatus =
-            document.getElementById("passwordStatus");
+            document.getElementById(
+                "passwordStatus"
+            );
+
+        const signupButton =
+            document.getElementById(
+                "signupButton"
+            );
+
+
+        /* =====================================================
+           PASSWORD MATCH CHECK
+        ===================================================== */
 
         function checkPasswordMatch() {
+
+            if (
+                !password ||
+                !confirmPassword ||
+                !passwordStatus
+            ) {
+                return;
+            }
+
+
+            password.classList.remove(
+                "input-error",
+                "input-success"
+            );
+
+            confirmPassword.classList.remove(
+                "input-error",
+                "input-success"
+            );
+
 
             if (!confirmPassword.value) {
 
                 passwordStatus.textContent = "";
-                passwordStatus.className = "password-status";
+
+                passwordStatus.className =
+                    "password-status";
 
                 return;
             }
 
-            if (password.value === confirmPassword.value) {
 
-                passwordStatus.textContent = "✓ Passwords match";
+            if (
+                password.value ===
+                confirmPassword.value
+            ) {
+
+                passwordStatus.textContent =
+                    "✓ Passwords match";
+
                 passwordStatus.className =
                     "password-status match";
+
+
+                confirmPassword.classList.add(
+                    "input-success"
+                );
 
             } else {
 
@@ -569,61 +1331,211 @@
                 passwordStatus.className =
                     "password-status no-match";
 
-            }
 
+                confirmPassword.classList.add(
+                    "input-error"
+                );
+            }
         }
 
 
-        password.addEventListener(
-            "input",
-            checkPasswordMatch
-        );
+        /* =====================================================
+           PASSWORD INPUT EVENTS
+        ===================================================== */
 
-        confirmPassword.addEventListener(
-            "input",
-            checkPasswordMatch
-        );
+        if (password) {
+
+            password.addEventListener(
+                "input",
+                checkPasswordMatch
+            );
+        }
 
 
-        document.querySelector("form").addEventListener(
-            "submit",
-            function (event) {
+        if (confirmPassword) {
 
-                if (
-                    password.value !==
-                    confirmPassword.value
-                ) {
+            confirmPassword.addEventListener(
+                "input",
+                checkPasswordMatch
+            );
+        }
 
-                    event.preventDefault();
 
-                    passwordStatus.textContent =
-                        "✕ Passwords do not match";
+        /* =====================================================
+           FORM SUBMISSION
+        ===================================================== */
 
-                    passwordStatus.className =
-                        "password-status no-match";
+        if (signupForm) {
 
-                    confirmPassword.focus();
+            signupForm.addEventListener(
+                "submit",
+                function (event) {
 
-                    return;
+
+                    const storeName =
+                        document.getElementById(
+                            "id_store_name"
+                        );
+
+
+                    const firstName =
+                        document.getElementById(
+                            "id_first_name"
+                        );
+
+
+                    const username =
+                        document.getElementById(
+                            "id_username"
+                        );
+
+
+                    /* -----------------------------------------
+                       SHOP NAME
+                    ------------------------------------------ */
+
+                    if (
+                        !storeName ||
+                        !storeName.value.trim()
+                    ) {
+
+                        event.preventDefault();
+
+                        alert(
+                            "Please enter your shop name."
+                        );
+
+
+                        if (storeName) {
+                            storeName.focus();
+                        }
+
+                        return;
+                    }
+
+
+                    /* -----------------------------------------
+                       FIRST NAME
+                    ------------------------------------------ */
+
+                    if (
+                        !firstName ||
+                        !firstName.value.trim()
+                    ) {
+
+                        event.preventDefault();
+
+                        alert(
+                            "Please enter your first name."
+                        );
+
+
+                        if (firstName) {
+                            firstName.focus();
+                        }
+
+                        return;
+                    }
+
+
+                    /* -----------------------------------------
+                       USERNAME
+                    ------------------------------------------ */
+
+                    if (
+                        !username ||
+                        !username.value.trim()
+                    ) {
+
+                        event.preventDefault();
+
+                        alert(
+                            "Please choose a username."
+                        );
+
+
+                        if (username) {
+                            username.focus();
+                        }
+
+                        return;
+                    }
+
+
+                    /* -----------------------------------------
+                       PASSWORD LENGTH
+                    ------------------------------------------ */
+
+                    if (
+                        !password ||
+                        password.value.length < 8
+                    ) {
+
+                        event.preventDefault();
+
+
+                        passwordStatus.textContent =
+                            "✕ Password must be at least 8 characters.";
+
+
+                        passwordStatus.className =
+                            "password-status no-match";
+
+
+                        password.classList.add(
+                            "input-error"
+                        );
+
+
+                        password.focus();
+
+                        return;
+                    }
+
+
+                    /* -----------------------------------------
+                       PASSWORD MATCH
+                    ------------------------------------------ */
+
+                    if (
+                        !confirmPassword ||
+                        password.value !==
+                        confirmPassword.value
+                    ) {
+
+                        event.preventDefault();
+
+
+                        passwordStatus.textContent =
+                            "✕ Passwords do not match.";
+
+
+                        passwordStatus.className =
+                            "password-status no-match";
+
+
+                        confirmPassword.classList.add(
+                            "input-error"
+                        );
+
+
+                        confirmPassword.focus();
+
+                        return;
+                    }
+
+
+                    /* -----------------------------------------
+                       PREVENT DOUBLE SUBMISSION
+                    ------------------------------------------ */
+
+                    signupButton.disabled = true;
+
+                    signupButton.textContent =
+                        "Creating Account...";
                 }
-
-
-                if (password.value.length < 8) {
-
-                    event.preventDefault();
-
-                    passwordStatus.textContent =
-                        "✕ Password must be at least 8 characters";
-
-                    passwordStatus.className =
-                        "password-status no-match";
-
-                    password.focus();
-
-                }
-
-            }
-        );
+            );
+        }
 
     </script>
 

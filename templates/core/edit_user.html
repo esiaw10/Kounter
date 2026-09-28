@@ -1,0 +1,662 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link id="kounter-favicon" rel="icon" type="image/jpeg" data-light="{% static 'core/Kounter_light.jpg' %}"
+        data-dark="{% static 'core/Kounter_dark.jpg' %}" href="{% static 'core/Kounter_light.jpg' %}">
+
+    <script>
+        (function () {
+            const theme = localStorage.getItem("kounter-theme") || "light";
+
+            document.documentElement.setAttribute("data-theme", theme);
+
+            const favicon = document.getElementById("kounter-favicon");
+
+            if (favicon) {
+                favicon.href =
+                    theme === "dark"
+                        ? "{% static 'core/Kounter_dark.jpg' %}"
+                        : "{% static 'core/Kounter_light.jpg' %}";
+            }
+        })();
+    </script>
+
+
+    <title>Edit User — {{ user_account.username }}</title>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --danger-dark: #b91c1c;
+            --warning: #d97706;
+
+            --bg: #f5f7fb;
+            --card: #ffffff;
+            --text: #111827;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+
+            --shadow:
+                0 10px 30px rgba(15, 23, 42, 0.08);
+
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Arial,
+                sans-serif;
+
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .page {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px 50px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-button {
+            width: 44px;
+            height: 44px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 12px;
+            border: 1px solid var(--border);
+
+            background: var(--card);
+            color: var(--text);
+
+            text-decoration: none;
+            font-size: 20px;
+
+            box-shadow: 0 3px 10px rgba(15, 23, 42, 0.05);
+
+            transition: 0.2s ease;
+        }
+
+        .back-button:hover {
+            transform: translateY(-1px);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .page-title {
+            font-size: 27px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .page-subtitle {
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 24px 28px;
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .avatar {
+            width: 54px;
+            height: 54px;
+
+            border-radius: 15px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #eff6ff;
+            color: var(--primary);
+
+            font-size: 20px;
+            font-weight: 800;
+
+            flex-shrink: 0;
+        }
+
+        .user-heading {
+            min-width: 0;
+        }
+
+        .user-name {
+            font-size: 19px;
+            font-weight: 750;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .user-meta {
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        form {
+            width: 100%;
+        }
+
+        .form-body {
+            padding: 28px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .field-full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .required {
+            color: var(--danger);
+            margin-left: 3px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            height: 48px;
+
+            padding: 0 14px;
+
+            border: 1px solid #d1d5db;
+            border-radius: 11px;
+
+            background: #fff;
+            color: var(--text);
+
+            font-size: 15px;
+            outline: none;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
+        }
+
+        input::placeholder {
+            color: #9ca3af;
+        }
+
+        .help-text {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 13px 15px;
+            border-radius: 11px;
+            margin-bottom: 10px;
+
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .message.success {
+            background: #ecfdf5;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .message.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .message.warning {
+            background: #fffbeb;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        .form-footer {
+            padding: 20px 28px;
+
+            border-top: 1px solid var(--border);
+
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+
+            background: #fafafa;
+        }
+
+        .button {
+            min-height: 46px;
+            padding: 0 18px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+
+            border-radius: 11px;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            text-decoration: none;
+            cursor: pointer;
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-1px);
+        }
+
+        .button-secondary {
+            background: #fff;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .button-secondary:hover {
+            background: #f9fafb;
+        }
+
+        .button-primary {
+            background: var(--primary);
+            color: #fff;
+            border: 1px solid var(--primary);
+            box-shadow: 0 5px 14px rgba(37, 99, 235, 0.20);
+        }
+
+        .button-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .role-info {
+            margin-top: 25px;
+
+            padding: 16px;
+
+            border-radius: 13px;
+
+            background: #f8fafc;
+            border: 1px solid var(--border);
+        }
+
+        .role-info-title {
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .role-info-text {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 700px) {
+            .page {
+                padding: 20px 14px 40px;
+            }
+
+            .page-header {
+                align-items: flex-start;
+            }
+
+            .page-title {
+                font-size: 22px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field-full {
+                grid-column: auto;
+            }
+
+            .card-header {
+                padding: 20px;
+            }
+
+            .form-body {
+                padding: 20px;
+            }
+
+            .form-footer {
+                padding: 18px 20px;
+
+                flex-direction: column-reverse;
+                align-items: stretch;
+            }
+
+            .button {
+                width: 100%;
+            }
+        }
+    </style>
+    ```
+
+</head>
+
+<body>
+
+    ```
+    {% include "core/navbar.html" %}
+
+    <main class="page">
+
+        <!-- PAGE HEADER -->
+        <div class="page-header">
+
+            <div class="header-left">
+
+                <a href="{% url 'manage_users' %}" class="back-button" aria-label="Back to user management">
+                    ←
+                </a>
+
+                <div>
+                    <h1 class="page-title">
+                        Edit User
+                    </h1>
+
+                    <p class="page-subtitle">
+                        Update this user's account and store assignment.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- MESSAGES -->
+        {% if messages %}
+        <div class="messages">
+
+            {% for message in messages %}
+
+            <div class="message
+                    {% if message.tags %}
+                        {{ message.tags }}
+                    {% else %}
+                        success
+                    {% endif %}
+                ">
+                {{ message }}
+            </div>
+
+            {% endfor %}
+
+        </div>
+        {% endif %}
+
+
+        <!-- EDIT CARD -->
+        <section class="card">
+
+            <div class="card-header">
+
+                <div class="avatar">
+                    {{ user_account.username|first|upper }}
+                </div>
+
+                <div class="user-heading">
+
+                    <div class="user-name">
+                        {{ user_account.username }}
+                    </div>
+
+                    <div class="user-meta">
+                        Edit account details and permissions
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <form method="post">
+
+                {% csrf_token %}
+
+                <div class="form-body">
+
+                    <div class="form-grid">
+
+                        <!-- USERNAME -->
+                        <div class="field">
+
+                            <label for="username">
+                                Username
+                                <span class="required">*</span>
+                            </label>
+
+                            <input type="text" id="username" name="username" value="{{ user_account.username }}"
+                                maxlength="150" autocomplete="username" required>
+
+                            <div class="help-text">
+                                This is the username used to log in.
+                            </div>
+
+                        </div>
+
+
+                        <!-- EMAIL -->
+                        <div class="field">
+
+                            <label for="email">
+                                Email
+                            </label>
+
+                            <input type="email" id="email" name="email" value="{{ user_account.email|default:'' }}"
+                                autocomplete="email" placeholder="example@email.com">
+
+                            <div class="help-text">
+                                Email address is optional.
+                            </div>
+
+                        </div>
+
+
+                        <!-- ROLE -->
+                        <div class="field">
+
+                            <label for="role">
+                                Role
+                                <span class="required">*</span>
+                            </label>
+
+                            <select id="role" name="role" required>
+
+                                <option value="ADMIN" {% if user_account.role=="ADMIN" %} selected {% endif %}>
+                                    Admin
+                                </option>
+
+                                <option value="MANAGER" {% if user_account.role=="MANAGER" %} selected {% endif %}>
+                                    Manager
+                                </option>
+
+                                <option value="ATTENDANT" {% if user_account.role=="ATTENDANT" %} selected {% endif %}>
+                                    Attendant
+                                </option>
+
+                            </select>
+
+                            <div class="help-text">
+                                Controls what this user can access in the POS.
+                            </div>
+
+                        </div>
+
+
+                        <!-- STORE -->
+                        <div class="field">
+
+                            <label for="store">
+                                Store
+                                <span class="required">*</span>
+                            </label>
+
+                            <select id="store" name="store" required>
+
+                                <option value="">
+                                    Select store
+                                </option>
+
+                                {% for store in stores %}
+
+                                <option value="{{ store.id }}" {% if user_account.store_id==store.id %} selected {%
+                                    endif %}>
+                                    {{ store.name }}
+                                </option>
+
+                                {% empty %}
+
+                                <option value="" disabled>
+                                    No active stores available
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                            <div class="help-text">
+                                The store this user is assigned to.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ROLE INFORMATION -->
+                    <div class="role-info">
+
+                        <div class="role-info-title">
+                            User roles
+                        </div>
+
+                        <div class="role-info-text">
+                            <strong>Admin:</strong>
+                            Store-level administrative access.
+                            <br>
+
+                            <strong>Manager:</strong>
+                            Management access for daily store operations.
+                            <br>
+
+                            <strong>Attendant:</strong>
+                            Basic POS and sales operations.
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- FOOTER -->
+                <div class="form-footer">
+
+                    <a href="{% url 'manage_users' %}" class="button button-secondary">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="button button-primary">
+                        Save Changes
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+
+</body>
+
+</html>
