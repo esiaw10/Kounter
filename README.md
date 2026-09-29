@@ -1,4 +1,4 @@
-# Provision Shop POS — Starter
+# Kounter — Starter
 
 This is the first working foundation of the Ghana provision-shop POS.
 
