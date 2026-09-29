@@ -328,11 +328,15 @@
       border: none;
       background: var(--primary);
       color: white;
-      border-radius: 8px;
-      padding: 9px 17px;
-      font-size: 13px;
-      font-weight: bold;
-      transition: background 0.2s ease;
+      border-radius: 9px;
+      padding: 10px 12px;
+      min-height: 46px;
+      font-size: 14px;
+      font-weight: 800;
+      white-space: nowrap;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.2s ease, transform 0.1s ease;
     }
 
     .sell-button:hover:not(:disabled) {
@@ -828,22 +832,22 @@
 
     .product-table th:nth-child(1),
     .product-table td:nth-child(1) {
-      width: 43%;
+      width: 38%;
     }
 
     .product-table th:nth-child(2),
     .product-table td:nth-child(2) {
-      width: 21%;
+      width: 20%;
     }
 
     .product-table th:nth-child(3),
     .product-table td:nth-child(3) {
-      width: 23%;
+      width: 20%;
     }
 
     .product-table th:nth-child(4),
     .product-table td:nth-child(4) {
-      width: 13%;
+      width: 22%;
     }
 
     .product-price {
@@ -992,9 +996,10 @@
       }
 
       .sell-button {
-        font-size: 10px;
-        padding: 7px 3px;
-        border-radius: 6px;
+        min-height: 46px;
+        padding: 10px 6px;
+        font-size: 14px;
+        border-radius: 9px;
       }
 
       .cart-panel {
@@ -1112,8 +1117,10 @@
       }
 
       .sell-button {
-        font-size: 9px;
-        padding: 6px 2px;
+        min-height: 46px;
+        padding: 10px 5px;
+        font-size: 13px;
+        border-radius: 9px;
       }
     }
   </style>
