@@ -344,6 +344,43 @@
             transform: scale(1.05);
         }
 
+        .action-cell {
+            white-space: nowrap;
+        }
+
+        .edit-button {
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 5px;
+            border: 1px solid #bfdbfe;
+            border-radius: 9px;
+            background: #eff6ff;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 16px;
+            transition: all .2s ease;
+        }
+
+        .edit-button:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        html[data-theme="dark"] .edit-button {
+            background: rgba(37, 99, 235, .15);
+            border-color: rgba(37, 99, 235, .35);
+            color: #93c5fd;
+        }
+
+        html[data-theme="dark"] .edit-button:hover {
+            background: var(--primary);
+            color: white;
+        }
+
         .empty {
             padding: 50px 20px;
             text-align: center;
@@ -483,8 +520,8 @@
             .header-actions,
             .messages,
             .modal,
-            .delete-column,
-            .delete-cell {
+            .action-column,
+            .action-cell {
                 display: none !important;
             }
 
@@ -711,7 +748,7 @@
                             <th>Selling Price</th>
                             <th>Stock</th>
                             <th>Status</th>
-                            <th class="delete-column">Action</th>
+                            <th class="action-column">Action</th>
                         </tr>
                     </thead>
 
@@ -750,15 +787,23 @@
                                 {% endif %}
                             </td>
 
-                            <td class="delete-cell">
+                            <td class="action-cell">
+
+                                <a href="{% url 'edit_product' product.id %}" class="edit-button" title="Edit product"
+                                    aria-label="Edit {{ product.name }}">
+                                    ✏️
+                                </a>
+
                                 <form method="POST" action="{% url 'delete_product' product.id %}" class="delete-form"
                                     onsubmit="return confirmDelete('{{ product.name|escapejs }}');">
                                     {% csrf_token %}
+
                                     <button type="submit" class="delete-button" title="Delete product"
                                         aria-label="Delete {{ product.name }}">
                                         🗑️
                                     </button>
                                 </form>
+
                             </td>
                         </tr>
                         {% endfor %}

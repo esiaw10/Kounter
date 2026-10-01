@@ -1128,6 +1128,8 @@
 
 <body>
 
+  {% csrf_token %}
+
   {% include "core/navbar.html" %}
 
   <main class="page-container">
@@ -1389,6 +1391,44 @@
         <button type="button" class="complete-button" id="completeSaleButton" onclick="completeSale()">
           Complete Sale
         </button>
+
+      </div>
+
+    </div>
+
+    <div id="reviewModal" class="modal-overlay">
+
+      <div class="modal-box">
+
+        {% csrf_token %}
+
+        <h2>Review Sale</h2>
+
+        <p>
+          Confirm the products and quantities before completing this sale.
+        </p>
+
+        <ul id="reviewList" class="review-list"></ul>
+
+        <div class="cart-total-row">
+          <span>Total</span>
+
+          <span id="reviewTotal" class="cart-total">
+            GH₵ 0.00
+          </span>
+        </div>
+
+        <div class="modal-actions">
+
+          <button type="button" class="cancel-button" onclick="closeReviewModal()">
+            Cancel
+          </button>
+
+          <button type="button" class="complete-button" id="completeSaleButton" onclick="completeSale()">
+            Complete Sale
+          </button>
+
+        </div>
 
       </div>
 
@@ -2358,188 +2398,179 @@
        COMPLETE SALE
     ========================================================= */
 
+
+    function getCSRFToken() {
+      const csrfInput = document.querySelector(
+        'input[name="csrfmiddlewaretoken"]'
+      );
+
+      if (csrfInput && csrfInput.value) {
+        return csrfInput.value;
+      }
+
+      let cookieValue = null;
+
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+
+        for (let cookie of cookies) {
+          cookie = cookie.trim();
+
+          if (cookie.startsWith("csrftoken=")) {
+            cookieValue = decodeURIComponent(
+              cookie.substring("csrftoken=".length)
+            );
+            break;
+          }
+        }
+      }
+
+      return cookieValue;
+    }
+
+
     async function completeSale() {
 
-      const items =
-        Object.values(basket)
-          .map(function (item) {
-
-            return {
-
-              id: Number(item.id),
-
-              quantity:
-                item.quantity
-
-            };
-
-          });
-
+      const items = Object.values(basket).map(function (item) {
+        return {
+          id: Number(item.id),
+          quantity: Number(item.quantity)
+        };
+      });
 
       if (items.length === 0) {
-
         showStatus(
           "Your cart is empty.",
           "error"
         );
-
         return;
-
       }
 
-
       const completeButton =
-        document.getElementById(
-          "completeSaleButton"
-        );
+        document.getElementById("completeSaleButton");
 
-
-      completeButton.disabled =
-        true;
-
-
-      completeButton.textContent =
-        "Processing...";
-
+      completeButton.disabled = true;
+      completeButton.textContent = "Processing...";
 
       try {
 
-        const response =
-          await fetch(
-            "{% url 'process_cart_sale' %}",
-            {
+        const csrfToken = getCSRFToken();
 
-              method: "POST",
-
-              headers: {
-
-                "Content-Type":
-                  "application/json",
-
-                "X-CSRFToken":
-                  getCookie(
-                    "csrftoken"
-                  )
-
-              },
-
-              body:
-                JSON.stringify({
-                  items: items
-                })
-
-            }
+        if (!csrfToken) {
+          throw new Error(
+            "Security token is missing. Please refresh the page and try again."
           );
+        }
 
+        const response = await fetch(
+          "{% url 'process_cart_sale' %}",
+          {
+            method: "POST",
 
-        const data =
-          await response.json();
+            credentials: "same-origin",
 
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": csrfToken,
+              "Accept": "application/json"
+            },
 
-        if (
-          !response.ok ||
-          !data.ok
-        ) {
+            body: JSON.stringify({
+              items: items
+            })
+          }
+        );
 
+        let data;
+
+        try {
+          data = await response.json();
+        } catch (jsonError) {
+          throw new Error(
+            "The server returned an invalid response. Please check the Django server logs."
+          );
+        }
+
+        if (!response.ok || !data.ok) {
           throw new Error(
             data.error ||
             "Unable to complete the sale."
           );
-
         }
-
-
-        if (data.updates) {
-
-          data.updates.forEach(
-            function (update) {
-
-              const row =
-                document.querySelector(
-                  `.product-row[data-product-id="${update.id}"]`
-                );
-
-
-              if (row) {
-
-                row.setAttribute(
-                  "data-stock",
-                  update.new_stock
-                );
-
-              }
-
-
-              const button =
-                document.getElementById(
-                  "sell-button-" +
-                  update.id
-                );
-
-
-              if (button) {
-
-                button.setAttribute(
-                  "data-product-stock",
-                  update.new_stock
-                );
-
-              }
-
-            }
-          );
-
-        }
-
-
-        basket = {};
-
 
         /*
-         * Successful sale closes the cart.
+         * Update stock displayed on the POS.
          */
+        if (Array.isArray(data.updates)) {
 
-        closeCart();
+          data.updates.forEach(function (update) {
 
+            const row = document.querySelector(
+              `.product-row[data-product-id="${update.id}"]`
+            );
+
+            if (row) {
+              row.setAttribute(
+                "data-stock",
+                update.new_stock
+              );
+            }
+
+            const button = document.getElementById(
+              "sell-button-" + update.id
+            );
+
+            if (button) {
+              button.setAttribute(
+                "data-product-stock",
+                update.new_stock
+              );
+            }
+          });
+        }
+
+        /*
+         * Sale succeeded.
+         * Clear the local basket.
+         */
+        basket = {};
 
         renderBasket();
-
         updateProductButtons();
-
         updateStockLabels();
 
         closeReviewModal();
-
+        closeCart();
 
         showStatus(
-          "Sale completed successfully.",
+          data.message || "Sale completed successfully.",
           "success"
         );
 
-
       } catch (error) {
+
+        console.error(
+          "COMPLETE SALE ERROR:",
+          error
+        );
 
         showStatus(
           error.message ||
-          "An error occurred.",
+          "An error occurred while completing the sale.",
           "error"
         );
 
       } finally {
 
-        completeButton.disabled =
-          false;
-
-        completeButton.textContent =
-          "Complete Sale";
-
+        completeButton.disabled = false;
+        completeButton.textContent = "Complete Sale";
       }
-
     }
 
 
+
     /* =========================================================
-       ESCAPE HTML
+    ESCAPE HTML
     ========================================================= */
 
     function escapeHtml(value) {
@@ -2552,14 +2583,9 @@
         )
 
         .replace(
-          /</g,
-          "&lt;"
-        )
-
-        .replace(
-          />/g,
-          "&gt;"
-        )
+          /</g, "&lt;").replace(/>/g,
+            "&gt;"
+          )
 
         .replace(
           /"/g,
@@ -2575,7 +2601,7 @@
 
 
     /* =========================================================
-       CSRF COOKIE
+    CSRF COOKIE
     ========================================================= */
 
     function getCookie(name) {
@@ -2628,7 +2654,7 @@
 
 
     /* =========================================================
-       DARK MODE SUPPORT
+    DARK MODE SUPPORT
     ========================================================= */
 
     function applySavedTheme() {
@@ -2662,7 +2688,7 @@
 
 
     /* =========================================================
-       PAGE INITIALIZATION
+    PAGE INITIALIZATION
     ========================================================= */
 
     document.addEventListener(
@@ -2758,7 +2784,7 @@
 
 
     /* =========================================================
-       CLOSE REVIEW MODAL WHEN CLICKING OUTSIDE
+    CLOSE REVIEW MODAL WHEN CLICKING OUTSIDE
     ========================================================= */
 
     document
@@ -2776,6 +2802,8 @@
           }
 
         }
+
+
       );
 
   </script>

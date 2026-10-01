@@ -1,7 +1,8 @@
-from dotenv import load_dotenv
-import dj_database_url
-from pathlib import Path
 import os
+from pathlib import Path
+import dj_database_url
+from dotenv import load_dotenv
+load_dotenv()
 
 
 # =========================================================
@@ -144,28 +145,26 @@ TEMPLATES = [
 # =========================================================
 # DATABASE
 # =========================================================
-#
-# Local development:
-#     SQLite
-#
-# Render:
-#     PostgreSQL through DATABASE_URL
-#
 
 DATABASES = {
-    "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
-    )
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
+        "OPTIONS": {
+            "sslmode": "require",
+        },
+    }
 }
-
 
 # =========================================================
 # PASSWORD VALIDATION
 # =========================================================
 
 AUTH_PASSWORD_VALIDATORS = []
-
 
 # =========================================================
 # INTERNATIONALIZATION
@@ -179,7 +178,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # =========================================================
 # STATIC FILES
 # =========================================================
@@ -187,7 +185,6 @@ USE_TZ = True
 STATIC_URL = "/static/"
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
 
 STORAGES = {
     "default": {
@@ -202,13 +199,11 @@ STORAGES = {
     },
 }
 
-
 # =========================================================
 # DEFAULT PRIMARY KEY
 # =========================================================
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
 
 # =========================================================
 # AUTHENTICATION
@@ -222,7 +217,6 @@ LOGIN_REDIRECT_URL = "/"
 
 LOGOUT_REDIRECT_URL = "/login/"
 
-
 # =========================================================
 # RENDER / HTTPS
 # =========================================================
@@ -231,7 +225,6 @@ SECURE_PROXY_SSL_HEADER = (
     "HTTP_X_FORWARDED_PROTO",
     "https",
 )
-
 
 # =========================================================
 # EMAIL / PASSWORD RESET
