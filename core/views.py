@@ -25,7 +25,7 @@ from django.contrib.auth.forms import (
 )
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -137,7 +137,7 @@ def is_attendant(user):
 
 def can_manage_products(user):
     """
-    Users allowed to add/delete/reset products.
+    Users allowed to perform product-management actions.
     """
     return (
         user.is_authenticated
@@ -224,81 +224,65 @@ def get_current_store(request):
 # SUBSCRIPTION HELPERS
 # ============================================================
 
-def can_add_products(store):
-    """
-    Product creation is allowed:
-
-    1. During the first 30-day free trial.
-    2. While an active paid subscription exists.
-    """
-
+def has_product_management_access(store):
+    """Return True when product management is currently allowed."""
     if not store:
         return False
 
-    if store.trial_active:
-        return True
+    # Store.can_add_products is the single source of truth in models.py.
+    # It allows product management during the 30-day trial or an active
+    # paid subscription, and blocks it after both have expired.
+    return bool(store.can_add_products)
 
-    if store.subscription_active:
-        return True
 
-    return False
+def can_add_products(store):
+    """Backward-compatible alias for older code/templates."""
+    return has_product_management_access(store)
 
 
 def subscription_status(store):
-    """
-    Returns the current trial/subscription status.
-    """
+    """Return the current trial/subscription status."""
 
     if not store:
         return {
             "trial_active": False,
             "subscription_active": False,
             "can_add_products": False,
+            "can_manage_products": False,
             "days_remaining": 0,
             "status": "NO_STORE",
             "subscription": None,
         }
 
-    # --------------------------------------------------------
-    # ACTIVE PAID SUBSCRIPTION
-    # --------------------------------------------------------
-
     if store.subscription_active:
-
         subscription = store.active_subscription
 
         return {
             "trial_active": False,
             "subscription_active": True,
             "can_add_products": True,
+            "can_manage_products": True,
             "days_remaining": subscription.days_remaining,
             "status": "ACTIVE",
             "subscription": subscription,
         }
 
-    # --------------------------------------------------------
-    # FREE TRIAL
-    # --------------------------------------------------------
-
     if store.trial_active:
-
         return {
             "trial_active": True,
             "subscription_active": False,
             "can_add_products": True,
+            "can_manage_products": True,
             "days_remaining": store.trial_days_remaining,
             "status": "TRIAL",
             "subscription": None,
         }
 
-    # --------------------------------------------------------
-    # EXPIRED
-    # --------------------------------------------------------
-
     return {
         "trial_active": False,
         "subscription_active": False,
         "can_add_products": False,
+        "can_manage_products": False,
         "days_remaining": 0,
         "status": "EXPIRED",
         "subscription": None,
@@ -308,6 +292,37 @@ def subscription_status(store):
 # ============================================================
 # LOGIN
 # ============================================================
+
+class AttendantAuthenticationForm(AuthenticationForm):
+    """Explain deactivation only after the attendant's credentials are verified."""
+
+    deactivated_message = "Your account has been deactivated by your manager."
+
+    def get_invalid_login_error(self):
+        username = self.cleaned_data.get("username")
+        password = self.cleaned_data.get("password")
+        if username and password:
+            user = User.objects.filter(
+                **{User.USERNAME_FIELD: username},
+                role="ATTENDANT",
+                is_active=False,
+                is_staff=False,
+                is_superuser=False,
+            ).first()
+            if user is not None and user.check_password(password):
+                return ValidationError(self.deactivated_message, code="inactive")
+        return super().get_invalid_login_error()
+
+    def confirm_login_allowed(self, user):
+        if (
+            not user.is_active
+            and user.role == "ATTENDANT"
+            and not user.is_staff
+            and not user.is_superuser
+        ):
+            raise ValidationError(self.deactivated_message, code="inactive")
+        return super().confirm_login_allowed(user)
+
 
 def custom_login(request):
     """
@@ -323,7 +338,7 @@ def custom_login(request):
     next_url = request.POST.get("next") or request.GET.get("next", "")
 
     if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
+        form = AttendantAuthenticationForm(request, data=request.POST)
 
         if form.is_valid():
             user = form.get_user()
@@ -343,7 +358,7 @@ def custom_login(request):
 
             return redirect("dashboard")
     else:
-        form = AuthenticationForm(request)
+        form = AttendantAuthenticationForm(request)
 
     return render(
         request,
@@ -3469,7 +3484,7 @@ def dashboard(request):
 
     total_sales = sum(
         (
-            sale.total
+            sale.total_price
             for sale in (
                 Sale.objects
                 .filter(store=store)
@@ -3502,8 +3517,8 @@ def dashboard(request):
         Sale.objects
         .filter(
             store=store,
-            sold_at__date__gte=week_start,
-            sold_at__date__lte=week_end,
+            created_at__date__gte=week_start,
+            created_at__date__lte=week_end,
         )
     )
 
@@ -3520,10 +3535,10 @@ def dashboard(request):
 
         day_sales = sum(
             (
-                sale.total
+                sale.total_price
                 for sale in weekly_sales
                 if timezone.localtime(
-                    sale.sold_at
+                    sale.created_at
                 ).date() == current_day
             ),
             Decimal("0.00"),
@@ -3544,6 +3559,14 @@ def dashboard(request):
         "core/dashboard.html",
         {
             "store": store,
+            "attendants": (
+                User.objects.filter(
+                    store=store, role="ATTENDANT",
+                    is_superuser=False, is_staff=False,
+                ).order_by("username")
+                if request.user.is_superuser or request.user.role in ["ADMIN", "MANAGER"]
+                else User.objects.none()
+            ),
             "active_products_count": (
                 active_products_count
             ),
@@ -3639,6 +3662,18 @@ def delete_product(request, product_id):
             "dashboard"
         )
 
+    if not has_product_management_access(store):
+
+        messages.warning(
+            request,
+            (
+                "Your 30-day free trial has expired. "
+                "Please subscribe to continue managing products."
+            ),
+        )
+
+        return redirect("subscription")
+
     product = get_object_or_404(
         Product,
         id=product_id,
@@ -3706,6 +3741,18 @@ def reset_active_products(request):
         return redirect(
             "dashboard"
         )
+
+    if not has_product_management_access(store):
+
+        messages.warning(
+            request,
+            (
+                "Your 30-day free trial has expired. "
+                "Please subscribe to continue managing products."
+            ),
+        )
+
+        return redirect("subscription")
 
     password = request.POST.get(
         "password",
@@ -3800,18 +3847,18 @@ def daily_sales(request):
         Sale.objects
         .filter(
             store=store,
-            sold_at__date=selected_date,
+            created_at__date=selected_date,
         )
         .select_related(
             "product",
             "sold_by",
         )
-        .order_by("-sold_at")
+        .order_by("-created_at")
     )
 
     daily_total = sum(
         (
-            sale.total
+            sale.total_price
             for sale in sales
         ),
         Decimal("0.00"),
@@ -3955,12 +4002,12 @@ def all_sales(request):
             "product",
             "sold_by",
         )
-        .order_by("-sold_at")
+        .order_by("-created_at")
     )
 
     total_sales = sum(
         (
-            sale.total
+            sale.total_price
             for sale in sales
         ),
         Decimal("0.00"),
@@ -3973,6 +4020,23 @@ def all_sales(request):
 
     sales_count = sales.count()
 
+    profit_context = {"can_view_profit": can_manage_products(request.user)}
+    if profit_context["can_view_profit"]:
+        total_cost = sum((sale.cost_total for sale in sales), Decimal("0.00"))
+        gross_profit = total_sales - total_cost
+        profit_margin = (
+            gross_profit / total_sales * Decimal("100")
+            if total_sales > 0 else None
+        )
+        profit_context.update({
+            "total_cost": total_cost,
+            "gross_profit": gross_profit,
+            "profit_margin_display": (
+                f"{profit_margin:.2f}%" if profit_margin is not None else "—"
+            ),
+            "estimated_cost_sales_count": sum(sale.cost_is_estimated for sale in sales),
+        })
+
     return render(
         request,
         "core/all_sales.html",
@@ -3981,6 +4045,7 @@ def all_sales(request):
             "total_sales": total_sales,
             "total_items": total_items,
             "sales_count": sales_count,
+            **profit_context,
             "store": store,
         },
     )
@@ -4185,6 +4250,18 @@ def restock(request):
             "core/no_store.html",
         )
 
+    if not has_product_management_access(store):
+
+        messages.warning(
+            request,
+            (
+                "Your 30-day free trial has expired. "
+                "Please subscribe to continue managing products."
+            ),
+        )
+
+        return redirect("subscription")
+
     products = (
         Product.objects
         .filter(
@@ -4290,12 +4367,13 @@ def restock(request):
 @require_POST
 def process_cart_sale(request):
 
-    try:
+    # --------------------------------------------------------
+    # READ JSON
+    # --------------------------------------------------------
 
+    try:
         payload = json.loads(
-            request.body.decode(
-                "utf-8"
-            )
+            request.body.decode("utf-8")
         )
 
     except (
@@ -4311,22 +4389,23 @@ def process_cart_sale(request):
             status=400,
         )
 
-    cart_items = (
-        payload.get("items")
-        if isinstance(
-            payload,
-            dict,
-        )
-        else None
-    )
+    # --------------------------------------------------------
+    # GET CART ITEMS
+    # --------------------------------------------------------
 
-    if (
-        not isinstance(
-            cart_items,
-            list,
+    if not isinstance(payload, dict):
+
+        return JsonResponse(
+            {
+                "ok": False,
+                "error": "Invalid sale request.",
+            },
+            status=400,
         )
-        or not cart_items
-    ):
+
+    cart_items = payload.get("items")
+
+    if not isinstance(cart_items, list) or not cart_items:
 
         return JsonResponse(
             {
@@ -4336,37 +4415,39 @@ def process_cart_sale(request):
             status=400,
         )
 
+    # --------------------------------------------------------
+    # CLEAN AND COMBINE CART ITEMS
+    # --------------------------------------------------------
+
     quantities = {}
 
     try:
 
         for item in cart_items:
 
+            if not isinstance(item, dict):
+                raise ValueError
+
             product_id = int(
-                item["id"]
+                item.get("id")
             )
 
             quantity = int(
-                item["quantity"]
+                item.get("quantity")
             )
 
-            if (
-                product_id <= 0
-                or quantity <= 0
-            ):
+            if product_id <= 0:
+                raise ValueError
 
+            if quantity <= 0:
                 raise ValueError
 
             quantities[product_id] = (
-                quantities.get(
-                    product_id,
-                    0,
-                )
+                quantities.get(product_id, 0)
                 + quantity
             )
 
     except (
-        KeyError,
         TypeError,
         ValueError,
     ):
@@ -4375,32 +4456,48 @@ def process_cart_sale(request):
             {
                 "ok": False,
                 "error": (
-                    "Each cart item needs "
+                    "Each cart item must contain "
                     "a valid product and quantity."
                 ),
             },
             status=400,
         )
 
+    # --------------------------------------------------------
+    # CURRENT STORE
+    # --------------------------------------------------------
+
     store = get_current_store(request)
 
-    if not store:
+    if store is None:
 
         return JsonResponse(
             {
                 "ok": False,
-                "error": "No active store assigned.",
+                "error": (
+                    "No active store is assigned "
+                    "to your account."
+                ),
             },
             status=400,
         )
+
+    # --------------------------------------------------------
+    # COMPLETE SALE ATOMICALLY
+    # --------------------------------------------------------
 
     try:
 
         with transaction.atomic():
 
             product_ids = sorted(
-                quantities
+                quantities.keys()
             )
+
+            # Lock the products while processing
+            # the transaction. This prevents two users
+            # from selling the same remaining stock
+            # simultaneously.
 
             products = list(
                 Product.objects
@@ -4418,24 +4515,32 @@ def process_cart_sale(request):
                 for product in products
             }
 
-            if set(product_ids) != set(
-                products_by_id
-            ):
+            # ------------------------------------------------
+            # MAKE SURE EVERY PRODUCT EXISTS
+            # ------------------------------------------------
+
+            missing_products = [
+                product_id
+                for product_id in product_ids
+                if product_id not in products_by_id
+            ]
+
+            if missing_products:
 
                 return JsonResponse(
                     {
                         "ok": False,
                         "error": (
-                            "One or more products "
-                            "are unavailable."
+                            "One or more products are "
+                            "no longer available."
                         ),
                     },
                     status=404,
                 )
 
-            # --------------------------------------------
-            # CHECK STOCK BEFORE CHANGING ANYTHING
-            # --------------------------------------------
+            # ------------------------------------------------
+            # CHECK STOCK BEFORE MODIFYING ANYTHING
+            # ------------------------------------------------
 
             for product_id in product_ids:
 
@@ -4443,31 +4548,30 @@ def process_cart_sale(request):
                     product_id
                 ]
 
-                required_quantity = quantities[
+                requested_quantity = quantities[
                     product_id
                 ]
 
-                if (
-                    product.stock
-                    < required_quantity
-                ):
+                if product.stock < requested_quantity:
 
                     return JsonResponse(
                         {
                             "ok": False,
                             "error": (
-                                "Insufficient inventory "
-                                f"for {product.name}."
+                                f"Insufficient stock for "
+                                f"{product.name}. "
+                                f"Only {product.stock} "
+                                f"remaining."
                             ),
                         },
                         status=400,
                     )
 
-            updates = []
+            # ------------------------------------------------
+            # PROCESS EACH PRODUCT
+            # ------------------------------------------------
 
-            # --------------------------------------------
-            # COMPLETE SALE
-            # --------------------------------------------
+            updates = []
 
             for product_id in product_ids:
 
@@ -4479,21 +4583,41 @@ def process_cart_sale(request):
                     product_id
                 ]
 
-                product.stock -= quantity
+                old_stock = product.stock
+
+                # --------------------------------------------
+                # REDUCE STOCK
+                # --------------------------------------------
+
+                product.stock = (
+                    old_stock - quantity
+                )
 
                 product.save(
                     update_fields=[
-                        "stock"
+                        "stock",
                     ]
                 )
+
+                # --------------------------------------------
+                # CREATE SALE RECORD
+                # --------------------------------------------
+
+                unit_price = Decimal(product.selling_price)
+                total_price = unit_price * quantity
 
                 Sale.objects.create(
                     store=store,
                     product=product,
                     quantity=quantity,
-                    unit_price=product.selling_price,
+                    unit_price=unit_price,
+                    total_price=total_price,
                     sold_by=request.user,
                 )
+
+                # --------------------------------------------
+                # CREATE STOCK MOVEMENT
+                # --------------------------------------------
 
                 StockMovement.objects.create(
                     product=product,
@@ -4504,27 +4628,56 @@ def process_cart_sale(request):
                     note="POS cart sale",
                 )
 
-                updates.append({
-                    "id": product.id,
-                    "new_stock": product.stock,
-                    "is_low": (
-                        product.stock
-                        <= product.low_stock_threshold
-                    ),
-                })
+                # --------------------------------------------
+                # SEND UPDATED STOCK TO FRONTEND
+                # --------------------------------------------
 
-        return JsonResponse(
-            {
-                "ok": True,
-                "updates": updates,
-            }
-        )
+                updates.append(
+                    {
+                        "id": product.id,
+                        "new_stock": product.stock,
+                        "is_low": (
+                            product.stock
+                            <= product.low_stock_threshold
+                        ),
+                    }
+                )
 
-    except Exception:
+            # ------------------------------------------------
+            # SUCCESS
+            # ------------------------------------------------
+
+            return JsonResponse(
+                {
+                    "ok": True,
+                    "message": "Sale completed successfully.",
+                    "updates": updates,
+                },
+                status=200,
+            )
+
+    # --------------------------------------------------------
+    # DATABASE / UNEXPECTED ERROR
+    # --------------------------------------------------------
+
+    except Exception as exc:
 
         logger.exception(
-            "POS cart sale failed."
+            "POS cart sale failed: %s",
+            exc,
         )
+
+        # During development, return the actual error so
+        # the browser can tell us exactly what is wrong.
+        if settings.DEBUG:
+
+            return JsonResponse(
+                {
+                    "ok": False,
+                    "error": str(exc),
+                },
+                status=500,
+            )
 
         return JsonResponse(
             {
@@ -4577,7 +4730,7 @@ def add_product(request):
     # SUBSCRIPTION RESTRICTION
     # --------------------------------------------------------
 
-    if not can_add_products(store):
+    if not has_product_management_access(store):
 
         messages.warning(
             request,
@@ -4906,6 +5059,358 @@ def add_product(request):
     )
 
 
+@login_required
+def edit_product(request, product_id):
+
+    # --------------------------------------------------------
+    # PERMISSION
+    # --------------------------------------------------------
+
+    if not can_manage_products(request.user):
+
+        messages.error(
+            request,
+            "You do not have permission to edit products.",
+        )
+
+        return redirect("active_products")
+
+    # --------------------------------------------------------
+    # STORE
+    # --------------------------------------------------------
+
+    store = get_current_store(request)
+
+    if store is None:
+
+        messages.error(
+            request,
+            "No active store is assigned to your account.",
+        )
+
+        return redirect("dashboard")
+
+    # --------------------------------------------------------
+    # SUBSCRIPTION RESTRICTION
+    # --------------------------------------------------------
+
+    if not has_product_management_access(store):
+
+        messages.warning(
+            request,
+            (
+                "Your 30-day free trial has expired. "
+                "Please subscribe to continue managing products."
+            ),
+        )
+
+        return redirect("subscription")
+
+    # --------------------------------------------------------
+    # PRODUCT
+    # --------------------------------------------------------
+
+    product = get_object_or_404(
+        Product,
+        id=product_id,
+        store=store,
+    )
+
+    # --------------------------------------------------------
+    # STORE-SPECIFIC CATEGORIES
+    # --------------------------------------------------------
+
+    categories = (
+        Category.objects
+        .filter(store=store)
+        .order_by("name")
+    )
+
+    # --------------------------------------------------------
+    # CONTEXT HELPER
+    # --------------------------------------------------------
+
+    def page_context():
+
+        return {
+            "product": product,
+            "categories": categories,
+            "store": store,
+            "subscription": subscription_status(store),
+        }
+
+    # --------------------------------------------------------
+    # POST
+    # --------------------------------------------------------
+
+    if request.method == "POST":
+
+        name = request.POST.get(
+            "name",
+            "",
+        ).strip()
+
+        category_id = request.POST.get(
+            "category",
+            "",
+        ).strip()
+
+        preferred_category = request.POST.get(
+            "preferred_category",
+            "",
+        ).strip()
+
+        selling_price = request.POST.get(
+            "selling_price",
+            "",
+        ).strip()
+
+        cost_price = request.POST.get(
+            "cost_price",
+            "",
+        ).strip()
+
+        stock = request.POST.get(
+            "stock",
+            "0",
+        ).strip()
+
+        low_stock_threshold = request.POST.get(
+            "low_stock_threshold",
+            "20",
+        ).strip()
+
+        barcode = request.POST.get(
+            "barcode",
+            "",
+        ).strip()
+
+        active = product.active
+
+        # ----------------------------------------------------
+        # NAME
+        # ----------------------------------------------------
+
+        if not name:
+
+            messages.error(
+                request,
+                "Please enter the product name.",
+            )
+
+            return render(
+                request,
+                "core/edit_product.html",
+                page_context(),
+            )
+
+        # ----------------------------------------------------
+        # SELLING PRICE REQUIRED
+        # ----------------------------------------------------
+
+        if not selling_price:
+
+            messages.error(
+                request,
+                "Please enter the selling price.",
+            )
+
+            return render(
+                request,
+                "core/edit_product.html",
+                page_context(),
+            )
+
+        # ----------------------------------------------------
+        # CATEGORY
+        # ----------------------------------------------------
+
+        category = None
+
+        # ----------------------------------------------------
+        # PREFERRED / NEW CATEGORY
+        # ----------------------------------------------------
+
+        if preferred_category:
+
+            category, _ = (
+                Category.objects.get_or_create(
+                    store=store,
+                    name=preferred_category,
+                )
+            )
+
+        # ----------------------------------------------------
+        # EXISTING CATEGORY
+        # ----------------------------------------------------
+
+        elif category_id:
+
+            category = get_object_or_404(
+                Category,
+                id=category_id,
+                store=store,
+            )
+
+        # ----------------------------------------------------
+        # SELLING PRICE
+        # ----------------------------------------------------
+
+        try:
+
+            selling_price_decimal = Decimal(
+                selling_price
+            )
+
+            if selling_price_decimal < 0:
+                raise ValueError
+
+        except (
+            InvalidOperation,
+            ValueError,
+        ):
+
+            messages.error(
+                request,
+                "Please enter a valid selling price.",
+            )
+
+            return render(
+                request,
+                "core/edit_product.html",
+                page_context(),
+            )
+
+        # ----------------------------------------------------
+        # COST PRICE
+        # ----------------------------------------------------
+
+        cost_price_decimal = None
+
+        if cost_price:
+
+            try:
+
+                cost_price_decimal = Decimal(
+                    cost_price
+                )
+
+                if cost_price_decimal < 0:
+                    raise ValueError
+
+            except (
+                InvalidOperation,
+                ValueError,
+            ):
+
+                messages.error(
+                    request,
+                    "Please enter a valid cost price.",
+                )
+
+                return render(
+                    request,
+                    "core/edit_product.html",
+                    page_context(),
+                )
+
+        # ----------------------------------------------------
+        # STOCK
+        # ----------------------------------------------------
+
+        try:
+
+            stock_value = int(
+                stock
+            )
+
+            if stock_value < 0:
+                raise ValueError
+
+        except (
+            TypeError,
+            ValueError,
+        ):
+
+            messages.error(
+                request,
+                "Stock must be a valid number.",
+            )
+
+            return render(
+                request,
+                "core/edit_product.html",
+                page_context(),
+            )
+
+        # ----------------------------------------------------
+        # LOW STOCK THRESHOLD
+        # ----------------------------------------------------
+
+        try:
+
+            low_stock_value = int(
+                low_stock_threshold
+            )
+
+            if low_stock_value < 0:
+                raise ValueError
+
+        except (
+            TypeError,
+            ValueError,
+        ):
+
+            messages.error(
+                request,
+                "Low-stock threshold must be a valid number.",
+            )
+
+            return render(
+                request,
+                "core/edit_product.html",
+                page_context(),
+            )
+
+        # ----------------------------------------------------
+        # UPDATE PRODUCT
+        # ----------------------------------------------------
+
+        product.category = category
+        product.name = name
+        product.selling_price = selling_price_decimal
+        product.cost_price = cost_price_decimal
+        product.stock = stock_value
+        product.low_stock_threshold = low_stock_value
+        product.barcode = barcode or ""
+        product.active = active
+
+        product.save()
+
+        # ----------------------------------------------------
+        # SUCCESS
+        # ----------------------------------------------------
+
+        messages.success(
+            request,
+            f'"{product.name}" was updated successfully.',
+        )
+
+        return redirect(
+            "active_products"
+        )
+
+    # --------------------------------------------------------
+    # GET
+    # --------------------------------------------------------
+
+    return render(
+        request,
+        "core/edit_product.html",
+        page_context(),
+    )
+
+
 # ============================================================
 # SUBSCRIPTION PAGE
 # ============================================================
@@ -4968,3 +5473,188 @@ def custom_logout_view(request):
     return redirect(
         "login"
     )
+
+
+# ============================================================
+# STORE ATTENDANT ACCOUNT CREATION
+# ============================================================
+
+@login_required
+@require_POST
+def create_attendant(request):
+    """Create an attendant for the signed-in manager's active store."""
+    if not (
+        request.user.is_active
+        and (
+            request.user.is_superuser
+            or request.user.role in ["ADMIN", "MANAGER"]
+        )
+    ):
+        return HttpResponse(
+            "You do not have permission to create attendant accounts.",
+            status=403,
+        )
+
+    store = get_current_store(request)
+    if store is None:
+        messages.error(
+            request,
+            "No active store is assigned to your account.",
+            extra_tags="attendant",
+        )
+        return redirect("dashboard")
+
+    dashboard_url = reverse("dashboard") + "#attendant-accounts"
+    username = User.normalize_username(
+        request.POST.get("username", "").strip()
+    )
+    password = request.POST.get("password1", "")
+    password_confirmation = request.POST.get("password2", "")
+
+    # The store and role come from the server, never from submitted fields.
+    attendant = User(
+        username=username,
+        first_name=request.POST.get("first_name", "").strip(),
+        last_name=request.POST.get("last_name", "").strip(),
+        email=User.objects.normalize_email(
+            request.POST.get("email", "").strip()
+        ),
+        role="ATTENDANT",
+        store=store,
+        is_active=True,
+        is_staff=False,
+        is_superuser=False,
+    )
+
+    errors = []
+    if not username:
+        errors.append("Please enter a username.")
+    elif User.objects.filter(username__iexact=username).exists():
+        errors.append(
+            "This username is already taken. Choose another username.")
+
+    if not password:
+        errors.append("Please enter a password.")
+    elif password != password_confirmation:
+        errors.append("The passwords do not match.")
+
+    try:
+        attendant.full_clean(exclude=["password"])
+    except ValidationError as error:
+        errors.extend(error.messages)
+
+    if password:
+        try:
+            validate_password(password, user=attendant)
+        except ValidationError as error:
+            errors.extend(error.messages)
+
+    if errors:
+        for error in dict.fromkeys(errors):
+            messages.error(request, error, extra_tags="attendant")
+        return redirect(dashboard_url)
+
+    # Store a password hash, never the original password.
+    attendant.set_password(password)
+    try:
+        with transaction.atomic():
+            attendant.save()
+    except IntegrityError:
+        logger.exception("Unable to create attendant for store %s", store.pk)
+        messages.error(
+            request,
+            "The account could not be created. The username may have just "
+            "been taken. Choose another username and try again.",
+            extra_tags="attendant",
+        )
+        return redirect(dashboard_url)
+
+    messages.success(
+        request,
+        f"Attendant account '{attendant.username}' created successfully "
+        f"for {store.name}. The attendant can sign in using the normal login page.",
+        extra_tags="attendant",
+    )
+    return redirect(dashboard_url)
+
+
+# ============================================================
+# STORE ATTENDANT ACCOUNT MANAGEMENT
+# ============================================================
+
+@login_required
+@require_POST
+def manage_attendant(request, user_id):
+    """Manage only ordinary attendant accounts in the manager's own store."""
+    if not (
+        request.user.is_active
+        and (request.user.is_superuser or request.user.role in ["ADMIN", "MANAGER"])
+    ):
+        return HttpResponse("You do not have permission to manage attendants.", status=403)
+
+    store = get_current_store(request)
+    if store is None:
+        messages.error(
+            request, "No active store is assigned to your account.", extra_tags="attendant")
+        return redirect("dashboard")
+
+    destination = reverse("dashboard") + "#attendant-manage"
+    action = request.POST.get("action", "")
+    if action not in ["edit", "password", "activate", "deactivate", "delete"]:
+        return HttpResponse("Invalid attendant action.", status=400)
+
+    try:
+        with transaction.atomic():
+            attendant = get_object_or_404(
+                User.objects.select_for_update(),
+                pk=user_id, store=store, role="ATTENDANT",
+                is_superuser=False, is_staff=False,
+            )
+
+            if action == "edit":
+                attendant.first_name = request.POST.get(
+                    "first_name", "").strip()
+                attendant.last_name = request.POST.get("last_name", "").strip()
+                attendant.email = User.objects.normalize_email(
+                    request.POST.get("email", "").strip())
+                attendant.full_clean(exclude=["password"])
+                attendant.save(
+                    update_fields=["first_name", "last_name", "email"])
+                feedback = f"Details updated for '{attendant.username}'."
+
+            elif action == "password":
+                password = request.POST.get("password1", "")
+                confirmation = request.POST.get("password2", "")
+                if not password:
+                    raise ValidationError("Please enter a new password.")
+                if password != confirmation:
+                    raise ValidationError("The passwords do not match.")
+                validate_password(password, user=attendant)
+                attendant.set_password(password)
+                attendant.save(update_fields=["password"])
+                feedback = f"Password reset for '{attendant.username}'."
+
+            elif action == "delete":
+                username = attendant.username
+                attendant.delete()
+                feedback = f"Attendant '{username}' deleted successfully."
+
+            else:
+                attendant.is_active = action == "activate"
+                attendant.save(update_fields=["is_active"])
+                status = "activated" if attendant.is_active else "deactivated"
+                feedback = f"Attendant '{attendant.username}' {status}."
+
+    except ValidationError as error:
+        for text in error.messages:
+            messages.error(request, text, extra_tags="attendant")
+        return redirect(destination)
+    except IntegrityError:
+        logger.exception(
+            "Unable to update attendant %s in store %s", user_id, store.pk)
+        messages.error(
+            request, "The attendant account could not be updated. Please try again.", extra_tags="attendant")
+        return redirect(destination)
+
+    messages.success(request, feedback, extra_tags="attendant")
+    return redirect(destination)

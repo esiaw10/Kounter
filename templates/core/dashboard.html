@@ -1,6 +1,7 @@
 {% load static %}
 
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -11,7 +12,9 @@
         data-dark="{% static 'core/Kounter_dark.jpg' %}" href="{% static 'core/Kounter_light.jpg' %}">
 
     <script>
+
         (function () {
+
             const theme = localStorage.getItem("kounter-theme") || "light";
 
             document.documentElement.setAttribute("data-theme", theme);
@@ -19,27 +22,43 @@
             const favicon = document.getElementById("kounter-favicon");
 
             if (favicon) {
+
                 favicon.href =
+
                     theme === "dark"
+
                         ? "{% static 'core/Kounter_dark.jpg' %}"
+
                         : "{% static 'core/Kounter_light.jpg' %}";
+
             }
+
         })();
+
     </script>
 
     <script>
+
         (function () {
+
             const savedTheme = localStorage.getItem("kounter-theme");
 
             if (savedTheme === "dark") {
+
                 document.documentElement.setAttribute("data-theme", "dark");
+
             } else {
+
                 document.documentElement.setAttribute("data-theme", "light");
+
             }
+
         })();
+
     </script>
 
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     {% load static %}
@@ -51,131 +70,180 @@
     <link rel="stylesheet" href="{% static 'core/css/phone_view.css' %}">
 
     <title>
+
         {{ request.user.store.name|default:"TRON HUB" }} Dashboard
+
     </title>
 
     <style>
         /* =========================================================
+
            ROOT
+
         ========================================================= */
 
         :root {
+
             --primary: #2563eb;
+
             --primary-dark: #1d4ed8;
 
             --green: #16a34a;
+
             --green-light: #dcfce7;
 
             --red: #dc2626;
 
             --text: #111827;
+
             --muted: #6b7280;
 
             --bg: #f4f7fb;
+
             --card: #ffffff;
+
             --border: #e5e7eb;
 
             --shadow:
+
                 0 8px 30px rgba(15, 23, 42, 0.06);
 
             --radius: 16px;
+
         }
 
-
         /* =========================================================
+
            RESET
+
         ========================================================= */
 
         * {
+
             box-sizing: border-box;
+
         }
 
         html {
+
             scroll-behavior: smooth;
+
         }
 
         body {
+
             margin: 0;
 
             background: var(--bg);
+
             color: var(--text);
 
             font-family:
+
                 Inter,
+
                 -apple-system,
+
                 BlinkMacSystemFont,
+
                 "Segoe UI",
+
                 Arial,
+
                 sans-serif;
 
             transition:
-                background 0.25s ease,
+
+                *background* 0.25s ease,
+
                 color 0.25s ease;
+
         }
 
         a {
+
             color: inherit;
+
             text-decoration: none;
+
         }
 
-
         /* =========================================================
+
            MAIN CONTAINER
+
         ========================================================= */
 
         .dashboard-container {
+
             width: 100%;
+
             max-width: 1400px;
 
             margin: 0 auto;
 
             padding:
+
                 0 28px 50px;
+
         }
 
-
         /* =========================================================
+
            PAGE HEADER
+
         ========================================================= */
 
         .page-header {
+
             display: flex;
 
             justify-content: space-between;
+
             align-items: center;
 
             gap: 20px;
 
             padding:
+
                 30px 0 25px;
+
         }
 
         .header-left h1 {
+
             margin: 0;
 
             font-size: 28px;
+
             line-height: 1.25;
 
             font-weight: 800;
 
             letter-spacing: -0.7px;
+
         }
 
         .header-left p {
+
             margin: 7px 0 0;
 
             color: var(--muted);
 
             font-size: 14px;
+
         }
 
         .header-date {
+
             padding:
+
                 10px 14px;
 
             background: var(--card);
 
             border:
+
                 1px solid var(--border);
 
             border-radius: 10px;
@@ -185,14 +253,17 @@
             font-size: 12px;
 
             white-space: nowrap;
+
         }
 
-
         /* =========================================================
+
            QUICK ACTIONS
+
         ========================================================= */
 
         .quick-actions {
+
             display: flex;
 
             flex-wrap: wrap;
@@ -200,25 +271,31 @@
             gap: 10px;
 
             margin-bottom: 24px;
+
         }
 
         .quick-btn {
+
             display: inline-flex;
 
             align-items: center;
+
             justify-content: center;
 
             gap: 8px;
 
             padding:
+
                 11px 16px;
 
             border:
+
                 1px solid var(--border);
 
             border-radius: 10px;
 
             background: var(--card);
+
             color: var(--text);
 
             font-size: 13px;
@@ -226,64 +303,89 @@
             font-weight: 650;
 
             transition:
+
                 transform 0.2s ease,
+
                 border-color 0.2s ease,
-                background 0.2s ease,
+
+                *background* 0.2s ease,
+
                 color 0.2s ease;
+
         }
 
         .quick-btn:hover {
+
             transform: translateY(-2px);
 
             border-color:
+
                 var(--primary);
 
             color:
+
                 var(--primary);
+
         }
 
         .quick-btn.primary {
+
             background:
+
                 var(--primary);
 
             border-color:
+
                 var(--primary);
 
             color:
+
                 #ffffff;
 
             box-shadow:
+
                 0 6px 18px rgba(37, 99, 235, 0.20);
+
         }
 
         .quick-btn.primary:hover {
+
             background:
+
                 var(--primary-dark);
 
             border-color:
+
                 var(--primary-dark);
 
             color:
+
                 #ffffff;
+
         }
 
-
         /* =========================================================
+
            METRICS
+
         ========================================================= */
 
         .metrics-grid {
+
             display: grid;
 
             grid-template-columns:
+
                 repeat(2, minmax(0, 1fr));
 
             gap: 18px;
 
             margin-bottom: 22px;
+
         }
 
         .metric-card {
+
             position: relative;
 
             display: block;
@@ -293,71 +395,97 @@
             padding: 21px;
 
             background:
+
                 var(--card);
 
             border:
+
                 1px solid var(--border);
 
             border-radius:
+
                 var(--radius);
 
             box-shadow:
+
                 var(--shadow);
 
             cursor: pointer;
 
             transition:
+
                 transform 0.2s ease,
+
                 box-shadow 0.2s ease,
+
                 border-color 0.2s ease;
+
         }
 
         .metric-card:hover {
+
             transform:
+
                 translateY(-3px);
 
             box-shadow:
+
                 0 12px 35px rgba(15, 23, 42, 0.10);
 
             border-color:
+
                 #cbd5e1;
+
         }
 
         .metric-card:active {
+
             transform:
+
                 translateY(-1px);
+
         }
 
         .metric-card::after {
+
             content: "";
 
             position: absolute;
 
             right: -25px;
+
             bottom: -25px;
 
             width: 80px;
+
             height: 80px;
 
             border-radius: 50%;
 
             background:
+
                 rgba(37, 99, 235, 0.05);
 
             pointer-events: none;
+
         }
 
         .metric-top {
+
             display: flex;
 
             align-items: center;
+
             justify-content: space-between;
 
             gap: 12px;
+
         }
 
         .metric-label {
+
             color:
+
                 var(--muted);
 
             font-size: 12px;
@@ -367,39 +495,51 @@
             letter-spacing: 0.5px;
 
             text-transform: uppercase;
+
         }
 
         .metric-icon {
+
             display: flex;
 
             align-items: center;
+
             justify-content: center;
 
             width: 42px;
+
             height: 42px;
 
             border-radius: 12px;
 
             background:
+
                 #dbeafe;
 
             color:
+
                 var(--primary);
 
             font-size: 18px;
 
             font-weight: bold;
+
         }
 
         .metric-card.sales .metric-icon {
+
             background:
+
                 var(--green-light);
 
             color:
+
                 var(--green);
+
         }
 
         .metric-value {
+
             margin-top: 16px;
 
             font-size: 28px;
@@ -407,23 +547,31 @@
             font-weight: 800;
 
             letter-spacing: -0.7px;
+
         }
 
         .metric-card.sales .metric-value {
+
             color:
+
                 var(--green);
+
         }
 
         .metric-footer {
+
             margin-top: 7px;
 
             color:
+
                 var(--muted);
 
             font-size: 11px;
+
         }
 
         .metric-open {
+
             display: inline-flex;
 
             align-items: center;
@@ -433,74 +581,97 @@
             margin-top: 13px;
 
             color:
+
                 var(--primary);
 
             font-size: 11px;
 
             font-weight: 700;
+
         }
 
-
         /* =========================================================
+
            SECTION CARD
+
         ========================================================= */
 
         .section-card {
+
             overflow: hidden;
 
             background:
+
                 var(--card);
 
             border:
+
                 1px solid var(--border);
 
             border-radius:
+
                 var(--radius);
 
             box-shadow:
+
                 var(--shadow);
+
         }
 
         .section-header {
+
             display: flex;
 
             align-items: center;
+
             justify-content: space-between;
 
             gap: 15px;
 
             padding:
+
                 20px 22px 10px;
+
         }
 
         .section-title {
+
             margin: 0;
 
             font-size: 16px;
 
             font-weight: 800;
+
         }
 
         .section-subtitle {
+
             margin:
+
                 5px 0 0;
 
             color:
+
                 var(--muted);
 
             font-size: 12px;
+
         }
 
         .week-badge {
+
             padding:
+
                 7px 11px;
 
             border-radius: 8px;
 
             background:
+
                 #eff6ff;
 
             color:
+
                 var(--primary);
 
             font-size: 11px;
@@ -508,78 +679,105 @@
             font-weight: 700;
 
             white-space: nowrap;
+
         }
 
-
         /* =========================================================
+
            GRAPH
+
         ========================================================= */
 
         .graph-wrapper {
+
             width: 100%;
 
             height: 360px;
 
             padding:
+
                 5px 18px 15px;
 
             overflow: hidden;
+
         }
 
         #salesGraph {
+
             display: block;
 
             width: 100%;
+
             height: 100%;
+
         }
 
         .graph-grid {
+
             stroke:
+
                 var(--border);
 
             stroke-width: 1;
+
         }
 
         .graph-line {
+
             fill: none;
 
             stroke:
+
                 var(--green);
 
             stroke-width: 4;
 
             stroke-linecap: round;
+
             stroke-linejoin: round;
+
         }
 
         .graph-area {
+
             fill:
+
                 rgba(22, 163, 74, 0.08);
 
             stroke: none;
+
         }
 
         .graph-point {
+
             fill:
+
                 var(--card);
 
             stroke:
+
                 var(--green);
 
             stroke-width: 3;
+
         }
 
         .graph-label {
+
             fill:
+
                 var(--muted);
 
             font-size: 13px;
 
             text-anchor: middle;
+
         }
 
         .graph-amount {
+
             fill:
+
                 var(--green);
 
             font-size: 12px;
@@ -587,59 +785,79 @@
             font-weight: bold;
 
             text-anchor: middle;
+
         }
 
         .graph-empty {
+
             fill:
+
                 var(--muted);
 
             font-size: 16px;
 
             text-anchor: middle;
+
         }
 
-
         /* =========================================================
+
            WEEKLY TABLE
+
         ========================================================= */
 
         .weekly-table {
+
             padding:
+
                 20px 22px;
 
             border-top:
+
                 1px solid var(--border);
+
         }
 
         .weekly-table-title {
+
             margin:
+
                 0 0 14px;
 
             font-size: 14px;
 
             font-weight: 800;
+
         }
 
         .table-wrapper {
+
             overflow-x: auto;
+
         }
 
         .weekly-table table {
+
             width: 100%;
 
             min-width: 450px;
 
             border-collapse: collapse;
+
         }
 
         .weekly-table th {
+
             padding:
+
                 11px 10px;
 
             border-bottom:
+
                 1px solid var(--border);
 
             color:
+
                 var(--muted);
 
             font-size: 10px;
@@ -651,91 +869,123 @@
             text-align: left;
 
             text-transform: uppercase;
+
         }
 
         .weekly-table td {
+
             padding:
+
                 13px 10px;
 
             border-bottom:
+
                 1px solid var(--border);
 
             font-size: 13px;
+
         }
 
         .weekly-table th:last-child,
+
         .weekly-table td:last-child {
+
             text-align: right;
+
         }
 
         .weekly-table td:last-child {
+
             color:
+
                 var(--green);
 
             font-weight: 750;
+
         }
 
         .weekly-table tr:last-child td {
+
             border-bottom: none;
+
         }
 
         .day-cell {
+
             font-weight: 650;
+
         }
 
-
         /* =========================================================
+
            INFORMATION CARDS
+
         ========================================================= */
 
         .info-grid {
+
             display: grid;
 
             grid-template-columns:
+
                 repeat(2, minmax(0, 1fr));
 
             gap: 18px;
 
             margin-top: 20px;
+
         }
 
         .info-card {
+
             padding: 20px;
 
             background:
+
                 var(--card);
 
             border:
+
                 1px solid var(--border);
 
             border-radius:
+
                 var(--radius);
 
             box-shadow:
+
                 var(--shadow);
+
         }
 
         .info-card h3 {
+
             margin: 0;
 
             font-size: 14px;
 
             font-weight: 800;
+
         }
 
         .info-card p {
+
             margin:
+
                 6px 0 15px;
 
             color:
+
                 var(--muted);
 
             font-size: 12px;
 
             line-height: 1.6;
+
         }
 
         .info-link {
+
             display: inline-flex;
 
             align-items: center;
@@ -743,94 +993,129 @@
             gap: 6px;
 
             color:
+
                 var(--primary);
 
             font-size: 12px;
 
             font-weight: 700;
+
         }
 
         .note {
+
             margin:
+
                 22px 0 0;
 
             color:
+
                 var(--muted);
 
             font-size: 12px;
 
             line-height: 1.6;
+
         }
 
-
         /* =========================================================
+
            DARK MODE
+
         ========================================================= */
 
         html[data-theme="dark"] {
+
             color-scheme: dark;
 
             --text: #f8fafc;
+
             --muted: #94a3b8;
 
             --bg: #0f172a;
+
             --card: #111827;
 
             --border: #1f2937;
 
             --green-light:
+
                 rgba(22, 163, 74, 0.15);
 
             --shadow:
+
                 0 8px 30px rgba(0, 0, 0, 0.22);
+
         }
 
         html[data-theme="dark"] .week-badge {
+
             background:
+
                 rgba(37, 99, 235, 0.14);
 
             color:
+
                 #60a5fa;
+
         }
 
         html[data-theme="dark"] .graph-area {
+
             fill:
+
                 rgba(22, 163, 74, 0.12);
+
         }
 
-
         /* =========================================================
+
            MOBILE
+
         ========================================================= */
 
         @media (max-width: 700px) {
 
             .dashboard-container {
+
                 padding:
+
                     0 14px 35px;
+
             }
 
             .page-header {
+
                 align-items:
+
                     flex-start;
 
                 padding:
+
                     22px 0 18px;
+
             }
 
             .header-left h1 {
+
                 font-size: 22px;
+
             }
 
             .header-left p {
+
                 font-size: 12px;
+
             }
 
             .header-date {
+
                 display: none;
+
             }
 
             .quick-actions {
+
                 flex-wrap: nowrap;
 
                 overflow-x: auto;
@@ -838,205 +1123,466 @@
                 padding-bottom: 3px;
 
                 scrollbar-width: none;
+
             }
 
             .quick-actions::-webkit-scrollbar {
+
                 display: none;
+
             }
 
             .quick-btn {
+
                 flex-shrink: 0;
+
             }
 
             .metrics-grid {
+
                 gap: 11px;
+
             }
 
             .metric-card {
+
                 padding: 15px;
+
             }
 
             .metric-label {
+
                 font-size: 10px;
+
             }
 
             .metric-icon {
+
                 width: 34px;
+
                 height: 34px;
 
                 font-size: 14px;
+
             }
 
             .metric-value {
+
                 margin-top: 13px;
 
                 font-size: 19px;
+
             }
 
             .metric-footer {
+
                 font-size: 9px;
+
             }
 
             .metric-open {
+
                 font-size: 9px;
+
             }
 
             .section-header {
+
                 align-items:
+
                     flex-start;
 
                 padding:
+
                     17px 15px 8px;
+
             }
 
             .week-badge {
+
                 padding:
+
                     6px 8px;
 
                 font-size: 9px;
+
             }
 
             .graph-wrapper {
+
                 height: 285px;
 
                 padding:
+
                     5px 5px 10px;
+
             }
 
             .graph-amount {
+
                 font-size: 10px;
+
             }
 
             .graph-label {
+
                 font-size: 11px;
+
             }
 
             .weekly-table {
+
                 padding:
+
                     16px 15px;
+
             }
 
             .info-grid {
+
                 grid-template-columns: 1fr;
 
                 gap: 12px;
+
             }
+
         }
 
-
         /* =========================================================
+
            SMALL PHONES
+
         ========================================================= */
 
         @media (max-width: 420px) {
 
             .metrics-grid {
+
                 gap: 8px;
+
             }
 
             .metric-card {
+
                 padding: 13px;
+
             }
 
             .metric-value {
+
                 font-size: 17px;
+
             }
 
             .metric-label {
+
                 font-size: 9px;
+
             }
+
         }
 
         /* =========================================================
+
    NAVBAR THEME SYNC
+
    Makes the logo/menu header use the exact dashboard background
+
    ========================================================= */
 
         body {
+
             background: var(--bg);
+
         }
 
         /* Common navbar/header wrappers */
+
         .navbar,
+
         .top-navbar,
+
         .site-navbar,
+
         .main-navbar,
+
         header,
+
         nav {
+
             background: var(--bg) !important;
+
             color: var(--text) !important;
+
             border-color: var(--border) !important;
+
             transition:
+
                 background-color 0.25s ease,
+
                 color 0.25s ease,
+
                 border-color 0.25s ease;
+
         }
 
         /* Navbar links */
+
         .navbar a,
+
         .top-navbar a,
+
         .site-navbar a,
+
         .main-navbar a,
+
         header a,
+
         nav a {
+
             color: var(--text) !important;
+
         }
 
         /* Navbar buttons */
+
         .navbar button,
+
         .top-navbar button,
+
         .site-navbar button,
+
         .main-navbar button,
+
         header button,
+
         nav button {
+
             color: var(--text);
+
             border-color: var(--border);
+
             background: transparent;
+
         }
 
         /* Navbar logo / brand */
+
         .navbar-brand,
+
         .brand,
+
         .logo,
+
         .logo-text {
+
             color: var(--text) !important;
+
         }
 
         /* Mobile menu */
+
         .mobile-menu,
+
         .menu-panel,
+
         .nav-menu,
+
         .dropdown-menu {
+
             background: var(--card) !important;
+
             color: var(--text) !important;
+
             border-color: var(--border) !important;
+
         }
 
         /* Dark mode */
+
         html[data-theme="dark"] .navbar,
+
         html[data-theme="dark"] .top-navbar,
+
         html[data-theme="dark"] .site-navbar,
+
         html[data-theme="dark"] .main-navbar,
+
         html[data-theme="dark"] header,
+
         html[data-theme="dark"] nav {
+
             background: var(--bg) !important;
+
             color: var(--text) !important;
+
             border-color: var(--border) !important;
+
+        }
+
+
+        /* Attendant account creation */
+        .attendant-panel {
+            margin: 0 0 24px;
+            padding: 22px;
+            background: var(--card, #ffffff);
+            color: var(--text, #111827);
+            border: 1px solid var(--border, #e5e7eb);
+            border-radius: 16px;
+        }
+
+        .attendant-panel[hidden] {
+            display: none;
+        }
+
+        .attendant-panel h2 {
+            margin: 0 0 8px;
+            font-size: 20px;
+        }
+
+        .attendant-panel p {
+            margin: 0 0 18px;
+            color: var(--muted, #6b7280);
+        }
+
+        .attendant-form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .attendant-field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .attendant-field label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .attendant-field input {
+            width: 100%;
+            min-width: 0;
+            padding: 12px;
+            border: 1px solid var(--border, #e5e7eb);
+            border-radius: 10px;
+            background: var(--card, #ffffff);
+            color: var(--text, #111827);
+            font: inherit;
+        }
+
+        .attendant-field input:focus {
+            outline: 2px solid var(--primary, #2563eb);
+            outline-offset: 2px;
+        }
+
+        .attendant-submit {
+            margin-top: 18px;
+            padding: 12px 20px;
+            border: 0;
+            border-radius: 10px;
+            background: var(--primary, #2563eb);
+            color: #ffffff;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .attendant-feedback {
+            padding: 12px;
+            margin-bottom: 14px;
+            border: 1px solid currentColor;
+            border-radius: 10px;
+            overflow-wrap: anywhere;
+        }
+
+        .attendant-feedback.error {
+            color: var(--red, #dc2626);
+        }
+
+        .attendant-feedback.success {
+            color: var(--green, #16a34a);
+        }
+
+        @media (max-width: 640px) {
+            .attendant-form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .attendant-panel {
+                padding: 16px;
+            }
+
+            .attendant-submit {
+                width: 100%;
+            }
+        }
+
+
+        .attendant-details {
+            margin-top: 16px;
+        }
+
+        .attendant-details summary {
+            cursor: pointer;
+            font-weight: 600;
+            padding: 12px 0;
+        }
+
+        .attendant-list {
+            margin-top: 22px;
+        }
+
+        .attendant-account {
+            padding: 18px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border, #e5e7eb);
+            border-radius: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .attendant-account-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .attendant-account-heading .attendant-submit {
+            margin-top: 0;
+        }
+
+        .attendant-status {
+            margin-left: 8px;
+            font-size: 13px;
+        }
+
+        .attendant-account-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .attendant-delete {
+            background: var(--red, #dc2626);
         }
     </style>
-</head>
 
+</head>
 
 <body>
 
     {% include "core/navbar.html" %}
 
-
     <main class="dashboard-container">
 
-
         <!-- =====================================================
+
              HEADER
+
         ====================================================== -->
 
         <header class="page-header">
@@ -1044,78 +1590,228 @@
             <div class="header-left">
 
                 <h1>
+
                     {{ request.user.store.name|default:"TRON HUB" }}
+
                     Dashboard
+
                 </h1>
 
                 <p>
+
                     Welcome back. Here's an overview of your shop.
+
                 </p>
 
             </div>
 
-
             <div class="header-date" id="currentDate">
+
                 Today
+
             </div>
 
         </header>
 
-
-
         <!-- =====================================================
+
              QUICK ACTIONS
+
         ====================================================== -->
 
         <div class="quick-actions">
 
             <a href="{% url 'pos' %}" class="quick-btn primary">
-                🛒 Open POS
-            </a>
 
+                🛒 Open POS
+
+            </a>
 
             <a href="{% url 'daily_sales' %}" class="quick-btn">
-                ▤ Sales History
-            </a>
 
+                ▤ Sales History
+
+            </a>
 
             {% if request.user.is_superuser or request.user.role == "ADMIN" or request.user.role == "MANAGER" %}
 
             <a href="{% url 'add_product' %}" class="quick-btn">
+
                 ➕ Add Product
+
+            </a>
+
+            {% endif %}
+
+            {% if request.user.is_superuser or request.user.role == "ADMIN" or request.user.role == "MANAGER" %}
+
+            <a href="{% url 'restock' %}" class="quick-btn">
+
+                📥 Restock Stock
+
             </a>
 
             {% endif %}
 
 
             {% if request.user.is_superuser or request.user.role == "ADMIN" or request.user.role == "MANAGER" %}
-
-            <a href="{% url 'restock' %}" class="quick-btn">
-                📥 Restock Stock
-            </a>
-
+            <a href="#attendant-accounts" id="attendant-toggle" class="quick-btn" aria-controls="attendant-accounts"
+                aria-expanded="false">👥 Manage Attendants</a>
             {% endif %}
         </div>
 
+        {% if request.user.is_superuser or request.user.role == "ADMIN" or request.user.role == "MANAGER" %}
+        <div id="attendant-feedback">
+            {% for message in messages %}
+            {% if "attendant" in message.tags %}
+            <div class="attendant-feedback {{ message.tags }}" role="status">{{ message }}</div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <section id="attendant-accounts" class="attendant-panel" aria-labelledby="attendant-heading" hidden>
+            <h2 id="attendant-heading">Manage attendants</h2>
+            <p>Create and manage attendant accounts for {{ store.name }}.</p>
+
+            <details id="attendant-create-details" class="attendant-details">
+                <summary>Create attendant account</summary>
+                <form method="post" action="{% url 'create_attendant' %}">
+                    {% csrf_token %}
+                    <div class="attendant-form-grid">
+                        <div class="attendant-field">
+                            <label for="attendant-first-name">First name</label>
+                            <input id="attendant-first-name" name="first_name" maxlength="150"
+                                autocomplete="given-name">
+                        </div>
+                        <div class="attendant-field">
+                            <label for="attendant-last-name">Last name</label>
+                            <input id="attendant-last-name" name="last_name" maxlength="150" autocomplete="family-name">
+                        </div>
+                        <div class="attendant-field">
+                            <label for="attendant-username">Username *</label>
+                            <input id="attendant-username" name="username" maxlength="150" autocomplete="off"
+                                autocapitalize="none" spellcheck="false" required>
+                        </div>
+                        <div class="attendant-field">
+                            <label for="attendant-email">Email (optional)</label>
+                            <input id="attendant-email" type="email" name="email" maxlength="254" autocomplete="email">
+                        </div>
+                        <div class="attendant-field">
+                            <label for="attendant-password">Password *</label>
+                            <input id="attendant-password" type="password" name="password1" autocomplete="new-password"
+                                required>
+                        </div>
+                        <div class="attendant-field">
+                            <label for="attendant-confirm-password">Confirm password *</label>
+                            <input id="attendant-confirm-password" type="password" name="password2"
+                                autocomplete="new-password" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="attendant-submit">Create attendant account</button>
+                </form>
+            </details>
+
+            <div class="attendant-list">
+                {% for attendant in attendants %}
+                <article class="attendant-account">
+                    <div class="attendant-account-heading">
+                        <div>
+                            <strong>{{ attendant.username }}</strong>
+                            <span class="attendant-status">{{ attendant.is_active|yesno:"Active,Inactive" }}</span>
+                            <div>{{ attendant.get_full_name|default:"No name provided" }}</div>
+                            <div>{{ attendant.email|default:"" }}</div>
+                        </div>
+                        <div class="attendant-account-actions">
+                            <form method="post" action="{% url 'manage_attendant' attendant.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action"
+                                    value="{{ attendant.is_active|yesno:'deactivate,activate' }}">
+                                <button type="submit" class="attendant-submit">
+                                    {{ attendant.is_active|yesno:"Deactivate,Activate" }}
+                                </button>
+                            </form>
+                            <form method="post" action="{% url 'manage_attendant' attendant.id %}"
+                                onsubmit="return window.confirm('Delete this attendant account permanently? This action cannot be undone.');">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="delete">
+                                <button type="submit" class="attendant-submit attendant-delete">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                    <details class="attendant-details">
+                        <summary>Edit details</summary>
+                        <form method="post" action="{% url 'manage_attendant' attendant.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="edit">
+                            <div class="attendant-form-grid">
+                                <div class="attendant-field">
+                                    <label for="attendant-first-{{ attendant.id }}">First name</label>
+                                    <input id="attendant-first-{{ attendant.id }}" name="first_name"
+                                        value="{{ attendant.first_name }}" maxlength="150">
+                                </div>
+                                <div class="attendant-field">
+                                    <label for="attendant-last-{{ attendant.id }}">Last name</label>
+                                    <input id="attendant-last-{{ attendant.id }}" name="last_name"
+                                        value="{{ attendant.last_name }}" maxlength="150">
+                                </div>
+                                <div class="attendant-field">
+                                    <label for="attendant-email-{{ attendant.id }}">Email</label>
+                                    <input id="attendant-email-{{ attendant.id }}" type="email" name="email"
+                                        value="{{ attendant.email }}" maxlength="254">
+                                </div>
+                            </div>
+                            <button type="submit" class="attendant-submit">Save details</button>
+                        </form>
+                    </details>
+                    <details class="attendant-details">
+                        <summary>Reset password</summary>
+                        <form method="post" action="{% url 'manage_attendant' attendant.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="password">
+                            <div class="attendant-form-grid">
+                                <div class="attendant-field">
+                                    <label for="attendant-password-{{ attendant.id }}">New password</label>
+                                    <input id="attendant-password-{{ attendant.id }}" type="password" name="password1"
+                                        autocomplete="new-password" required>
+                                </div>
+                                <div class="attendant-field">
+                                    <label for="attendant-confirm-{{ attendant.id }}">Confirm password</label>
+                                    <input id="attendant-confirm-{{ attendant.id }}" type="password" name="password2"
+                                        autocomplete="new-password" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="attendant-submit">Reset password</button>
+                        </form>
+                    </details>
+                </article>
+                {% empty %}
+                <p class="attendant-empty">No attendant accounts yet. Create your first account above.</p>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
 
 
         <!-- =====================================================
+
              METRICS
+
         ====================================================== -->
 
         <section class="metrics-grid" aria-label="Dashboard statistics">
 
-
             <!-- TOTAL SALES -->
 
             <a href="{% url 'all_sales' %}" class="metric-card">
+
                 <span class="metric-label">Total Sales</span>
+
                 <span class="metric-value">
+
                     GH₵ {{ total_sales|floatformat:2 }}
+
                 </span>
+
             </a>
-
-
 
             <!-- ACTIVE PRODUCTS -->
 
@@ -1124,57 +1820,66 @@
                 <div class="metric-top">
 
                     <div class="metric-label">
+
                         Active Products
+
                     </div>
 
                     <div class="metric-icon">
+
                         ▦
+
                     </div>
 
                 </div>
 
-
                 <div class="metric-value">
-                    {{ active_products_count|default:0 }}
-                </div>
 
+                    {{ active_products_count|default:0 }}
+
+                </div>
 
                 <div class="metric-footer">
+
                     Products currently active
+
                 </div>
 
-
                 <div class="metric-open">
+
                     View Products →
+
                 </div>
 
             </a>
 
         </section>
 
-
-
         <!-- =====================================================
+
              WEEKLY SALES
+
         ====================================================== -->
 
         <section class="section-card">
-
 
             <div class="section-header">
 
                 <div>
 
                     <h2 class="section-title">
+
                         📈 Sales This Week
+
                     </h2>
 
                     <p class="section-subtitle">
+
                         Sunday to Saturday sales performance
+
                     </p>
 
                 </div>
-
 
                 <div class="week-badge">
 
@@ -1188,8 +1893,6 @@
 
             </div>
 
-
-
             <!-- GRAPH -->
 
             <div class="graph-wrapper">
@@ -1199,16 +1902,15 @@
 
             </div>
 
-
-
             <!-- TABLE -->
 
             <div class="weekly-table">
 
                 <h3 class="weekly-table-title">
-                    Weekly Sales Breakdown
-                </h3>
 
+                    Weekly Sales Breakdown
+
+                </h3>
 
                 <div class="table-wrapper">
 
@@ -1219,17 +1921,20 @@
                             <tr>
 
                                 <th>
+
                                     Day
+
                                 </th>
 
                                 <th>
+
                                     Amount
+
                                 </th>
 
                             </tr>
 
                         </thead>
-
 
                         <tbody>
 
@@ -1240,12 +1945,17 @@
                             <tr>
 
                                 <td class="day-cell">
+
                                     {{ item.day }}
+
                                 </td>
 
                                 <td>
+
                                     GH₵
+
                                     {{ item.amount|default:0|floatformat:2 }}
+
                                 </td>
 
                             </tr>
@@ -1257,7 +1967,9 @@
                             <tr>
 
                                 <td colspan="2">
+
                                     No sales recorded this week.
+
                                 </td>
 
                             </tr>
@@ -1274,80 +1986,90 @@
 
         </section>
 
-
-
         <!-- =====================================================
+
              INFORMATION CARDS
+
         ====================================================== -->
 
         <section class="info-grid">
 
-
             <article class="info-card">
 
                 <h3>
+
                     🛒 Start Selling
+
                 </h3>
 
                 <p>
+
                     Quickly record a customer purchase and
+
                     automatically update your stock.
+
                 </p>
 
                 <a href="{% url 'pos' %}" class="info-link">
+
                     Open POS →
+
                 </a>
 
             </article>
-
-
 
             <article class="info-card">
 
                 <h3>
+
                     📦 Manage Inventory
+
                 </h3>
 
                 <p>
+
                     Add products, update stock and keep your
+
                     inventory organized.
+
                 </p>
 
                 <a href="{% url 'restock' %}" class="info-link">
+
                     Manage Stock →
+
                 </a>
 
             </article>
 
-
         </section>
-
-
 
         <p class="note">
 
             Use
+
             <strong>Sales History</strong>
+
             to choose a date and view itemized sales.
 
         </p>
 
-
     </main>
 
-
-
     <!-- =========================================================
+
          JAVASCRIPT
+
     ========================================================== -->
 
     <script>
 
         "use strict";
 
-
         /* =========================================================
+
            WEEKLY SALES DATA
+
         ========================================================= */
 
         const weeklySales = [
@@ -1355,10 +2077,15 @@
             {% for item in weekly_sales_data %}
 
         {
+
             day: "{{ item.day|escapejs }}",
+
                 amount: Number(
+
                     "{{ item.amount|default:'0' }}"
+
                 )
+
         }
 
         {% if not forloop.last %}, {% endif %}
@@ -1367,72 +2094,89 @@
 
         ];
 
-
-
         /* =========================================================
+
            DRAW SALES GRAPH
+
         ========================================================= */
 
         function drawSalesGraph() {
 
             const svg =
+
                 document.getElementById("salesGraph");
 
-
             if (!svg) {
-                return;
-            }
 
+                return;
+
+            }
 
             if (weeklySales.length !== 7) {
 
                 svg.innerHTML = `
+
                     <text
+
                         x="400"
+
                         y="175"
+
                         class="graph-empty"
+
                     >
+
                         Weekly sales data unavailable
+
                     </text>
+
                 `;
 
                 return;
+
             }
 
-
             const width = 800;
+
             const height = 350;
 
             const left = 85;
+
             const right = 30;
 
             const top = 35;
+
             const bottom = 60;
 
             const graphWidth =
+
                 width - left - right;
 
             const graphHeight =
+
                 height - top - bottom;
 
-
             const amounts =
+
                 weeklySales.map(item => {
 
                     const value =
+
                         Number(item.amount);
 
                     return Number.isFinite(value)
+
                         && value >= 0
+
                         ? value
+
                         : 0;
 
                 });
 
-
             let maxAmount =
-                Math.max(...amounts, 0);
 
+                Math.max(...amounts, 0);
 
             if (maxAmount === 0) {
 
@@ -1444,298 +2188,402 @@
 
             }
 
-
             let svgContent = "";
-
 
             /* GRID */
 
             for (let i = 0; i <= 4; i++) {
 
                 const y =
+
                     top +
+
                     (graphHeight / 4) * i;
 
                 const value =
-                    maxAmount -
-                    (maxAmount / 4) * i;
 
+                    maxAmount -
+
+                    (maxAmount / 4) * i;
 
                 svgContent += `
 
                     <line
+
                         x1="${left}"
+
                         y1="${y}"
+
                         x2="${width - right}"
+
                         y2="${y}"
+
                         class="graph-grid"
+
                     ></line>
 
                     <text
+
                         x="${left - 12}"
+
                         y="${y + 4}"
+
                         class="graph-label"
+
                         text-anchor="end"
+
                     >
+
                         GH₵ ${value.toFixed(0)}
+
                     </text>
 
                 `;
 
             }
 
-
             /* POINTS */
 
             const points =
+
                 weeklySales.map(
+
                     (item, index) => {
 
                         const amount =
+
                             amounts[index];
 
                         const x =
+
                             left +
+
                             (graphWidth / 6) *
+
                             index;
 
                         const y =
+
                             top +
+
                             graphHeight -
+
                             (amount / maxAmount) *
+
                             graphHeight;
 
-
                         return {
+
                             x,
+
                             y,
+
                             day: item.day,
+
                             amount
+
                         };
 
                     }
+
                 );
-
-
 
             /* AREA */
 
             const areaPoints =
-                points
-                    .map(
-                        point =>
-                            `${point.x},${point.y}`
-                    )
-                    .join(" ");
 
+                points
+
+                    .map(
+
+                        point =>
+
+                            `${point.x},${point.y}`
+
+                    )
+
+                    .join(" ");
 
             svgContent += `
 
                 <polygon
+
                     points="
+
                         ${points[0].x},${top + graphHeight}
+
                         ${areaPoints}
+
                         ${points[points.length - 1].x},
+
                         ${top + graphHeight}
+
                     "
+
                     class="graph-area"
+
                 ></polygon>
 
             `;
 
-
-
             /* LINE */
 
             const linePoints =
-                points
-                    .map(
-                        point =>
-                            `${point.x},${point.y}`
-                    )
-                    .join(" ");
 
+                points
+
+                    .map(
+
+                        point =>
+
+                            `${point.x},${point.y}`
+
+                    )
+
+                    .join(" ");
 
             svgContent += `
 
                 <polyline
+
                     points="${linePoints}"
+
                     class="graph-line"
+
                 ></polyline>
 
             `;
-
-
 
             /* POINTS */
 
             points.forEach(point => {
 
                 const shortDay =
+
                     point.day.substring(0, 3);
 
-
                 const amountY =
-                    Math.max(
-                        point.y - 14,
-                        15
-                    );
 
+                    Math.max(
+
+                        point.y - 14,
+
+                        15
+
+                    );
 
                 svgContent += `
 
                     <circle
+
                         cx="${point.x}"
+
                         cy="${point.y}"
+
                         r="6"
+
                         class="graph-point"
+
                     ></circle>
 
-
                     <text
+
                         x="${point.x}"
+
                         y="${amountY}"
+
                         class="graph-amount"
+
                     >
+
                         GH₵ ${point.amount.toFixed(2)}
+
                     </text>
 
-
                     <text
+
                         x="${point.x}"
+
                         y="${height - 20}"
+
                         class="graph-label"
+
                     >
+
                         ${shortDay}
+
                     </text>
 
                 `;
 
             });
 
-
             svg.innerHTML =
+
                 svgContent;
 
         }
 
-
-
         /* =========================================================
+
            CURRENT DATE
+
         ========================================================= */
 
         function displayDate() {
 
             const element =
+
                 document.getElementById(
+
                     "currentDate"
+
                 );
 
-
             if (!element) {
+
                 return;
+
             }
 
-
             const today =
+
                 new Date();
 
-
             element.textContent =
+
                 today.toLocaleDateString(
+
                     "en-GH",
+
                     {
+
                         weekday: "short",
+
                         day: "numeric",
+
                         month: "short",
+
                         year: "numeric"
+
                     }
+
                 );
 
         }
 
-
-
         /* =========================================================
+
            APPLY THEME
+
         ========================================================= */
 
-
         /* =========================================================
+
            THEME
+
            ========================================================= */
 
         function applyTheme(theme) {
 
             const selectedTheme =
+
                 theme === "dark" ? "dark" : "light";
 
             document.documentElement.setAttribute(
+
                 "data-theme",
+
                 selectedTheme
+
             );
 
             /*
+
              * Keep every theme toggle on the page synchronized.
+
              */
+
             document
+
                 .querySelectorAll("[data-theme-toggle]")
+
                 .forEach(toggle => {
+
                     toggle.checked = selectedTheme === "dark";
+
                 });
 
             const darkModeToggle =
+
                 document.getElementById("darkModeToggle");
 
             if (darkModeToggle) {
+
                 darkModeToggle.checked =
+
                     selectedTheme === "dark";
+
             }
 
             /*
+
              * Redraw graph because its colors use CSS variables.
+
              */
+
             drawSalesGraph();
+
         }
 
-
         /* =========================================================
+
            LOAD SAVED THEME
+
            ========================================================= */
 
         const savedTheme =
+
             localStorage.getItem("kounter-theme") || "light";
 
         applyTheme(savedTheme);
 
-
         /* =========================================================
+
            THEME TOGGLE
+
            ========================================================= */
 
         document
+
             .querySelectorAll("[data-theme-toggle]")
+
             .forEach(toggle => {
 
                 toggle.addEventListener("change", function () {
 
                     const selectedTheme =
+
                         this.checked ? "dark" : "light";
 
                     localStorage.setItem(
+
                         "kounter-theme",
+
                         selectedTheme
+
                     );
 
                     applyTheme(selectedTheme);
+
                 });
 
             });
 
-
         /* =========================================================
+
            KEEP THEME SYNCHRONIZED BETWEEN PAGES
+
            ========================================================= */
 
         window.addEventListener("storage", function (event) {
@@ -1743,67 +2591,134 @@
             if (event.key === "kounter-theme") {
 
                 applyTheme(
+
                     event.newValue || "light"
+
                 );
 
             }
 
         });
 
-
-
-
         /* =========================================================
+
            CURRENT DATE
+
            ========================================================= */
 
         function displayDate() {
 
             const element =
+
                 document.getElementById("currentDate");
 
             if (!element) {
+
                 return;
+
             }
 
             const today = new Date();
 
             element.textContent =
+
                 today.toLocaleDateString("en-GH", {
+
                     weekday: "short",
+
                     day: "numeric",
+
                     month: "short",
+
                     year: "numeric"
+
                 });
+
         }
 
-
         /* =========================================================
+
            INITIALIZE
+
            ========================================================= */
 
         document.addEventListener(
+
             "DOMContentLoaded",
+
             function () {
 
                 displayDate();
+
                 drawSalesGraph();
 
                 /*
+
                  * Re-apply theme after navbar.html has been included.
+
                  */
+
                 applyTheme(
+
                     localStorage.getItem("kounter-theme") || "light"
+
                 );
+
             }
+
         );
 
         window.addEventListener(
+
             "resize",
+
             drawSalesGraph
+
         );
 
+    </script>
 
+    <script>
+        (function () {
+            const toggle = document.getElementById("attendant-toggle");
+            const panel = document.getElementById("attendant-accounts");
+            if (!toggle || !panel) return;
+
+            function showPanel(show) {
+                panel.hidden = !show;
+                toggle.setAttribute("aria-expanded", String(show));
+            }
+
+            toggle.addEventListener("click", function (event) {
+                event.preventDefault();
+                const show = panel.hidden;
+                showPanel(show);
+                if (show) {
+                    panel.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            });
+
+            if (window.location.hash === "#attendant-manage") {
+                showPanel(true);
+            }
+
+            // Keep the form open for corrections; hide it after successful creation.
+            if (window.location.hash === "#attendant-accounts") {
+                const hasErrors = document.querySelector(
+                    "#attendant-feedback .attendant-feedback.error"
+                );
+                showPanel(Boolean(hasErrors));
+                const creation = document.getElementById("attendant-create-details");
+                if (creation) creation.open = Boolean(hasErrors);
+                if (!hasErrors) {
+                    window.history.replaceState(
+                        window.history.state,
+                        "",
+                        window.location.pathname + window.location.search
+                    );
+                }
+            }
+        })();
     </script>
 
 </body>
