@@ -1,675 +1,1153 @@
 {% load static %}
+
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <script>
+        // Restore the same theme used by the navigation menu before painting.
+        (function () {
+            var theme = "light";
+            try {
+                var savedTheme = localStorage.getItem("kounter-theme");
+                if (savedTheme !== "dark" && savedTheme !== "light") {
+                    savedTheme = localStorage.getItem("pos-theme");
+                }
+                theme = savedTheme === "dark" ? "dark" : "light";
+            } catch (error) {
+                var currentTheme = document.documentElement.getAttribute("data-theme");
+                theme = currentTheme === "dark" ? "dark" : "light";
+            }
+            document.documentElement.setAttribute("data-theme", theme);
+        })();
+    </script>
+
     <script src="{% static 'core/js/theme.js' %}"></script>
+
     <link rel="stylesheet" href="{% static 'core/css/phone_view.css' %}">
 
     <title>
+
         Active Products - {{ store.name|default:"TRON HUB" }}
+
     </title>
 
     <style>
         :root {
+
             --primary: #2563eb;
+
             --primary-dark: #1d4ed8;
+
             --green: #16a34a;
+
             --red: #dc2626;
+
             --red-dark: #b91c1c;
+
             --orange: #f59e0b;
+
             --text: #111827;
+
             --muted: #6b7280;
+
             --bg: #f4f7fb;
+
             --card: #ffffff;
+
             --border: #e5e7eb;
+
             --shadow: 0 8px 30px rgba(15, 23, 42, 0.07);
+
             --radius: 16px;
+
         }
 
         * {
+
             box-sizing: border-box;
+
         }
 
         html {
+
             scroll-behavior: smooth;
+
         }
 
         body {
+
             margin: 0;
+
             background: var(--bg);
+
             color: var(--text);
+
             font-family: Inter, -apple-system, BlinkMacSystemFont,
+
                 "Segoe UI", Arial, sans-serif;
+
         }
 
         a {
+
             color: inherit;
+
             text-decoration: none;
+
         }
 
         button,
+
         input {
+
             font: inherit;
+
         }
 
         .container {
+
             width: 100%;
+
             max-width: 1400px;
+
             margin: 0 auto;
+
             padding: 25px;
+
         }
 
         /* HEADER */
+
         .page-header {
+
             display: flex;
+
             align-items: center;
+
             justify-content: space-between;
+
             gap: 15px;
+
             margin-bottom: 22px;
+
         }
 
         .header-title h1 {
+
             margin: 0;
+
             font-size: 28px;
+
             font-weight: 800;
+
             letter-spacing: -0.5px;
+
         }
 
         .header-title p {
+
             margin: 6px 0 0;
+
             color: var(--muted);
+
             font-size: 13px;
+
         }
 
         .header-actions {
+
             display: flex;
+
             gap: 9px;
+
             flex-wrap: wrap;
+
         }
 
         .btn {
+
             display: inline-flex;
+
             align-items: center;
+
             justify-content: center;
+
             min-height: 42px;
+
             border: 1px solid var(--border);
+
             background: var(--card);
+
             color: var(--text);
+
             padding: 10px 15px;
+
             border-radius: 10px;
+
             cursor: pointer;
+
             font-size: 13px;
+
             font-weight: 700;
+
             text-decoration: none;
-            transition: background .2s ease, border-color .2s ease,
+
+            transition: *background* .2s ease, border-color .2s ease,
+
                 color .2s ease, transform .2s ease;
+
         }
 
         .btn:hover {
+
             border-color: var(--primary);
+
             color: var(--primary);
+
             transform: translateY(-1px);
+
         }
 
         .btn-primary {
+
             background: var(--primary);
+
             border-color: var(--primary);
+
             color: #fff;
+
         }
 
         .btn-primary:hover {
+
             background: var(--primary-dark);
+
             border-color: var(--primary-dark);
+
             color: #fff;
+
         }
 
         .btn-danger {
+
             background: var(--red);
+
             border-color: var(--red);
+
             color: #fff;
+
         }
 
         .btn-danger:hover {
+
             background: var(--red-dark);
+
             border-color: var(--red-dark);
+
             color: #fff;
+
         }
 
         .btn:focus-visible,
+
         .delete-button:focus-visible,
+
         .password-input:focus-visible {
+
             outline: 3px solid rgba(37, 99, 235, .18);
+
             outline-offset: 2px;
+
         }
 
         /* MESSAGES */
+
         .messages {
+
             margin-bottom: 18px;
+
         }
 
         .message {
+
             padding: 13px 15px;
+
             border-radius: 10px;
+
             font-size: 13px;
+
             font-weight: 600;
+
             margin-bottom: 8px;
+
         }
 
         .message.success {
+
             background: #dcfce7;
+
             color: #166534;
+
         }
 
         .message.error {
+
             background: #fee2e2;
+
             color: #991b1b;
+
         }
 
         /* SUMMARY */
+
         .summary-grid {
+
             display: grid;
+
             grid-template-columns: repeat(2, minmax(0, 1fr));
+
             gap: 16px;
+
             margin-bottom: 20px;
+
         }
 
         .summary-card {
+
             background: var(--card);
+
             border: 1px solid var(--border);
+
             border-radius: 15px;
+
             padding: 20px;
+
             box-shadow: var(--shadow);
+
         }
 
         .summary-label {
+
             color: var(--muted);
+
             font-size: 11px;
+
             font-weight: 800;
+
             text-transform: uppercase;
+
             letter-spacing: .5px;
+
         }
 
         .summary-value {
+
             margin-top: 10px;
+
             font-size: 27px;
+
             font-weight: 800;
+
         }
 
         .summary-value.green {
+
             color: var(--green);
+
         }
 
         .summary-value.orange {
+
             color: var(--orange);
+
         }
 
         /* TABLE */
+
         .table-card {
+
             background: var(--card);
+
             border: 1px solid var(--border);
+
             border-radius: 16px;
+
             box-shadow: var(--shadow);
+
             overflow: hidden;
+
         }
 
         .table-header {
+
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
+
             gap: 15px;
+
             padding: 20px;
+
             border-bottom: 1px solid var(--border);
+
         }
 
         .table-title {
+
             margin: 0;
+
             font-size: 16px;
+
             font-weight: 800;
+
         }
 
         .table-subtitle {
+
             margin: 5px 0 0;
+
             color: var(--muted);
+
             font-size: 12px;
+
         }
 
         .table-wrapper {
+
             width: 100%;
+
             overflow-x: auto;
+
         }
 
         table {
+
             width: 100%;
+
             min-width: 800px;
+
             border-collapse: collapse;
+
         }
 
         th {
+
             padding: 13px 15px;
+
             background: #f8fafc;
+
             color: var(--muted);
+
             border-bottom: 1px solid var(--border);
+
             font-size: 10px;
+
             text-transform: uppercase;
+
             letter-spacing: .5px;
+
             text-align: left;
+
             white-space: nowrap;
+
         }
 
         td {
+
             padding: 14px 15px;
+
             border-bottom: 1px solid var(--border);
+
             font-size: 13px;
+
             vertical-align: middle;
+
         }
 
         tbody tr:last-child td {
+
             border-bottom: none;
+
         }
 
         tbody tr:hover {
+
             background: rgba(37, 99, 235, .025);
+
         }
 
         .product-name {
+
             font-weight: 750;
+
         }
 
         .category {
+
             color: var(--muted);
+
         }
 
         .price {
+
             font-weight: 700;
+
             white-space: nowrap;
+
         }
 
         .stock {
+
             font-weight: 750;
+
         }
 
         .stock.low {
+
             color: var(--red);
+
         }
 
         .stock.ok {
+
             color: var(--green);
+
         }
 
         .status {
+
             display: inline-flex;
+
             align-items: center;
+
             padding: 5px 9px;
+
             border-radius: 999px;
+
             background: #dcfce7;
+
             color: #166534;
+
             font-size: 10px;
+
             font-weight: 800;
+
             white-space: nowrap;
+
         }
 
         .low-status {
+
             background: #fee2e2;
+
             color: var(--red);
+
         }
 
         /* DELETE BUTTON */
+
         .delete-form {
+
             display: inline-flex;
+
             margin: 0;
+
         }
 
         .delete-button {
+
             width: 36px;
+
             height: 36px;
+
             display: inline-flex;
+
             align-items: center;
+
             justify-content: center;
+
             border: 1px solid #fecaca;
+
             border-radius: 9px;
+
             background: #fef2f2;
+
             color: var(--red);
+
             cursor: pointer;
+
             font-size: 16px;
+
             transition: all .2s ease;
+
         }
 
         .delete-button:hover {
+
             background: var(--red);
+
             color: white;
+
             transform: scale(1.05);
+
         }
 
         .action-cell {
+
             white-space: nowrap;
+
         }
 
         .edit-button {
+
             width: 36px;
+
             height: 36px;
+
             display: inline-flex;
+
             align-items: center;
+
             justify-content: center;
+
             margin-right: 5px;
+
             border: 1px solid #bfdbfe;
+
             border-radius: 9px;
+
             background: #eff6ff;
+
             color: var(--primary);
+
             cursor: pointer;
+
             font-size: 16px;
+
             transition: all .2s ease;
+
         }
 
         .edit-button:hover {
+
             background: var(--primary);
+
             color: white;
+
             transform: scale(1.05);
+
         }
 
         html[data-theme="dark"] .edit-button {
+
             background: rgba(37, 99, 235, .15);
+
             border-color: rgba(37, 99, 235, .35);
+
             color: #93c5fd;
+
         }
 
         html[data-theme="dark"] .edit-button:hover {
+
             background: var(--primary);
+
             color: white;
+
         }
 
         .empty {
+
             padding: 50px 20px;
+
             text-align: center;
+
             color: var(--muted);
+
         }
 
         .empty h3 {
+
             margin: 10px 0 5px;
+
             color: var(--text);
+
         }
 
         .empty p {
+
             margin: 0 0 18px;
+
         }
 
         /* RESET MODAL */
+
         .modal {
+
             position: fixed;
+
             inset: 0;
+
             display: none;
+
             align-items: center;
+
             justify-content: center;
+
             padding: 20px;
+
             background: rgba(15, 23, 42, .62);
+
             z-index: 9999;
+
         }
 
         .modal.show {
+
             display: flex;
+
         }
 
         .modal-card {
+
             width: 100%;
+
             max-width: 430px;
+
             background: var(--card);
+
             color: var(--text);
+
             border: 1px solid var(--border);
+
             border-radius: 18px;
+
             padding: 24px;
+
             box-shadow: 0 25px 70px rgba(0, 0, 0, .25);
+
             animation: modalIn .18s ease-out;
+
         }
 
         @keyframes modalIn {
+
             from {
+
                 opacity: 0;
+
                 transform: translateY(8px) scale(.98);
+
             }
 
             to {
+
                 opacity: 1;
+
                 transform: translateY(0) scale(1);
+
             }
+
         }
 
         .modal-icon {
+
             width: 48px;
+
             height: 48px;
+
             display: flex;
+
             align-items: center;
+
             justify-content: center;
+
             margin-bottom: 14px;
+
             border-radius: 14px;
+
             background: #fee2e2;
+
             color: var(--red);
+
             font-size: 21px;
+
         }
 
         .modal-card h2 {
+
             margin: 0;
+
             font-size: 19px;
+
             font-weight: 800;
+
         }
 
         .modal-card p {
+
             margin: 8px 0 18px;
+
             color: var(--muted);
+
             font-size: 13px;
+
             line-height: 1.6;
+
         }
 
         .modal-warning {
+
             margin: 0 0 16px;
+
             padding: 11px 12px;
+
             border: 1px solid #fecaca;
+
             border-radius: 10px;
+
             background: #fef2f2;
+
             color: #991b1b;
+
             font-size: 12px;
+
             line-height: 1.5;
+
         }
 
         .form-label {
+
             display: block;
+
             margin-bottom: 7px;
+
             font-size: 12px;
+
             font-weight: 750;
+
         }
 
         .password-input {
+
             width: 100%;
+
             height: 46px;
+
             padding: 0 13px;
+
             border: 1px solid var(--border);
+
             border-radius: 10px;
+
             outline: none;
+
             font-size: 14px;
+
             background: var(--card);
+
             color: var(--text);
+
         }
 
         .password-input:focus {
+
             border-color: var(--primary);
+
             box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+
         }
 
         .modal-actions {
+
             display: flex;
+
             justify-content: flex-end;
+
             gap: 9px;
+
             margin-top: 18px;
+
         }
 
         /* PRINT */
+
         @media print {
+
             @page {
+
                 margin: 12mm;
+
             }
 
             body {
+
                 background: white;
+
                 color: black;
+
             }
 
             .no-print,
+
             nav,
+
             .header-actions,
+
             .messages,
+
             .modal,
+
             .action-column,
+
             .action-cell {
+
                 display: none !important;
+
             }
 
             .container {
+
                 max-width: none;
+
                 padding: 0;
+
             }
 
             .table-card,
+
             .summary-card {
+
                 border: 1px solid #ddd;
+
                 box-shadow: none;
+
             }
 
             .table-wrapper {
+
                 overflow: visible;
+
             }
 
             table {
+
                 min-width: 0;
+
             }
 
             th {
+
                 background: white;
+
             }
 
             .summary-grid {
+
                 grid-template-columns: repeat(2, 1fr);
+
             }
+
         }
 
         /* MOBILE */
+
         @media (max-width: 700px) {
+
             .container {
+
                 padding: 15px;
+
             }
 
             .page-header {
+
                 align-items: flex-start;
+
                 flex-direction: column;
+
             }
 
             .header-title h1 {
+
                 font-size: 22px;
+
             }
 
             .header-actions {
+
                 width: 100%;
+
             }
 
             .header-actions .btn {
+
                 flex: 1;
+
             }
 
             .summary-grid {
+
                 grid-template-columns: 1fr;
+
                 gap: 10px;
+
             }
 
             .summary-card {
+
                 padding: 15px;
+
             }
 
             .summary-value {
+
                 font-size: 21px;
+
             }
 
             .table-header {
+
                 align-items: flex-start;
+
                 flex-direction: column;
+
             }
 
             th,
+
             td {
+
                 padding: 11px 10px;
+
             }
 
             .modal-card {
+
                 padding: 20px;
+
             }
 
             .modal-actions {
+
                 flex-direction: column-reverse;
+
             }
 
             .modal-actions .btn {
+
                 width: 100%;
+
             }
+
         }
 
         /* DARK MODE */
+
         html[data-theme="dark"] {
+
             color-scheme: dark;
+
             --text: #f8fafc;
+
             --muted: #94a3b8;
+
             --bg: #0f172a;
+
             --card: #111827;
+
             --border: #1f2937;
+
             --shadow: 0 8px 30px rgba(0, 0, 0, .25);
+
         }
 
         html[data-theme="dark"] th {
+
             background: #0f172a;
+
         }
 
         html[data-theme="dark"] .message.success {
+
             background: rgba(22, 163, 74, .14);
+
             color: #86efac;
+
         }
 
         html[data-theme="dark"] .message.error {
+
             background: rgba(220, 38, 38, .14);
+
             color: #fca5a5;
+
         }
 
         html[data-theme="dark"] .btn-danger {
+
             background: rgba(220, 38, 38, .15);
+
             border-color: rgba(220, 38, 38, .35);
+
             color: #fca5a5;
+
         }
 
         html[data-theme="dark"] .btn-danger:hover {
+
             background: var(--red);
+
             border-color: var(--red);
+
             color: #fff;
+
         }
 
         html[data-theme="dark"] .delete-button {
+
             background: rgba(220, 38, 38, .15);
+
             border-color: rgba(220, 38, 38, .3);
+
         }
 
         html[data-theme="dark"] .delete-button:hover {
+
             background: var(--red);
+
             color: white;
+
         }
 
         html[data-theme="dark"] .modal-icon {
+
             background: rgba(220, 38, 38, .14);
+
             color: #fca5a5;
+
         }
 
         html[data-theme="dark"] .modal-warning {
+
             background: rgba(220, 38, 38, .10);
+
             border-color: rgba(220, 38, 38, .3);
+
             color: #fca5a5;
+
         }
     </style>
+
 </head>
 
 <body>
@@ -679,290 +1157,455 @@
     <main class="container">
 
         <!-- HEADER -->
+
         <header class="page-header">
+
             <div class="header-title">
+
                 <h1>Active Products</h1>
+
                 <p>
+
                     {{ store.name|default:"TRON HUB" }} · Current inventory
+
                 </p>
+
             </div>
 
             <div class="header-actions">
+
                 <a href="{% url 'dashboard' %}" class="btn">
+
                     ← Dashboard
+
                 </a>
 
                 <button type="button" class="btn btn-primary" onclick="window.print()">
+
                     🖨 Print
+
                 </button>
 
                 {% if request.user.is_superuser or request.user.role == "ADMIN" or request.user.role == "MANAGER" %}
+
                 <button type="button" class="btn btn-danger" onclick="openResetProductsModal()">
+
                     🔄 Reset Products
+
                 </button>
+
                 {% endif %}
+
             </div>
+
         </header>
 
         <!-- MESSAGES -->
+
         {% if messages %}
+
         <div class="messages no-print">
+
             {% for message in messages %}
+
             <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+
                 {{ message }}
+
             </div>
+
             {% endfor %}
+
         </div>
+
         {% endif %}
 
         <!-- SUMMARY -->
+
         <section class="summary-grid">
+
             <div class="summary-card">
+
                 <div class="summary-label">Active Products</div>
+
                 <div class="summary-value green">{{ total_products }}</div>
+
             </div>
 
             <div class="summary-card">
+
                 <div class="summary-label">Low Stock</div>
+
                 <div class="summary-value orange">{{ low_stock_count }}</div>
+
             </div>
+
         </section>
 
         <!-- PRODUCTS TABLE -->
+
         <section class="table-card">
+
             <div class="table-header">
+
                 <div>
+
                     <h2 class="table-title">Product Inventory</h2>
+
                     <p class="table-subtitle">All currently active products</p>
+
                 </div>
+
             </div>
 
             <div class="table-wrapper">
+
                 {% if products %}
+
                 <table>
+
                     <thead>
+
                         <tr>
+
                             <th>#</th>
+
                             <th>Product</th>
+
                             <th>Category</th>
+
                             <th>Selling Price</th>
+
                             <th>Stock</th>
+
                             <th>Status</th>
+
                             <th class="action-column">Action</th>
+
                         </tr>
+
                     </thead>
 
                     <tbody>
+
                         {% for product in products %}
+
                         <tr>
+
                             <td>{{ forloop.counter }}</td>
 
                             <td class="product-name">
+
                                 {{ product.name }}
+
                             </td>
 
                             <td class="category">
+
                                 {% if product.category %}
+
                                 {{ product.category.name }}
+
                                 {% else %}
+
                                 Unassigned
+
                                 {% endif %}
+
                             </td>
 
                             <td class="price">
+
                                 GH₵ {{ product.selling_price|floatformat:2 }}
+
                             </td>
 
                             <td>
+
                                 <span class="stock {% if product.is_low_stock %}low{% else %}ok{% endif %}">
+
                                     {{ product.stock }}
+
                                 </span>
+
                             </td>
 
                             <td>
+
                                 {% if product.is_low_stock %}
+
                                 <span class="status low-status">LOW STOCK</span>
+
                                 {% else %}
+
                                 <span class="status">ACTIVE</span>
+
                                 {% endif %}
+
                             </td>
 
                             <td class="action-cell">
 
                                 <a href="{% url 'edit_product' product.id %}" class="edit-button" title="Edit product"
                                     aria-label="Edit {{ product.name }}">
+
                                     ✏️
+
                                 </a>
 
                                 <form method="POST" action="{% url 'delete_product' product.id %}" class="delete-form"
                                     onsubmit="return confirmDelete('{{ product.name|escapejs }}');">
+
                                     {% csrf_token %}
 
                                     <button type="submit" class="delete-button" title="Delete product"
                                         aria-label="Delete {{ product.name }}">
+
                                         🗑️
+
                                     </button>
+
                                 </form>
 
                             </td>
+
                         </tr>
+
                         {% endfor %}
+
                     </tbody>
+
                 </table>
+
                 {% else %}
+
                 <div class="empty">
+
                     <div style="font-size:40px;">📦</div>
+
                     <h3>No active products</h3>
+
                     <p>There are currently no active products in this store.</p>
+
                     <a href="{% url 'add_product' %}" class="btn btn-primary">
+
                         + Add Product
+
                     </a>
+
                 </div>
+
                 {% endif %}
+
             </div>
+
         </section>
+
     </main>
 
     <!-- RESET PRODUCTS MODAL -->
+
     {% if request.user.is_superuser or request.user.role == "ADMIN" or request.user.role == "MANAGER" %}
+
     <div id="resetProductsModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true"
         aria-labelledby="resetProductsTitle">
 
         <div class="modal-card" role="document">
+
             <div class="modal-icon" aria-hidden="true">⚠️</div>
 
             <h2 id="resetProductsTitle">Reset Active Products</h2>
 
             <p>
+
                 This will deactivate all active products in this store.
+
                 The products will not be permanently deleted.
+
             </p>
 
             <div class="modal-warning">
+
                 Please make sure you really want to continue before confirming this action.
+
             </div>
 
             <form method="post" action="{% url 'reset_active_products' %}" id="resetProductsForm"
                 onsubmit="return confirmProductReset(event);">
+
                 {% csrf_token %}
 
                 <label for="productResetPassword" class="form-label">
+
                     Your current password
+
                 </label>
 
                 <input type="password" name="password" id="productResetPassword" class="password-input"
                     placeholder="Enter your current password" autocomplete="current-password" required>
 
                 <div class="modal-actions">
+
                     <button type="button" class="btn" onclick="closeResetProductsModal()">
+
                         Cancel
+
                     </button>
 
                     <button type="submit" class="btn btn-danger">
+
                         Confirm Reset
+
                     </button>
+
                 </div>
+
             </form>
+
         </div>
+
     </div>
+
     {% endif %}
 
     <script>
+
         "use strict";
 
         /* DELETE CONFIRMATION */
+
         function confirmDelete(productName) {
+
             return confirm(
+
                 'Are you sure you want to permanently delete "' +
+
                 productName +
+
                 '"? This action cannot be undone.'
+
             );
+
         }
 
         /* RESET PRODUCTS MODAL */
+
         const resetProductsModal = document.getElementById("resetProductsModal");
+
         const productResetPassword = document.getElementById("productResetPassword");
 
         function openResetProductsModal() {
+
             if (!resetProductsModal) {
+
                 return;
+
             }
 
             resetProductsModal.classList.add("show");
+
             resetProductsModal.setAttribute("aria-hidden", "false");
+
             document.body.style.overflow = "hidden";
 
             setTimeout(function () {
+
                 if (productResetPassword) {
+
                     productResetPassword.focus();
+
                 }
+
             }, 50);
+
         }
 
         function closeResetProductsModal() {
+
             if (!resetProductsModal) {
+
                 return;
+
             }
 
             resetProductsModal.classList.remove("show");
+
             resetProductsModal.setAttribute("aria-hidden", "true");
+
             document.body.style.overflow = "";
 
             if (productResetPassword) {
+
                 productResetPassword.value = "";
+
             }
+
         }
 
         function confirmProductReset(event) {
+
             if (!productResetPassword || !productResetPassword.value.trim()) {
+
                 event.preventDefault();
+
                 alert("Please enter your current password.");
+
                 if (productResetPassword) {
+
                     productResetPassword.focus();
+
                 }
+
                 return false;
+
             }
 
             const confirmed = confirm(
+
                 "Are you sure you want to reset all active products for this store? " +
+
                 "They will be deactivated and will no longer appear as active products."
+
             );
 
             if (!confirmed) {
+
                 event.preventDefault();
+
                 return false;
+
             }
 
             return true;
+
         }
 
         if (resetProductsModal) {
+
             resetProductsModal.addEventListener("click", function (event) {
+
                 if (event.target === resetProductsModal) {
+
                     closeResetProductsModal();
+
                 }
+
             });
+
         }
 
         document.addEventListener("keydown", function (event) {
+
             if (event.key === "Escape" && resetProductsModal &&
+
                 resetProductsModal.classList.contains("show")) {
+
                 closeResetProductsModal();
+
             }
+
         });
 
-        /* THEME */
-        (function () {
-            const currentTheme =
-                localStorage.getItem("pos-theme") ||
-                localStorage.getItem("kounter-theme") ||
-                "light";
-
-            document.documentElement.setAttribute(
-                "data-theme",
-                currentTheme === "dark" ? "dark" : "light"
-            );
-        })();
     </script>
 
 </body>

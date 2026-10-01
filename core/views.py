@@ -5658,3 +5658,37 @@ def manage_attendant(request, user_id):
 
     messages.success(request, feedback, extra_tags="attendant")
     return redirect(destination)
+
+
+@login_required
+def how_to_use(request):
+    """Show the Kounter usage guide to signed-in users."""
+    return render(request, "core/how_to_use.html", {
+        "store": get_current_store(request),
+        "can_manage_store": can_manage_products(request.user),
+    })
+
+
+# ============================================================
+# EXCEL BULK PRODUCT IMPORT
+# ============================================================
+
+@login_required
+@require_GET
+def bulk_product_template(request):
+    from .bulk_products import download_template
+    return download_template(request)
+
+
+@login_required
+@require_POST
+def bulk_product_upload(request):
+    from .bulk_products import upload_products
+    return upload_products(request)
+
+
+@login_required
+@require_POST
+def bulk_product_confirm(request):
+    from .bulk_products import confirm_products
+    return confirm_products(request)

@@ -48,6 +48,7 @@ urlpatterns = [
 
     # Dashboard
     path("", views.dashboard, name="dashboard"),
+    path("how-to-use/", views.how_to_use, name="how_to_use"),
 
     # Attendant accounts
     path("attendants/create/", views.create_attendant, name="create_attendant"),
@@ -68,6 +69,12 @@ urlpatterns = [
     path("products/delete/<int:product_id>/",
          views.delete_product, name="delete_product"),
     path("add-product/", views.add_product, name="add_product"),
+    path("products/bulk/template/", views.bulk_product_template,
+         name="bulk_product_template"),
+    path("products/bulk/upload/", views.bulk_product_upload,
+         name="bulk_product_upload"),
+    path("products/bulk/confirm/", views.bulk_product_confirm,
+         name="bulk_product_confirm"),
 
     # Subscription
     path("subscription/", views.subscription, name="subscription"),

@@ -1,0 +1,180 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Bulk Products | Kounter</title>
+    <script>
+        document.documentElement.setAttribute("data-theme", localStorage.getItem("kounter-theme") || "light");
+    </script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        .bulk-preview {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 24px;
+            background: #fff;
+            border-radius: 16px;
+        }
+
+        .bulk-preview h1 {
+            margin-top: 0;
+        }
+
+        .bulk-preview p,
+        .bulk-preview li {
+            line-height: 1.6;
+        }
+
+        .bulk-preview-table {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .bulk-preview table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .bulk-preview th,
+        .bulk-preview td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dce3ed;
+        }
+
+        .bulk-preview th {
+            background: #17365d;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        .bulk-preview td {
+            overflow-wrap: anywhere;
+        }
+
+        .bulk-preview .bulk-errors {
+            padding: 16px;
+            border: 1px solid #dc2626;
+            border-radius: 10px;
+        }
+
+        .bulk-preview .bulk-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .bulk-preview button,
+        .bulk-preview .bulk-back {
+            display: inline-block;
+            padding: 12px 18px;
+            border: 0;
+            border-radius: 9px;
+            background: #2563eb;
+            color: #fff;
+            text-decoration: none;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .bulk-preview .bulk-back {
+            background: #475569;
+        }
+
+        html[data-theme="dark"] body {
+            background: #0f172a;
+            color: #edf2fa;
+        }
+
+        html[data-theme="dark"] .bulk-preview {
+            background: #172237;
+        }
+
+        html[data-theme="dark"] .bulk-preview td {
+            border-color: #334155;
+        }
+
+        @media (max-width: 640px) {
+            .bulk-preview {
+                margin: 16px 10px;
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% include "core/navbar.html" %}
+    <main class="bulk-preview">
+        <h1>Review bulk products</h1>
+        <p>Store: <strong>{{ store.name }}</strong></p>
+        {% if errors %}
+        <section class="bulk-errors" role="alert">
+            <h2>Correct these errors</h2>
+            <p>No products have been imported. Fix your Excel file and upload it again.</p>
+            <ul>
+                {% for error in errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% else %}
+        <p>{{ rows|length }} products passed validation. Check the values below before importing.
+            This preview expires after 15 minutes.</p>
+        {% endif %}
+        {% if rows %}
+        <div class="bulk-preview-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Excel row</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Cost (GH₵)</th>
+                        <th>Selling price (GH₵)</th>
+                        <th>Stock</th>
+                        <th>Low-stock threshold</th>
+                        <th>Barcode</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        <td>{{ row.row_number }}</td>
+                        <td>{{ row.name }}</td>
+                        <td>{{ row.category|default:"Uncategorised" }}</td>
+                        <td>{{ row.cost_price }}</td>
+                        <td>{{ row.selling_price }}</td>
+                        <td>{{ row.stock }}</td>
+                        <td>{{ row.low_stock_threshold }}</td>
+                        <td>{{ row.barcode|default:"—" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+        <div class="bulk-actions">
+            {% if token %}
+            <form method="post" action="{% url 'bulk_product_confirm' %}">
+                {% csrf_token %}
+                <input type="hidden" name="token" value="{{ token }}">
+                <button type="submit">Import {{ rows|length }} Products</button>
+            </form>
+            {% endif %}
+            <a href="{% url 'add_product' %}" class="bulk-back">Back to Add Product</a>
+        </div>
+    </main>
+</body>
+
+</html>

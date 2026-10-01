@@ -13,7 +13,16 @@
 
     (function () {
 
-      const theme = localStorage.getItem("kounter-theme") || "light";
+      let theme = "light";
+      try {
+        let savedTheme = localStorage.getItem("kounter-theme");
+        if (savedTheme !== "dark" && savedTheme !== "light") {
+          savedTheme = localStorage.getItem("pos-theme");
+        }
+        theme = savedTheme === "dark" ? "dark" : "light";
+      } catch (error) {
+        theme = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+      }
 
       document.documentElement.setAttribute("data-theme", theme);
 
@@ -128,7 +137,7 @@
 
       transition:
 
-        *background* 0.2s ease,
+        background 0.2s ease,
 
         color 0.2s ease;
 
@@ -818,6 +827,7 @@
             <div class="sale-time">
 
               {{ sale.created_at|date:"d M Y" }}<br>
+
               {{ sale.created_at|date:"H:i" }}
 
             </div>
@@ -850,7 +860,7 @@
 
             </div>
 
-            <div class="sold-by" title="{% firstof sale.sold_by_username sale.sold_by.username " —" %}">
+            <div class="sold-by" title="{% firstof sale.sold_by_username sale.sold_by.username '—' %}">
 
               {% firstof sale.sold_by_username sale.sold_by.username "—" %}
 
@@ -896,99 +906,7 @@
 
   </main>
 
-  <!-- DARK MODE -->
 
-  <script>
-
-    "use strict";
-
-    function applyTheme(theme) {
-
-      document.documentElement.dataset.theme =
-
-        theme;
-
-      document
-
-        .querySelectorAll(
-
-          "[data-theme-toggle]"
-
-        )
-
-        .forEach(
-
-          function (toggle) {
-
-            toggle.checked =
-
-              theme === "dark";
-
-          }
-
-        );
-
-    }
-
-    applyTheme(
-
-      localStorage.getItem(
-
-        "pos-theme"
-
-      ) || "light"
-
-    );
-
-    document
-
-      .querySelectorAll(
-
-        "[data-theme-toggle]"
-
-      )
-
-      .forEach(
-
-        function (toggle) {
-
-          toggle.addEventListener(
-
-            "change",
-
-            function () {
-
-              const theme =
-
-                toggle.checked
-
-                  ? "dark"
-
-                  : "light";
-
-              localStorage.setItem(
-
-                "pos-theme",
-
-                theme
-
-              );
-
-              applyTheme(
-
-                theme
-
-              );
-
-            }
-
-          );
-
-        }
-
-      );
-
-  </script>
 
 </body>
 
