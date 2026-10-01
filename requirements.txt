@@ -1,1 +1,18 @@
-﻿  a s g i r e f = = 3 . 1 2 . 1   c e r t i f i = = 2 0 2 6 . 7 . 2 2   c h a r s e t - n o r m a l i z e r = = 3 . 5 . 1   d j - d a t a b a s e - u r l = = 3 . 1 . 2   D j a n g o = = 5 . 2 . 1 7   g u n i c o r n = = 2 6 . 2 . 0   i d n a = = 3 . 2 0   p s y c o p g = = 3 . 3 . 6   p s y c o p g - b i n a r y = = 3 . 3 . 6   p y t h o n - d o t e n v = = 1 . 2 . 3   r e q u e s t s = = 2 . 3 4 . 2   s q l p a r s e = = 0 . 6 . 0   t z d a t a = = 2 0 2 6 . 4   u r l l i b 3 = = 2 . 8 . 0   w h i t e n o i s e = = 6 . 1 2 . 0  openpyxl>=3.1.5,<4defusedxml>=0.7.1,<1 
+﻿asgiref==3.12.1
+certifi==2026.7.22
+charset-normalizer==3.5.1
+defusedxml==0.7.1
+dj-database-url==3.1.2
+Django==5.2.17
+et_xmlfile==2.0.0
+gunicorn==26.2.0
+idna==3.20
+openpyxl==3.1.5
+psycopg==3.3.6
+psycopg-binary==3.3.6
+python-dotenv==1.2.3
+requests==2.34.2
+sqlparse==0.6.0
+tzdata==2026.4
+urllib3==2.8.0
+whitenoise==6.12.0
