@@ -1,0 +1,367 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Use | Kounter</title>
+    <script>
+        (function () {
+            document.documentElement.setAttribute(
+                "data-theme", localStorage.getItem("kounter-theme") || "light"
+            );
+        })();
+    </script>
+    <style>
+        :root {
+            --guide-bg: #f4f7fb;
+            --guide-card: #fff;
+            --guide-text: #172033;
+            --guide-muted: #566478;
+            --guide-border: #dce3ed;
+            --guide-primary: #2563eb;
+            --guide-tint: #edf3ff;
+        }
+
+        html[data-theme="dark"] {
+            --guide-bg: #0f172a;
+            --guide-card: #172237;
+            --guide-text: #edf2fa;
+            --guide-muted: #b4c0d3;
+            --guide-border: #334155;
+            --guide-primary: #93b4ff;
+            --guide-tint: #233451;
+        }
+
+        body {
+            margin: 0;
+            background: var(--guide-bg);
+            color: var(--guide-text);
+            font-family: Arial, sans-serif;
+        }
+
+        .guide-wrap {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px 40px;
+        }
+
+        .guide-wrap * {
+            box-sizing: border-box;
+        }
+
+        .guide-heading {
+            padding: 28px;
+            background: var(--guide-card);
+            border: 1px solid var(--guide-border);
+            border-radius: 18px;
+        }
+
+        .guide-heading h1 {
+            margin: 0 0 12px;
+            font-size: clamp(26px, 4vw, 38px);
+        }
+
+        .guide-heading p {
+            margin: 0;
+            line-height: 1.7;
+            color: var(--guide-muted);
+        }
+
+        .guide-badge {
+            display: inline-block;
+            margin-bottom: 14px;
+            color: var(--guide-primary);
+            font-weight: bold;
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+
+        .guide-contents {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+            margin: 20px 0;
+        }
+
+        .guide-contents a,
+        .guide-link {
+            color: var(--guide-primary);
+            text-decoration: none;
+        }
+
+        .guide-contents a {
+            padding: 10px 14px;
+            border: 1px solid var(--guide-border);
+            border-radius: 10px;
+            background: var(--guide-card);
+        }
+
+        .guide-contents a:hover,
+        .guide-link:hover {
+            text-decoration: underline;
+        }
+
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .guide-card {
+            padding: 24px;
+            border: 1px solid var(--guide-border);
+            background: var(--guide-card);
+            border-radius: 16px;
+            scroll-margin-top: 110px;
+        }
+
+        .guide-card h2 {
+            font-size: 21px;
+            margin: 0 0 14px;
+        }
+
+        .guide-card p,
+        .guide-card li {
+            line-height: 1.7;
+        }
+
+        .guide-card ol,
+        .guide-card ul {
+            padding-left: 23px;
+            margin: 12px 0;
+        }
+
+        .guide-card li {
+            margin-bottom: 9px;
+        }
+
+        .guide-tip {
+            padding: 12px 14px;
+            background: var(--guide-tint);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .guide-role {
+            color: var(--guide-muted);
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .guide-actions {
+            margin-top: 16px;
+        }
+
+        .guide-wide {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 720px) {
+            .guide-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .guide-wrap {
+                margin-top: 18px;
+                padding: 0 12px 30px;
+            }
+
+            .guide-heading,
+            .guide-card {
+                padding: 20px;
+            }
+        }
+
+        @media print {
+
+            .guide-contents,
+            .guide-actions,
+            header,
+            nav {
+                display: none !important;
+            }
+
+            body {
+                background: #fff;
+                color: #000;
+            }
+
+            .guide-grid {
+                display: block;
+            }
+
+            .guide-card {
+                margin-bottom: 14px;
+                break-inside: avoid;
+                background: #fff;
+                color: #000;
+            }
+
+            .guide-heading {
+                background: #fff;
+                color: #000;
+            }
+
+            .guide-role,
+            .guide-heading p {
+                color: #333;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% include "core/navbar.html" %}
+    <main class="guide-wrap">
+        <section class="guide-heading">
+            <span class="guide-badge">KOUNTER USER GUIDE</span>
+            <h1>How to use Kounter</h1>
+            <p>Follow these steps to record sales, manage stock and review your shop's performance. Some tools are
+                available only to store managers and store admins.</p>
+        </section>
+        <nav class="guide-contents" aria-label="Guide contents">
+            <a href="#guide-pos">POS</a>
+            <a href="#guide-stock">Stock management</a>
+            <a href="#guide-reports">Sales reports</a>
+            <a href="#guide-profit">Profit analysis</a>
+            <a href="#guide-attendants">Attendants</a>
+            <a href="#guide-subscription">Subscriptions</a>
+            <a href="#guide-account">Account help</a>
+        </nav>
+        <div class="guide-grid">
+            <section id="guide-pos" class="guide-card">
+                <h2>1. Make a sale with POS</h2>
+                <div class="guide-role">Managers, store admins and attendants</div>
+                <ol>
+                    <li>Open <strong>POS</strong> from the menu or dashboard.</li>
+                    <li>Find the product using the search box or category filter. Use its barcode where the POS supports
+                        barcode entry.</li>
+                    <li>Add the product to the cart and set the quantity the customer is buying. Repeat for other items.
+                    </li>
+                    <li>Check the products, quantities and total, then review the sale.</li>
+                    <li>Select <strong>Complete Sale</strong> and wait for the success confirmation.</li>
+                </ol>
+                <p class="guide-tip">A completed sale reduces stock and records who made the sale. If an error appears,
+                    read it before trying again. Do not submit the same sale twice.</p>
+                {% if not request.user.is_superuser %}
+                <div class="guide-actions"><a class="guide-link" href="{% url 'pos' %}">Open POS →</a></div>
+                {% endif %}
+            </section>
+            <section id="guide-stock" class="guide-card">
+                <h2>2. Manage products and stock</h2>
+                <div class="guide-role">Product changes and restocking: managers and store admins</div>
+                <ol>
+                    <li>Choose <strong>Add Product</strong>. Enter the product name, category, cost price, selling price
+                        and opening stock.</li>
+                    <li>Set the low-stock threshold and enter a barcode if you use one. Save the product.</li>
+                    <li>Open <strong>Active Products</strong> to check available products and quantities.</li>
+                    <li>Use the product's edit option to update its details or prices.</li>
+                    <li>When supplies arrive, open <strong>Restock Stock</strong>, select the product, enter the
+                        quantity received and submit.</li>
+                </ol>
+                <p class="guide-tip">Cost price is what the shop pays per item. Selling price is what the customer pays.
+                    Review low-stock alerts before an item runs out. Deactivating a product removes it from active
+                    selling; it does not mean it has been sold.</p>
+                {% if can_manage_store %}
+                <div class="guide-actions"><a class="guide-link" href="{% url 'add_product' %}">Add Product</a> · <a
+                        class="guide-link" href="{% url 'restock' %}">Restock Stock</a></div>
+                {% endif %}
+            </section>
+            <section id="guide-reports" class="guide-card">
+                <h2>3. View and print sales</h2>
+                <ol>
+                    <li>Open <strong>Sales History</strong> / <strong>Daily Sales</strong> and choose a date to review
+                        that day's sales.</li>
+                    <li>Open <strong>All Sales</strong>, or click <strong>Total Sales</strong> on the dashboard, to view
+                        the shop's sales history.</li>
+                    <li>Check the date and time, product, quantity, price, total and <strong>Sold By</strong> for each
+                        sale.</li>
+                    <li>Use the <strong>Print</strong> button on All Sales to print the report or save it as a PDF
+                        through your browser's print window.</li>
+                </ol>
+                <p class="guide-tip">Managers can reset sales using the password-confirmation tool. Reset permanently
+                    removes sales history and changes report totals. Save any reports you need before resetting.</p>
+                {% if not request.user.is_superuser %}
+                <div class="guide-actions"><a class="guide-link" href="{% url 'daily_sales' %}">Daily Sales</a> · <a
+                        class="guide-link" href="{% url 'all_sales' %}">All Sales</a></div>
+                {% endif %}
+            </section>
+            <section id="guide-profit" class="guide-card">
+                <h2>4. Understand your profit</h2>
+                <div class="guide-role">Managers and store admins</div>
+                <p>Open <strong>All Sales</strong> and find <strong>Profit Analysis</strong>.</p>
+                <ul>
+                    <li><strong>Revenue:</strong> the total value of recorded sales.</li>
+                    <li><strong>Cost of goods sold:</strong> the cost of the items sold, multiplied by their quantities.
+                    </li>
+                    <li><strong>Gross profit:</strong> revenue minus cost of goods sold.</li>
+                    <li><strong>Profit margin:</strong> gross profit divided by revenue, multiplied by 100.</li>
+                </ul>
+                <p>For example, revenue of GH₵100 and a cost of GH₵70 give GH₵30 gross profit and a 30% margin. Expand
+                    <strong>View profit for each sale</strong> for the breakdown.
+                </p>
+                <p class="guide-tip">Older sales without a saved cost are marked as estimates using current product
+                    costs. New sales save their original cost. Gross profit excludes rent, wages, taxes and other
+                    expenses.</p>
+            </section>
+            <section id="guide-attendants" class="guide-card">
+                <h2>5. Create and manage attendants</h2>
+                <div class="guide-role">Managers and store admins</div>
+                <ol>
+                    <li>On the dashboard, select <strong>Manage Attendants</strong> to open the panel.</li>
+                    <li>Expand <strong>Create attendant account</strong>. Enter a unique username, optional name and
+                        email, and matching passwords.</li>
+                    <li>Create the account. Give the attendant their login details privately; they sign in on the same
+                        login page.</li>
+                    <li>Use <strong>Edit details</strong> or <strong>Reset password</strong> beside an account when
+                        needed.</li>
+                    <li><strong>Deactivate</strong> blocks login. <strong>Activate</strong> restores access.
+                        <strong>Delete</strong> permanently removes the account after confirmation.
+                    </li>
+                </ol>
+                <p class="guide-tip">Attendants belong to your store. Deleting an account retains recorded sales and the
+                    saved Sold By name. The creation form closes after a successful submission.</p>
+                {% if can_manage_store %}
+                <div class="guide-actions"><a class="guide-link" href="{% url 'dashboard' %}#attendant-manage">Manage
+                        Attendants →</a></div>
+                {% endif %}
+            </section>
+            <section id="guide-subscription" class="guide-card">
+                <h2>6. Check your subscription</h2>
+                <div class="guide-role">Managers and store admins</div>
+                <ol>
+                    <li>Open <strong>Subscription</strong> from the navigation's subscription indicator.</li>
+                    <li>Check whether the store is on its free trial, has an active subscription, or needs renewal.</li>
+                    <li>Follow the payment instructions on the subscription page when renewal is needed.</li>
+                    <li>Return to Kounter and confirm that the subscription is active after payment.</li>
+                </ol>
+                <p class="guide-tip">New stores receive a 30-day trial. Product management is restricted once both the
+                    trial and paid subscription have expired. If payment is not reflected, check the payment result
+                    before paying again.</p>
+                {% if can_manage_store %}
+                <div class="guide-actions"><a class="guide-link" href="{% url 'subscription' %}">View Subscription →</a>
+                </div>
+                {% endif %}
+            </section>
+            <section id="guide-account" class="guide-card guide-wide">
+                <h2>7. Login and account help</h2>
+                <ul>
+                    <li>Use your own account so sales are credited to the correct person. Log out when you finish using
+                        a shared device.</li>
+                    <li>If login fails, check your username and password. A deactivated attendant with correct
+                        credentials sees a message explaining that their manager deactivated the account.</li>
+                    <li>Ask your store manager to reactivate your account or reset your password. Use the login page's
+                        password-reset option if your account has a working email address.</li>
+                    <li>Open <strong>Profile</strong> to manage your personal account details and password.</li>
+                    <li>If a sale, stock update or payment fails, keep the error message and ask your manager for help
+                        before repeating the action.</li>
+                </ul>
+                <div class="guide-actions"><a class="guide-link" href="{% url 'profile' %}">Open Profile →</a></div>
+            </section>
+        </div>
+    </main>
+</body>
+
+</html>
