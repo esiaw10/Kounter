@@ -1,113 +1,58 @@
 {% load static %}
-
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
-    {% load static %}
-
-    <link id="kounter-favicon" rel="icon" type="image/jpeg" data-light="{% static 'core/Kounter_light.jpg' %}"
-        data-dark="{% static 'core/Kounter_dark.jpg' %}" href="{% static 'core/Kounter_light.jpg' %}">
-
-    <script>
-        (function () {
-            const theme = localStorage.getItem("kounter-theme") || "light";
-
-            document.documentElement.setAttribute("data-theme", theme);
-
-            const favicon = document.getElementById("kounter-favicon");
-
-            if (favicon) {
-                favicon.href =
-                    theme === "dark"
-                        ? "{% static 'core/Kounter_dark.jpg' %}"
-                        : "{% static 'core/Kounter_light.jpg' %}";
-            }
-        })();
-    </script>
-
-    <script>
-        (function () {
-            const savedTheme = localStorage.getItem("kounter-theme");
-
-            if (savedTheme === "dark") {
-                document.documentElement.setAttribute("data-theme", "dark");
-            } else {
-                document.documentElement.setAttribute("data-theme", "light");
-            }
-        })();
-    </script>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <meta name="theme-color" content="#2563eb">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Kounter — Login</title>
 
+    <meta name="theme-color" content="#f5f7fb" id="theme-color">
 
-    <!-- =========================================================
- THEME INITIALIZATION
-
-========================================================== -->
+    <link
+        id="kounter-favicon"
+        rel="icon"
+        type="image/jpeg"
+        href="{% static 'core/Kounter_light.jpg' %}"
+        data-light="{% static 'core/Kounter_light.jpg' %}"
+        data-dark="{% static 'core/Kounter_dark.jpg' %}"
+    >
 
     <script>
         (function () {
+            let theme = "light";
 
-            const savedTheme =
-                localStorage.getItem("kounter-theme");
+            try {
+                const saved = localStorage.getItem("kounter-theme");
 
-            if (savedTheme === "dark") {
+                if (saved === "dark" || saved === "light") {
+                    theme = saved;
+                }
+            } catch (error) {}
 
-                document.documentElement.setAttribute(
-                    "data-theme",
-                    "dark"
-                );
+            document.documentElement.dataset.theme = theme;
 
-            } else if (savedTheme === "light") {
+            const favicon = document.getElementById("kounter-favicon");
+            favicon.href = theme === "dark"
+                ? favicon.dataset.dark
+                : favicon.dataset.light;
 
-                document.documentElement.setAttribute(
-                    "data-theme",
-                    "light"
-                );
-
-            } else {
-
-                const prefersDark =
-                    window.matchMedia &&
-                    window.matchMedia(
-                        "(prefers-color-scheme: dark)"
-                    ).matches;
-
-                document.documentElement.setAttribute(
-                    "data-theme",
-                    prefersDark ? "dark" : "light"
-                );
-
-            }
-
+            document.getElementById("theme-color").content =
+                theme === "dark" ? "#0f172a" : "#f5f7fb";
         })();
     </script>
 
-
     <style>
-        /* =========================================================
-   KOUNTER VARIABLES
-========================================================= */
-
         :root {
+            color-scheme: light;
 
             --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --primary-light: #eff6ff;
+            --primary-hover: #1d4ed8;
+            --primary-soft: #eff6ff;
+            --button-text: #ffffff;
 
-            --page-bg: #f5f7fb;
-            --card-bg: #ffffff;
-            --surface-bg: #ffffff;
-            --surface-soft: #f8fafc;
+            --bg: #f5f7fb;
+            --card: #ffffff;
+            --soft: #f8fafc;
 
             --text: #111827;
             --text-soft: #374151;
@@ -116,37 +61,29 @@
             --border: #dfe4ec;
             --input-bg: #ffffff;
             --input-border: #cbd5e1;
+            --focus-ring: rgba(37, 99, 235, .13);
 
             --danger: #dc2626;
             --danger-bg: #fee2e2;
-
             --success: #16a34a;
             --success-bg: #dcfce7;
 
-            --shadow:
-                0 25px 70px rgba(15, 23, 42, .12);
-
-            --small-shadow:
-                0 8px 25px rgba(15, 23, 42, .08);
-
-            color-scheme: light;
+            --shadow: 0 25px 70px rgba(15, 23, 42, .09);
+            --small-shadow: 0 8px 25px rgba(15, 23, 42, .08);
+            --overlay: rgba(245, 247, 251, .96);
         }
 
-
-        /* =========================================================
-   DARK THEME
-========================================================= */
-
         html[data-theme="dark"] {
+            color-scheme: dark;
 
             --primary: #60a5fa;
-            --primary-dark: #3b82f6;
-            --primary-light: #172554;
+            --primary-hover: #93c5fd;
+            --primary-soft: #172554;
+            --button-text: #0f172a;
 
-            --page-bg: #0f172a;
-            --card-bg: #172033;
-            --surface-bg: #172033;
-            --surface-soft: #1e293b;
+            --bg: #0f172a;
+            --card: #172033;
+            --soft: #1e293b;
 
             --text: #f8fafc;
             --text-soft: #e2e8f0;
@@ -155,2051 +92,1089 @@
             --border: #263449;
             --input-bg: #111827;
             --input-border: #475569;
+            --focus-ring: rgba(96, 165, 250, .15);
 
             --danger: #f87171;
             --danger-bg: rgba(248, 113, 113, .14);
-
             --success: #4ade80;
             --success-bg: rgba(74, 222, 128, .14);
 
-            --shadow:
-                0 25px 70px rgba(0, 0, 0, .45);
-
-            --small-shadow:
-                0 10px 30px rgba(0, 0, 0, .28);
-
-            color-scheme: dark;
+            --shadow: 0 25px 70px rgba(0, 0, 0, .35);
+            --small-shadow: 0 10px 30px rgba(0, 0, 0, .28);
+            --overlay: rgba(15, 23, 42, .96);
         }
 
-
-        /* =========================================================
-   RESET
-========================================================= */
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-
-        html {
-            min-height: 100%;
-            background: var(--page-bg);
-        }
-
+        * { box-sizing: border-box; }
 
         body {
-
-            min-height: 100vh;
-
-            font-family:
-                Inter,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Roboto,
-                Helvetica,
-                Arial,
-                sans-serif;
-
-            background: var(--page-bg);
+            margin: 0;
+            background: var(--bg);
             color: var(--text);
-
+            font-family: system-ui, -apple-system, BlinkMacSystemFont,
+                         "Segoe UI", sans-serif;
+            line-height: 1.6;
             -webkit-font-smoothing: antialiased;
-            text-rendering: optimizeLegibility;
-
-            transition:
-                background-color .25s ease,
-                color .25s ease;
         }
 
+        button, input { font: inherit; }
+        button { cursor: pointer; }
+        a { color: inherit; text-decoration: none; }
 
-        button,
-        input {
-            font: inherit;
-        }
-
-
-        button {
+        button, a {
             -webkit-tap-highlight-color: transparent;
         }
 
-
-        a {
-            text-decoration: none;
+        a:focus-visible,
+        button:focus-visible,
+        input[type="checkbox"]:focus-visible {
+            outline: 3px solid var(--primary);
+            outline-offset: 4px;
         }
-
-
-        /* =========================================================
-   MAIN PAGE
-========================================================= */
 
         .login-page {
-
             min-height: 100vh;
-
+            min-height: 100svh;
             display: grid;
-
             grid-template-columns: 1fr 1fr;
-
-            background: var(--page-bg);
-
-            overflow: hidden;
         }
 
-
-        /* =========================================================
-   BRAND PANEL
-========================================================= */
-
+        /* Brand panel */
         .brand-panel {
-
-            min-height: 100vh;
-
             position: relative;
-
+            overflow: hidden;
             display: flex;
-
             align-items: center;
             justify-content: center;
-
-            padding: 60px;
-
-            overflow: hidden;
-
+            padding: 70px;
+            background: linear-gradient(145deg, #2563eb, #1d4ed8 48%, #1e3a8a);
             color: #ffffff;
-
-            background:
-                linear-gradient(145deg,
-                    #2563eb 0%,
-                    #1d4ed8 48%,
-                    #1e3a8a 100%);
         }
 
+        html[data-theme="dark"] .brand-panel {
+            background: linear-gradient(145deg, #172554, #1e3a8a 60%, #0f172a);
+        }
+
+        .brand-panel::before,
+        .brand-panel::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
 
         .brand-panel::before {
-
-            content: "";
-
-            position: absolute;
-
             width: 520px;
             height: 520px;
-
             top: -240px;
             right: -180px;
-
-            border-radius: 50%;
-
-            background:
-                rgba(255, 255, 255, .08);
+            background: rgba(255, 255, 255, .07);
         }
-
 
         .brand-panel::after {
-
-            content: "";
-
-            position: absolute;
-
             width: 430px;
             height: 430px;
-
             bottom: -230px;
             left: -190px;
-
-            border-radius: 50%;
-
-            background:
-                rgba(255, 255, 255, .07);
+            border: 65px solid rgba(255, 255, 255, .05);
         }
-
 
         .brand-content {
-
-            width: 100%;
-
-            max-width: 520px;
-
             position: relative;
-
-            z-index: 2;
-        }
-
-
-        /* =========================================================
-   LOGO
-========================================================= */
-
-        .brand-logo-wrapper {
-
-            width: 82px;
-            height: 82px;
-
-            margin-bottom: 28px;
-
-            display: block;
-
-            overflow: hidden;
-
-            border-radius: 22px;
-
-            background: #ffffff;
-
-            border: 1px solid rgba(255, 255, 255, .35);
-
-            box-shadow:
-                0 18px 45px rgba(15, 23, 42, .22);
-        }
-
-
-        .brand-logo {
-
+            z-index: 1;
             width: 100%;
-            height: 100%;
-
-            display: block;
-
-            object-fit: cover;
-
-            padding: 2px;
-
-            border-radius: 22px;
-        }
-
-
-        /* =========================================================
-   LOGO THEME SWITCH
-========================================================= */
-
-        .logo-light {
-            display: block;
-        }
-
-
-        .logo-dark {
-            display: none;
-        }
-
-
-        html[data-theme="dark"] .logo-light {
-            display: none;
-        }
-
-
-        html[data-theme="dark"] .logo-dark {
-            display: block;
-        }
-
-
-        /* =========================================================
-   BRAND TEXT
-========================================================= */
-
-        .brand-title {
-
-            font-size:
-                clamp(46px, 5vw, 68px);
-
-            line-height: 1;
-
-            font-weight: 800;
-
-            letter-spacing: -3px;
-
-            margin-bottom: 22px;
-        }
-
-
-        .brand-description {
-
             max-width: 470px;
-
-            font-size: 18px;
-
-            line-height: 1.7;
-
-            color:
-                rgba(255, 255, 255, .84);
-
-            margin-bottom: 38px;
         }
 
-
-        /* =========================================================
-   FEATURES
-========================================================= */
-
-        .feature-list {
-
-            display: grid;
-
+        .brand-home {
+            display: inline-flex;
+            align-items: center;
             gap: 15px;
+            color: #ffffff;
         }
 
-
-        .feature {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 13px;
-
-            font-size: 15px;
-
-            color:
-                rgba(255, 255, 255, .92);
+        .brand-home-label {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -.6px;
         }
 
-
-        .feature-icon {
-
-            width: 30px;
-            height: 30px;
-
-            flex: 0 0 30px;
-
-            display: grid;
-
-            place-items: center;
-
-            border-radius: 9px;
-
-            background:
-                rgba(255, 255, 255, .14);
-
-            font-size: 14px;
+        .brand-home-label small {
+            display: block;
+            margin-top: 3px;
+            font-size: 10px;
+            font-weight: 650;
+            letter-spacing: 2px;
+            opacity: .75;
         }
 
-
-        /* =========================================================
-   LOGIN PANEL
-========================================================= */
-
-        .login-panel {
-
-            min-height: 100vh;
-
-            position: relative;
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            padding: 50px 40px;
-
-            background: var(--page-bg);
-        }
-
-
-        .login-container {
-
-            width: 100%;
-
-            max-width: 450px;
-        }
-
-
-        /* =========================================================
-   THEME TOGGLE
-========================================================= */
-
-        .theme-toggle {
-
-            position: absolute;
-
-            top: 25px;
-            right: 25px;
-
-            width: 44px;
-            height: 44px;
-
-            display: grid;
-
-            place-items: center;
-
-            border: 1px solid var(--border);
-
-            border-radius: 12px;
-
-            background: var(--card-bg);
-
-            color: var(--text);
-
-            cursor: pointer;
-
-            box-shadow: var(--small-shadow);
-
-            transition:
-                background-color .2s ease,
-                border-color .2s ease,
-                transform .15s ease;
-        }
-
-
-        .theme-toggle:hover {
-
-            transform:
-                translateY(-1px);
-        }
-
-
-        .theme-toggle:active {
-
-            transform:
-                translateY(0);
-        }
-
-
-        .theme-icon {
-
-            font-size: 18px;
-
-            line-height: 1;
-        }
-
-
-        .sun-icon {
-            display: none;
-        }
-
-
-        .moon-icon {
-            display: inline;
-        }
-
-
-        html[data-theme="dark"] .sun-icon {
-            display: inline;
-        }
-
-
-        html[data-theme="dark"] .moon-icon {
-            display: none;
-        }
-
-
-        /* =========================================================
-   MOBILE BRAND
-========================================================= */
-
-        .mobile-brand {
-
-            display: none;
-
-            text-align: center;
-
-            margin-bottom: 28px;
-        }
-
-
-        .mobile-brand-icon {
-
+        .logo-frame {
+            display: block;
             width: 72px;
             height: 72px;
-
-            margin:
-                0 auto 13px;
-
-            display: block;
-
+            flex: 0 0 72px;
             overflow: hidden;
-
-            border-radius: 19px;
-
-            background: var(--card-bg);
-
             border: 1px solid var(--border);
-
+            border-radius: 19px;
+            background: var(--card);
             box-shadow: var(--small-shadow);
+            transition: transform .25s ease, box-shadow .25s ease;
         }
 
-
-        .mobile-brand-logo {
-
+        .logo-frame img {
             width: 100%;
             height: 100%;
-
-            display: block;
-
-            object-fit: cover;
-
-            padding: 1px;
-
-            border-radius: 19px;
+            object-fit: contain;
         }
 
+        .logo-frame .logo-light { display: block; }
+        .logo-frame .logo-dark { display: none; }
 
-        /* =========================================================
-   LOGIN HEADER
-========================================================= */
+        html[data-theme="dark"] .logo-frame .logo-light { display: none; }
+        html[data-theme="dark"] .logo-frame .logo-dark { display: block; }
 
-        .login-header {
-
-            margin-bottom: 30px;
+        .brand-home:hover .logo-frame,
+        .mobile-brand:hover .logo-frame {
+            transform: translateY(-3px) rotate(-4deg);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, .2);
         }
 
-
-        .login-title {
-
-            font-size: 34px;
-
-            line-height: 1.15;
-
-            letter-spacing: -1.2px;
-
-            font-weight: 800;
-
-            color: var(--text);
-
-            margin-bottom: 9px;
-        }
-
-
-        .login-subtitle {
-
-            color: var(--muted);
-
-            font-size: 15px;
-
-            line-height: 1.6;
-        }
-
-
-        /* =========================================================
-   DJANGO MESSAGES
-========================================================= */
-
-        .messages {
-
-            display: grid;
-
-            gap: 10px;
-
-            margin-bottom: 18px;
-        }
-
-
-        .message {
-
-            display: flex;
-
-            align-items: flex-start;
-
-            gap: 10px;
-
-            padding: 13px 15px;
-
-            border-radius: 11px;
-
-            border: 1px solid var(--border);
-
-            background: var(--surface-soft);
-
-            color: var(--text-soft);
-
-            font-size: 14px;
-
-            line-height: 1.5;
-        }
-
-
-        .message.error {
-
-            color: var(--danger);
-
-            background: var(--danger-bg);
-
-            border-color:
-                rgba(220, 38, 38, .25);
-        }
-
-
-        .message.success {
-
-            color: var(--success);
-
-            background: var(--success-bg);
-
-            border-color:
-                rgba(22, 163, 74, .25);
-        }
-
-
-        /* =========================================================
-   LOGIN AUTHENTICATION ERROR
-========================================================= */
-
-        .login-error {
-
-            display: flex;
-
-            align-items: flex-start;
-
-            gap: 10px;
-
-            margin-bottom: 20px;
-
-            padding: 13px 15px;
-
-            border-radius: 11px;
-
-            border: 1px solid rgba(220, 38, 38, .25);
-
-            background: var(--danger-bg);
-
-            color: var(--danger);
-
-            font-size: 14px;
-
-            line-height: 1.5;
-        }
-
-
-        .error-icon {
-
-            width: 23px;
-            height: 23px;
-
-            min-width: 23px;
-
-            display: grid;
-
-            place-items: center;
-
-            border-radius: 50%;
-
-            background: var(--danger);
-
-            color: #ffffff;
-
-            font-size: 13px;
-
-            font-weight: 800;
-
-            line-height: 1;
-        }
-
-
-        .login-error-content {
-            padding-top: 1px;
-        }
-
-
-        .login-error-title {
-
-            display: block;
-
-            margin-bottom: 2px;
-
-            font-weight: 750;
-        }
-
-
-        .login-error-text {
-
-            color: var(--danger);
-
-            opacity: .9;
-        }
-
-
-        /* =========================================================
-   FORM
-========================================================= */
-
-        .login-form {
-            width: 100%;
-        }
-
-
-        .form-group {
-
-            margin-bottom: 20px;
-        }
-
-
-        .form-label {
-
-            display: block;
-
-            margin-bottom: 8px;
-
-            color: var(--text);
-
-            font-size: 14px;
-
-            font-weight: 700;
-        }
-
-
-        .input-wrapper {
-            position: relative;
-        }
-
-
-        .form-input {
-
-            width: 100%;
-
-            height: 54px;
-
-            padding:
-                0 16px;
-
-            border:
-                1px solid var(--input-border);
-
-            border-radius: 12px;
-
-            outline: none;
-
-            background: var(--input-bg);
-
-            color: var(--text);
-
-            font-size: 15px;
-
-            transition:
-                border-color .2s ease,
-                box-shadow .2s ease,
-                background-color .2s ease;
-        }
-
-
-        .form-input::placeholder {
-
-            color: var(--muted);
-        }
-
-
-        .form-input:focus {
-
-            border-color:
-                var(--primary);
-
-            box-shadow:
-                0 0 0 4px rgba(37, 99, 235, .12);
-        }
-
-
-        .form-input.input-error {
-
-            border-color: var(--danger);
-        }
-
-
-        .form-input.input-error:focus {
-
-            border-color: var(--danger);
-
-            box-shadow:
-                0 0 0 4px rgba(220, 38, 38, .10);
-        }
-
-
-        .password-input {
-
-            padding-right: 55px;
-        }
-
-
-        /* =========================================================
-   PASSWORD TOGGLE
-========================================================= */
-
-        .password-toggle {
-
-            position: absolute;
-
-            top: 50%;
-            right: 6px;
-
-            transform:
-                translateY(-50%);
-
-            width: 42px;
-            height: 42px;
-
-            display: grid;
-
-            place-items: center;
-
-            border: 0;
-
-            border-radius: 9px;
-
-            background: transparent;
-
-            color: var(--muted);
-
-            cursor: pointer;
-        }
-
-
-        .password-toggle:hover {
-
-            background:
-                var(--surface-soft);
-
-            color: var(--text);
-        }
-
-
-        /* =========================================================
-   REMEMBER ME + FORGOT PASSWORD
-========================================================= */
-
-        .login-options {
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-
-            gap: 15px;
-
-            margin-top: -4px;
-
-            margin-bottom: 20px;
-        }
-
-
-        .remember-me {
-
-            display: inline-flex;
-
-            align-items: center;
-
-            gap: 8px;
-
-            color: var(--muted);
-
-            font-size: 13px;
-
-            font-weight: 600;
-
-            cursor: pointer;
-
-            user-select: none;
-        }
-
-
-        .remember-checkbox {
-
-            width: 17px;
-            height: 17px;
-
-            margin: 0;
-
-            accent-color: var(--primary);
-
-            cursor: pointer;
-        }
-
-
-        .remember-me:hover {
-
-            color: var(--text);
-        }
-
-
-        .forgot-password-link {
-
-            color: var(--primary);
-
-            font-size: 13px;
-
-            font-weight: 700;
-
-            white-space: nowrap;
-
-            transition:
-                opacity .2s ease;
-        }
-
-
-        .forgot-password-link:hover {
-
-            opacity: .75;
-
-            text-decoration:
-                underline;
-        }
-
-
-        /* =========================================================
-   LOGIN BUTTON
-========================================================= */
-
-        .login-button {
-
-            width: 100%;
-
-            height: 54px;
-
-            margin-top: 5px;
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            gap: 10px;
-
-            border: 0;
-
-            border-radius: 12px;
-
-            background:
-                linear-gradient(135deg,
-                    var(--primary),
-                    var(--primary-dark));
-
-            color: #ffffff;
-
-            font-size: 15px;
-
-            font-weight: 750;
-
-            cursor: pointer;
-
-            box-shadow:
-                0 12px 28px rgba(37, 99, 235, .22);
-
-            transition:
-                transform .2s ease,
-                box-shadow .2s ease,
-                opacity .2s ease;
-        }
-
-
-        .login-button:hover {
-
-            transform:
-                translateY(-1px);
-
-            box-shadow:
-                0 16px 34px rgba(37, 99, 235, .28);
-        }
-
-
-        .login-button:active {
-
-            transform:
-                translateY(0);
-        }
-
-
-        .login-button:disabled {
-
-            opacity: .7;
-
-            cursor: not-allowed;
-
-            transform: none;
-        }
-
-
-        /* =========================================================
-   BUTTON SPINNER
-========================================================= */
-
-        .button-spinner {
-
-            width: 17px;
-            height: 17px;
-
-            display: none;
-
-            border:
-                2px solid rgba(255, 255, 255, .35);
-
-            border-top-color: #ffffff;
-
-            border-radius: 50%;
-
-            animation:
-                kounterLoginSpin .75s linear infinite;
-        }
-
-
-        .login-button.loading .button-spinner {
-
-            display: block;
-        }
-
-
-        .login-button.loading .button-text {
-
-            display: none;
-        }
-
-
-        @keyframes kounterLoginSpin {
-
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-
-        /* =========================================================
-   DIVIDER
-========================================================= */
-
-        .divider {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 14px;
-
-            margin: 28px 0;
-        }
-
-
-        .divider::before,
-        .divider::after {
-
-            content: "";
-
-            height: 1px;
-
-            flex: 1;
-
-            background:
-                var(--border);
-        }
-
-
-        .divider span {
-
-            color: var(--muted);
-
+        .brand-tag {
+            display: inline-block;
+            margin-top: 40px;
+            padding: 6px 12px;
+            border: 1px solid rgba(255, 255, 255, .2);
+            border-radius: 30px;
+            background: rgba(255, 255, 255, .08);
             font-size: 11px;
+            font-weight: 650;
+            letter-spacing: .7px;
+        }
 
+        .brand-title {
+            margin: 20px 0;
+            font-size: clamp(40px, 4.5vw, 62px);
             font-weight: 800;
-
-            letter-spacing: .08em;
-
-            text-transform: uppercase;
+            line-height: 1.08;
+            letter-spacing: -2.5px;
         }
 
+        .brand-description {
+            max-width: 420px;
+            margin: 0 0 30px;
+            color: rgba(255, 255, 255, .8);
+            font-size: 16px;
+        }
 
-        /* =========================================================
-   SIGN UP
-========================================================= */
+        .feature-list {
+            display: grid;
+            gap: 8px;
+        }
 
-        .signup-text {
-
-            text-align: center;
-
-            color: var(--muted);
-
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border: 1px solid transparent;
+            border-radius: 12px;
             font-size: 14px;
-
-            line-height: 1.6;
+            transition: transform .22s, background-color .22s,
+                        border-color .22s;
         }
 
-
-        .signup-link {
-
-            color: var(--primary);
-
-            font-weight: 750;
-
-            transition:
-                opacity .2s ease;
+        .feature:hover {
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, .08);
+            border-color: rgba(255, 255, 255, .14);
         }
 
-
-        .signup-link:hover {
-
-            opacity: .75;
-
-            text-decoration:
-                underline;
+        .feature-check {
+            display: grid;
+            place-items: center;
+            width: 30px;
+            height: 30px;
+            flex: 0 0 30px;
+            border-radius: 9px;
+            background: rgba(255, 255, 255, .13);
+            transition: transform .22s;
         }
 
+        .feature:hover .feature-check { transform: rotate(-6deg); }
 
-        /* =========================================================
-   FOOTER
-========================================================= */
-
-        .login-footer {
-
-            margin-top: 30px;
-
-            text-align: center;
-
-            color: var(--muted);
-
+        .brand-footer {
+            margin-top: 35px;
+            color: rgba(255, 255, 255, .65);
             font-size: 12px;
         }
 
+        /* Login panel */
+        .login-panel {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 95px 40px 45px;
+        }
 
-        /* =========================================================
-   LOADING OVERLAY
-========================================================= */
+        .panel-tools {
+            position: absolute;
+            top: 24px;
+            left: 30px;
+            right: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: var(--muted);
+            font-size: 13px;
+            transition: color .2s;
+        }
+
+        .back-link:hover { color: var(--primary); }
+        .back-link svg { width: 16px; height: 16px; }
+
+        .theme-toggle {
+            display: grid;
+            place-items: center;
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--card);
+            color: var(--text);
+            transition: transform .22s, border-color .22s,
+                        background-color .22s;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            background: var(--soft);
+        }
+
+        .theme-toggle svg { width: 20px; height: 20px; }
+        .sun-icon { display: none; }
+        html[data-theme="dark"] .sun-icon { display: block; }
+        html[data-theme="dark"] .moon-icon { display: none; }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .login-card {
+            padding: 35px;
+            border: 1px solid var(--border);
+            border-radius: 23px;
+            background: var(--card);
+            box-shadow: var(--shadow);
+        }
+
+        .mobile-brand {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .mobile-brand .logo-frame {
+            width: 48px;
+            height: 48px;
+            flex-basis: 48px;
+            border-radius: 13px;
+        }
+
+        .mobile-brand strong {
+            font-size: 24px;
+            letter-spacing: -.7px;
+        }
+
+        .eyebrow {
+            color: var(--primary);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+        }
+
+        .login-title {
+            margin: 10px 0 8px;
+            font-size: 33px;
+            line-height: 1.15;
+            letter-spacing: -1.2px;
+        }
+
+        .login-subtitle {
+            margin: 0 0 27px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* Messages and errors */
+        .messages { display: grid; gap: 10px; margin-bottom: 20px; }
+
+        .message, .login-error {
+            padding: 13px 15px;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            background: var(--soft);
+            color: var(--text-soft);
+            font-size: 13px;
+        }
+
+        .message.error, .login-error {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .message.success {
+            background: var(--success-bg);
+            color: var(--success);
+        }
+
+        .login-error { margin-bottom: 20px; }
+        .login-error strong { display: block; margin-bottom: 4px; }
+        .login-error p { margin: 0; }
+
+        .field-error {
+            margin: 7px 0 0;
+            color: var(--danger);
+            font-size: 12px;
+        }
+
+        /* Form */
+        .form-group { margin-bottom: 20px; }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-soft);
+            font-size: 13px;
+            font-weight: 700;
+            transition: color .2s;
+        }
+
+        .form-group:focus-within .form-label { color: var(--primary); }
+
+        .input-wrapper { position: relative; }
+
+        .form-input {
+            width: 100%;
+            min-height: 51px;
+            padding: 13px 15px;
+            border: 1px solid var(--input-border);
+            border-radius: 11px;
+            background: var(--input-bg);
+            color: var(--text);
+            font-size: 16px;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .form-input::placeholder {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .form-input:hover { border-color: var(--primary); }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--focus-ring);
+        }
+
+        .form-input.input-error { border-color: var(--danger); }
+
+        .form-input.input-error:focus {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 4px rgba(220, 38, 38, .12);
+        }
+
+        .password-input { padding-right: 58px; }
+
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            transform: translateY(-50%);
+            display: grid;
+            place-items: center;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--muted);
+            transition: color .2s, background-color .2s;
+        }
+
+        .password-toggle:hover {
+            color: var(--primary);
+            background: var(--primary-soft);
+        }
+
+        .password-toggle svg { width: 21px; height: 21px; }
+        .eye-closed { display: none; }
+        .password-toggle[aria-pressed="true"] .eye-open { display: none; }
+        .password-toggle[aria-pressed="true"] .eye-closed { display: block; }
+
+        .login-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 3px 0 24px;
+            font-size: 12px;
+        }
+
+        .remember-me {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-soft);
+            cursor: pointer;
+        }
+
+        .remember-me:hover { color: var(--primary); }
+
+        .remember-checkbox {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .text-link {
+            position: relative;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .text-link::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -2px;
+            width: 100%;
+            height: 2px;
+            background: currentColor;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform .2s;
+        }
+
+        .text-link:hover::after { transform: scaleX(1); }
+
+        .login-button {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            min-height: 51px;
+            padding: 14px 20px;
+            border: 0;
+            border-radius: 11px;
+            background: var(--primary);
+            color: var(--button-text);
+            font-size: 14px;
+            font-weight: 800;
+            transition: transform .22s, background-color .22s,
+                        box-shadow .22s;
+        }
+
+        .login-button:not(:disabled):hover {
+            transform: translateY(-3px);
+            background: var(--primary-hover);
+            box-shadow: 0 12px 28px rgba(37, 99, 235, .22);
+        }
+
+        .login-button:not(:disabled):active { transform: translateY(0); }
+
+        .login-button::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                110deg,
+                transparent 20%,
+                rgba(255, 255, 255, .17) 50%,
+                transparent 80%
+            );
+            transform: translateX(-130%);
+            transition: transform .5s;
+            pointer-events: none;
+        }
+
+        .login-button:not(:disabled):hover::after {
+            transform: translateX(130%);
+        }
+
+        .button-arrow { width: 18px; height: 18px; }
+        .button-spinner { display: none; }
+
+        .login-button.loading { cursor: wait; }
+        .login-button.loading .button-arrow { display: none; }
+        .login-button.loading .button-spinner { display: block; }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 25px 0 20px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .signup-text {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .login-footer {
+            margin-top: 24px;
+            color: var(--muted);
+            font-size: 11px;
+            text-align: center;
+        }
+
+        /* Loading screen */
+        .loading-overlay[hidden] { display: none; }
 
         .loading-overlay {
-
             position: fixed;
-
             inset: 0;
-
-            z-index: 99999;
-
-            display: none;
-
-            align-items: center;
-
-            justify-content: center;
-
-            flex-direction: column;
-
-            gap: 17px;
-
-            background:
-                rgba(245, 247, 251, .96);
-
-            backdrop-filter:
-                blur(10px);
-
-            -webkit-backdrop-filter:
-                blur(10px);
-        }
-
-
-        html[data-theme="dark"] .loading-overlay {
-
-            background:
-                rgba(15, 23, 42, .96);
-        }
-
-
-        .loading-overlay.active {
-
+            z-index: 1000;
             display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 22px;
+            background: var(--overlay);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
 
-
-        .loading-logo {
-
-            width: 76px;
-            height: 76px;
-
-            overflow: hidden;
-
-            border-radius: 21px;
-
-            background: var(--card-bg);
-
-            border: 1px solid var(--border);
-
-            box-shadow: var(--small-shadow);
+        .loading-overlay .logo-frame {
+            width: 82px;
+            height: 82px;
+            flex: 0 0 82px;
+            border-radius: 22px;
         }
 
-
-        .loading-logo-image {
-
-            width: 100%;
-            height: 100%;
-
-            display: block;
-
-            object-fit: cover;
-
-            padding: 1px;
-
-            border-radius: 21px;
-        }
-
-
-        .loading-spinner {
-
-            width: 25px;
-            height: 25px;
-
-            border:
-                3px solid var(--border);
-
-            border-top-color:
-                var(--primary);
-
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
             border-radius: 50%;
-
-            animation:
-                kounterLoginSpin .8s linear infinite;
+            animation: spin .8s linear infinite;
         }
 
+        .button-spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+        }
 
         .loading-text {
-
-            color: var(--muted);
-
-            font-size: 14px;
-
-            font-weight: 600;
+            color: var(--text);
+            font-size: 15px;
+            font-weight: 650;
         }
 
-
-        /* =========================================================
-   TABLET
-========================================================= */
-
-        @media (max-width: 1000px) {
-
-            .login-page {
-
-                grid-template-columns:
-                    .85fr 1fr;
-            }
-
-
-            .brand-panel {
-
-                padding: 40px;
-            }
-
-
-            .login-panel {
-
-                padding:
-                    40px 30px;
-            }
-
-
-            .brand-title {
-
-                font-size: 48px;
-            }
-
-
-            .brand-description {
-
-                font-size: 16px;
-            }
-
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-
-        /* =========================================================
-   MOBILE
-========================================================= */
-
-        @media (max-width: 760px) {
-
-            .login-page {
-
-                display: block;
-
-                min-height: 100vh;
-            }
-
-
-            .brand-panel {
-
-                display: none;
-            }
-
-
-            .login-panel {
-
-                min-height: 100vh;
-
-                padding:
-                    35px 20px 30px;
-
-                align-items: center;
-            }
-
-
-            .login-container {
-
-                max-width: 480px;
-
-                margin:
-                    0 auto;
-            }
-
-
-            .mobile-brand {
-
-                display: block;
-            }
-
-
-            .login-header {
-
-                text-align: center;
-
-                margin-bottom: 28px;
-            }
-
-
-            .login-title {
-
-                font-size: 30px;
-            }
-
-
-            .theme-toggle {
-
-                top: 18px;
-                right: 18px;
-
-                width: 42px;
-                height: 42px;
-            }
-
+        @media (max-width: 1100px) {
+            .brand-panel { padding: 45px; }
+            .login-panel { padding-inline: 25px; }
+            .login-card { padding: 28px; }
         }
 
-
-        /* =========================================================
-   SMALL PHONES
-========================================================= */
-
-        @media (max-width: 400px) {
-
-            .login-panel {
-
-                padding:
-                    28px 16px 24px;
-            }
-
-
-            .mobile-brand-icon {
-
-                width: 62px;
-                height: 62px;
-
-                border-radius: 17px;
-            }
-
-
-            .mobile-brand-logo {
-
-                border-radius: 17px;
-            }
-
-
-            .login-title {
-
-                font-size: 27px;
-            }
-
-
-            .form-input,
-            .login-button {
-
-                height: 52px;
-            }
-
-
-            .loading-logo {
-
-                width: 68px;
-                height: 68px;
-            }
-
+        @media (max-width: 800px) {
+            .login-page { grid-template-columns: 1fr; }
+            .brand-panel { display: none; }
+            .mobile-brand { display: flex; }
+            .login-panel { padding: 95px 22px 35px; }
+            .panel-tools { left: 22px; right: 22px; }
         }
 
+        @media (max-width: 420px) {
+            .login-panel { padding-inline: 16px; }
+            .login-card { padding: 25px 20px; border-radius: 18px; }
+            .login-title { font-size: 29px; }
+        }
 
-        /* =========================================================
-   REDUCED MOTION
-========================================================= */
+        @media (hover: none) {
+            .feature:hover,
+            .feature:hover .feature-check,
+            .brand-home:hover .logo-frame,
+            .mobile-brand:hover .logo-frame,
+            .theme-toggle:hover,
+            .login-button:not(:disabled):hover {
+                transform: none;
+            }
+
+            .login-button::after { display: none; }
+        }
 
         @media (prefers-reduced-motion: reduce) {
-
-            *,
-            *::before,
-            *::after {
-
-                animation-duration:
-                    .01ms !important;
-
-                animation-iteration-count:
-                    1 !important;
-
-                transition-duration:
-                    .01ms !important;
+            *, *::before, *::after {
+                transition: none !important;
+                animation: none !important;
             }
 
+            .login-button::after { display: none; }
+
+            .feature:hover,
+            .feature:hover .feature-check,
+            .brand-home:hover .logo-frame,
+            .mobile-brand:hover .logo-frame,
+            .theme-toggle:hover,
+            .login-button:not(:disabled):hover {
+                transform: none;
+            }
         }
     </style>
-
 </head>
 
 <body>
-
-    <!-- =========================================================
- MAIN LOGIN PAGE
-
-========================================================= -->
-
-    <main class="login-page">
-
-
-        <!-- =====================================================
-     BRANDING
-====================================================== -->
-
-        <section class="brand-panel">
-
+    <main class="login-page" id="loginPage">
+        <section class="brand-panel" aria-labelledby="brand-title">
             <div class="brand-content">
-
-
-                <div class="brand-logo-wrapper">
-
-                    <img src="{% static 'core/Kounter_light.jpg' %}" alt="Kounter" class="brand-logo logo-light">
-
-                    <img src="{% static 'core/Kounter_dark.jpg' %}" alt="Kounter" class="brand-logo logo-dark">
-
-                </div>
-
-
-                <h1 class="brand-title">
-                    Kounter
-                </h1>
-
-
-                <p class="brand-description">
-
-                    A simple and modern point-of-sale
-                    system designed to help you manage
-                    your shop, products, stock and sales
-                    with ease.
-
-                </p>
-
-
-                <div class="feature-list">
-
-                    <div class="feature">
-
-                        <span class="feature-icon">
-                            ✓
-                        </span>
-
-                        <span>
-                            Manage products and stock easily
-                        </span>
-
-                    </div>
-
-
-                    <div class="feature">
-
-                        <span class="feature-icon">
-                            ✓
-                        </span>
-
-                        <span>
-                            Record sales quickly
-                        </span>
-
-                    </div>
-
-
-                    <div class="feature">
-
-                        <span class="feature-icon">
-                            ✓
-                        </span>
-
-                        <span>
-                            Monitor your shop from anywhere
-                        </span>
-
-                    </div>
-
-
-                    <div class="feature">
-
-                        <span class="feature-icon">
-                            ✓
-                        </span>
-
-                        <span>
-                            Keep your business organized
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =====================================================
-     LOGIN
-====================================================== -->
-
-        <section class="login-panel">
-
-
-            <!-- THEME TOGGLE -->
-
-            <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode"
-                title="Toggle dark mode">
-
-                <span class="theme-icon moon-icon">
-                    🌙
-                </span>
-
-                <span class="theme-icon sun-icon">
-                    ☀️
-                </span>
-
-            </button>
-
-
-
-            <div class="login-container">
-
-
-                <!-- =================================================
-             MOBILE BRAND
-        ================================================== -->
-
-                <div class="mobile-brand">
-
-                    <div class="mobile-brand-icon">
-
-                        <img src="{% static 'core/Kounter_light.jpg' %}" alt="Kounter"
-                            class="mobile-brand-logo logo-light">
-
-                        <img src="{% static 'core/Kounter_dark.jpg' %}" alt="Kounter"
-                            class="mobile-brand-logo logo-dark">
-
-                    </div>
-
-
-                    <div style="
-                font-size:23px;
-                font-weight:800;
-                letter-spacing:-.5px;
-                color:var(--text);
-                margin-bottom:5px;
-            ">
-                        Kounter
-                    </div>
-
-
-                    <div style="
-                font-size:13px;
-                color:var(--muted);
-            ">
-                        Point-of-sale management
-                    </div>
-
-                </div>
-
-
-
-                <!-- =================================================
-             LOGIN HEADER
-        ================================================== -->
-
-                <div class="login-header">
-
-                    <h2 class="login-title">
-                        Welcome back
-                    </h2>
-
-
-                    <p class="login-subtitle">
-                        Sign in to your Kounter account
-                        to continue.
-                    </p>
-
-                </div>
-
-
-
-                <!-- =================================================
-             DJANGO MESSAGES
-        ================================================== -->
-
-                {% if messages %}
-
-                <div class="messages">
-
-                    {% for message in messages %}
-
-                    <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
-
-                        {{ message }}
-
-                    </div>
-
-                    {% endfor %}
-
-                </div>
-
-                {% endif %}
-
-
-
-                <!-- =================================================
-             LOGIN FORM
-        ================================================== -->
-
-                <form method="post" action="{% url 'login' %}" class="login-form" id="loginForm">
-
-                    {% csrf_token %}
-
-                    <!-- Preserve redirect destination -->
-
-                    <input type="hidden" name="next" value="{{ next }}" />
-
-
-                    <!-- =================================================
-                 AUTHENTICATION ERROR
-            ================================================== -->
-
-                    {% if form.non_field_errors %}
-
-                    <div class="login-error" role="alert" aria-live="assertive">
-
-                        <span class="error-icon">
-                            !
-                        </span>
-
-
-                        <div class="login-error-content">
-
-                            <span class="login-error-title">
-                                Login failed
-                            </span>
-
-
-                            <span class="login-error-text">
-
-                                {% for error in form.non_field_errors %}
-
-                                {{ error }}
-
-                                {% endfor %}
-
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                    {% endif %}
-
-
-
-                    <!-- USERNAME -->
-
-                    <div class="form-group">
-
-                        <label for="username" class="form-label">
-                            Username
-                        </label>
-
-
-                        <div class="input-wrapper">
-
-                            <input type="text" id="username" name="username"
-                                class="form-input{% if form.non_field_errors %} input-error{% endif %}"
-                                placeholder="Enter your username" autocomplete="username"
-                                value="{{ form.username.value|default:'' }}" required autofocus>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- PASSWORD -->
-
-                    <div class="form-group">
-
-                        <label for="password" class="form-label">
-                            Password
-                        </label>
-
-
-                        <div class="input-wrapper">
-
-                            <input type="password" id="password" name="password"
-                                class="form-input password-input{% if form.non_field_errors %} input-error{% endif %}"
-                                placeholder="Enter your password" autocomplete="current-password" required>
-
-
-                            <button type="button" class="password-toggle" id="passwordToggle" aria-label="Show password"
-                                title="Show password">
-                                👁
-                            </button>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- =================================================
-                 REMEMBER ME + FORGOT PASSWORD
-            ================================================== -->
-
-                    <div class="login-options">
-
-                        <label for="remember_me" class="remember-me">
-
-                            <input type="checkbox" id="remember_me" name="remember_me" value="1"
-                                class="remember-checkbox">
-
-                            <span>
-                                Remember me
-                            </span>
-
-                        </label>
-
-
-                        <a href="{% url 'password_reset' %}" class="forgot-password-link">
-                            Forgot password?
-                        </a>
-
-                    </div>
-
-
-
-                    <!-- LOGIN BUTTON -->
-
-                    <button type="submit" class="login-button" id="loginButton">
-
-                        <span class="button-text">
-                            Sign in
-                        </span>
-
-                        <span class="button-spinner" aria-hidden="true"></span>
-
-                    </button>
-
-
-                </form>
-
-
-
-                <!-- =================================================
-             DIVIDER
-        ================================================== -->
-
-                <div class="divider">
-
-                    <span>
-                        Kounter
+                <a class="brand-home" href="{% url 'home' %}"
+                   aria-label="Go to Kounter homepage">
+                    <span class="logo-frame" aria-hidden="true">
+                        <img class="logo-light"
+                             src="{% static 'core/Kounter_light.jpg' %}" alt="">
+                        <img class="logo-dark"
+                             src="{% static 'core/Kounter_dark.jpg' %}" alt="">
                     </span>
 
+                    <span class="brand-home-label">
+                        Kounter
+                        <small>POINT OF SALE</small>
+                    </span>
+                </a>
+
+                <div>
+                    <span class="brand-tag">BUILT FOR YOUR BUSINESS</span>
                 </div>
 
+                <h1 class="brand-title" id="brand-title">
+                    Your shop.<br>
+                    Your progress.<br>
+                    One place.
+                </h1>
 
-
-                <!-- =================================================
-             SIGN UP
-        ================================================== -->
-
-                <p class="signup-text">
-
-                    Don't have an account?
-
-                    <a href="{% url 'signup' %}" class="signup-link">
-                        Create an account
-                    </a>
-
+                <p class="brand-description">
+                    Keep your stock organised, record your sales and
+                    see how your business is doing with Kounter.
                 </p>
 
+                <div class="feature-list">
+                    <div class="feature">
+                        <span class="feature-check" aria-hidden="true">✓</span>
+                        <span>Manage your stock with ease</span>
+                    </div>
 
+                    <div class="feature">
+                        <span class="feature-check" aria-hidden="true">✓</span>
+                        <span>Record sales quickly</span>
+                    </div>
 
-                <!-- =================================================
-             FOOTER
-        ================================================== -->
+                    <div class="feature">
+                        <span class="feature-check" aria-hidden="true">✓</span>
+                        <span>Review your sales and reports</span>
+                    </div>
 
-                <div class="login-footer">
-
-                    © {% now "Y" %} Kounter.
-                    All rights reserved.
-
+                    <div class="feature">
+                        <span class="feature-check" aria-hidden="true">✓</span>
+                        <span>Manage your attendant accounts</span>
+                    </div>
                 </div>
 
-
+                <div class="brand-footer">
+                    Built for shops in Ghana · Estech Solutions
+                </div>
             </div>
-
         </section>
 
+        <section class="login-panel" aria-labelledby="login-title">
+            <div class="panel-tools">
+                <a class="back-link" href="{% url 'home' %}">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M19 12H5m6-6-6 6 6 6"
+                              fill="none" stroke="currentColor" stroke-width="2"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Back to home
+                </a>
+
+                <button class="theme-toggle" id="themeToggle"
+                        type="button" aria-label="Switch colour theme">
+                    <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M20.5 13A9 9 0 0 1 11 3.5 9 9 0 1 0 20.5 13Z"
+                              fill="none" stroke="currentColor" stroke-width="1.8"
+                              stroke-linejoin="round"/>
+                    </svg>
+
+                    <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="4"
+                                fill="none" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"
+                              stroke="currentColor" stroke-width="1.8"
+                              stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="login-container">
+                <a class="mobile-brand" href="{% url 'home' %}">
+                    <span class="logo-frame" aria-hidden="true">
+                        <img class="logo-light"
+                             src="{% static 'core/Kounter_light.jpg' %}" alt="">
+                        <img class="logo-dark"
+                             src="{% static 'core/Kounter_dark.jpg' %}" alt="">
+                    </span>
+                    <strong>Kounter</strong>
+                </a>
+
+                <div class="login-card">
+                    <div class="eyebrow">Your business, connected</div>
+                    <h2 class="login-title" id="login-title">Welcome back</h2>
+                    <p class="login-subtitle">
+                        Sign in to continue managing your shop.
+                    </p>
+
+                    {% if messages %}
+                        <div class="messages" aria-live="polite">
+                            {% for message in messages %}
+                                <div class="message {{ message.tags }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <form method="post" action="{% url 'login' %}"
+                          id="loginForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ next|default:'' }}">
+
+                        {% if form.non_field_errors %}
+                            <div class="login-error" id="login-errors" role="alert">
+                                <strong>Login failed</strong>
+                                {% for error in form.non_field_errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="form-group">
+                            <label class="form-label" for="username">
+                                Username
+                            </label>
+
+                            <input
+                                class="form-input{% if form.username.errors or form.non_field_errors %} input-error{% endif %}"
+                                type="text"
+                                id="username"
+                                name="username"
+                                placeholder="Enter your username"
+                                value="{{ form.username.value|default:'' }}"
+                                autocomplete="username"
+                                autocapitalize="none"
+                                spellcheck="false"
+                                required
+                                {% if form.username.errors or form.non_field_errors %}
+                                    aria-invalid="true"
+                                    aria-describedby="{% if form.username.errors %}username-errors {% endif %}{% if form.non_field_errors %}login-errors{% endif %}"
+                                {% endif %}
+                            >
+
+                            {% if form.username.errors %}
+                                <div class="field-error" id="username-errors">
+                                    {% for error in form.username.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="password">
+                                Password
+                            </label>
+
+                            <div class="input-wrapper">
+                                <input
+                                    class="form-input password-input{% if form.password.errors or form.non_field_errors %} input-error{% endif %}"
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    placeholder="Enter your password"
+                                    autocomplete="current-password"
+                                    required
+                                    {% if form.password.errors or form.non_field_errors %}
+                                        aria-invalid="true"
+                                        aria-describedby="{% if form.password.errors %}password-errors {% endif %}{% if form.non_field_errors %}login-errors{% endif %}"
+                                    {% endif %}
+                                >
+
+                                <button class="password-toggle"
+                                        id="passwordToggle" type="button"
+                                        aria-label="Show password"
+                                        aria-pressed="false"
+                                        aria-controls="password">
+                                    <svg class="eye-open" viewBox="0 0 24 24"
+                                         aria-hidden="true">
+                                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+                                              fill="none" stroke="currentColor"
+                                              stroke-width="1.8"/>
+                                        <circle cx="12" cy="12" r="3"
+                                                fill="none" stroke="currentColor"
+                                                stroke-width="1.8"/>
+                                    </svg>
+
+                                    <svg class="eye-closed" viewBox="0 0 24 24"
+                                         aria-hidden="true">
+                                        <path d="m3 3 18 18M10.6 5.1A12 12 0 0 1 12 5c6.5 0 10 7 10 7a18 18 0 0 1-3 4M6.2 6.2A19 19 0 0 0 2 12s3.5 7 10 7a12 12 0 0 0 5-1.1"
+                                              fill="none" stroke="currentColor"
+                                              stroke-width="1.8"
+                                              stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            {% if form.password.errors %}
+                                <div class="field-error" id="password-errors">
+                                    {% for error in form.password.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="login-options">
+                            <label class="remember-me" for="remember_me">
+                                <input class="remember-checkbox"
+                                       type="checkbox" id="remember_me"
+                                       name="remember_me" value="1"
+                                       {% if request.POST.remember_me %}checked{% endif %}>
+                                <span>Remember me</span>
+                            </label>
+
+                            <a class="text-link" href="{% url 'password_reset' %}">
+                                Forgot password?
+                            </a>
+                        </div>
+
+                        <button class="login-button" id="loginButton"
+                                type="submit">
+                            <span id="buttonText">Sign in</span>
+
+                            <svg class="button-arrow" viewBox="0 0 24 24"
+                                 aria-hidden="true">
+                                <path d="M5 12h14m-6-6 6 6-6 6"
+                                      fill="none" stroke="currentColor"
+                                      stroke-width="2" stroke-linecap="round"
+                                      stroke-linejoin="round"/>
+                            </svg>
+
+                            <span class="button-spinner" aria-hidden="true"></span>
+                        </button>
+                    </form>
+
+                    <div class="divider"><span>NEW TO KOUNTER?</span></div>
+
+                    <p class="signup-text">
+                        Start managing your shop.
+                        <a class="text-link" href="{% url 'signup' %}">
+                            Create an account
+                        </a>
+                    </p>
+                </div>
+
+                <div class="login-footer">
+                    &copy; {% now "Y" %} Kounter · Estech Solutions
+                </div>
+            </div>
+        </section>
     </main>
 
-
-
-    <!-- =========================================================
- LOGIN LOADING OVERLAY
-
-========================================================= -->
-
-    <div class="loading-overlay" id="loadingOverlay" aria-hidden="true">
-
-        <div class="loading-logo">
-
-            <img src="{% static 'core/Kounter_light.jpg' %}" alt="Kounter" class="loading-logo-image logo-light">
-
-            <img src="{% static 'core/Kounter_dark.jpg' %}" alt="Kounter" class="loading-logo-image logo-dark">
-
+    <div class="loading-overlay" id="loadingOverlay"
+         role="status" aria-live="polite" hidden>
+        <div class="logo-frame" aria-hidden="true">
+            <img class="logo-light"
+                 src="{% static 'core/Kounter_light.jpg' %}" alt="">
+            <img class="logo-dark"
+                 src="{% static 'core/Kounter_dark.jpg' %}" alt="">
         </div>
 
-
-        <div class="loading-spinner"></div>
-
-
-        <div class="loading-text">
-            Signing you in...
-        </div>
-
+        <div class="spinner" aria-hidden="true"></div>
+        <div class="loading-text">Signing you in...</div>
     </div>
 
-
-
-    <!-- =========================================================
- JAVASCRIPT
-
-========================================================= -->
-
     <script>
+        (function () {
+            "use strict";
 
-        document.addEventListener(
-            "DOMContentLoaded",
-            function () {
+            const root = document.documentElement;
+            const themeToggle = document.getElementById("themeToggle");
+            const favicon = document.getElementById("kounter-favicon");
+            const themeColor = document.getElementById("theme-color");
 
-                "use strict";
+            const passwordToggle = document.getElementById("passwordToggle");
+            const passwordInput = document.getElementById("password");
 
+            const loginForm = document.getElementById("loginForm");
+            const loginButton = document.getElementById("loginButton");
+            const buttonText = document.getElementById("buttonText");
+            const loadingOverlay = document.getElementById("loadingOverlay");
+            const loginPage = document.getElementById("loginPage");
 
-                /* =================================================
-                   ELEMENTS
-                ================================================== */
+            let submitting = false;
 
-                const themeToggle =
-                    document.getElementById("themeToggle");
+            function applyTheme(theme, save) {
+                theme = theme === "dark" ? "dark" : "light";
+                root.dataset.theme = theme;
 
-
-                const passwordToggle =
-                    document.getElementById("passwordToggle");
-
-
-                const passwordInput =
-                    document.getElementById("password");
-
-
-                const loginForm =
-                    document.getElementById("loginForm");
-
-
-                const loginButton =
-                    document.getElementById("loginButton");
-
-
-                const loadingOverlay =
-                    document.getElementById("loadingOverlay");
-
-
-
-                /* =================================================
-                   APPLY THEME
-                ================================================== */
-
-                function applyTheme(theme) {
-
-                    document.documentElement.setAttribute(
-                        "data-theme",
-                        theme
-                    );
-
-
-                    localStorage.setItem(
-                        "kounter-theme",
-                        theme
-                    );
-
+                if (save) {
+                    try {
+                        localStorage.setItem("kounter-theme", theme);
+                    } catch (error) {}
                 }
 
+                favicon.href = theme === "dark"
+                    ? favicon.dataset.dark
+                    : favicon.dataset.light;
 
+                themeColor.content = theme === "dark"
+                    ? "#0f172a"
+                    : "#f5f7fb";
 
-                /* =================================================
-                   THEME TOGGLE
-                ================================================== */
+                const label = theme === "dark"
+                    ? "Switch to light mode"
+                    : "Switch to dark mode";
 
-                if (themeToggle) {
-
-                    themeToggle.addEventListener(
-                        "click",
-                        function () {
-
-                            const currentTheme =
-                                document.documentElement.getAttribute(
-                                    "data-theme"
-                                );
-
-
-                            const newTheme =
-                                currentTheme === "dark"
-                                    ? "light"
-                                    : "dark";
-
-
-                            applyTheme(newTheme);
-
-                        }
-                    );
-
-                }
-
-
-
-                /* =================================================
-                   PASSWORD VISIBILITY
-                ================================================== */
-
-                if (
-                    passwordToggle &&
-                    passwordInput
-                ) {
-
-                    passwordToggle.addEventListener(
-                        "click",
-                        function () {
-
-                            const isPassword =
-                                passwordInput.type === "password";
-
-
-                            if (isPassword) {
-
-                                passwordInput.type = "text";
-
-                                passwordToggle.textContent = "🙈";
-
-                                passwordToggle.setAttribute(
-                                    "aria-label",
-                                    "Hide password"
-                                );
-
-                                passwordToggle.setAttribute(
-                                    "title",
-                                    "Hide password"
-                                );
-
-                            } else {
-
-                                passwordInput.type = "password";
-
-                                passwordToggle.textContent = "👁";
-
-                                passwordToggle.setAttribute(
-                                    "aria-label",
-                                    "Show password"
-                                );
-
-                                passwordToggle.setAttribute(
-                                    "title",
-                                    "Show password"
-                                );
-
-                            }
-
-                        }
-                    );
-
-                }
-
-
-
-                /* =================================================
-                   LOGIN LOADING
-                ================================================== */
-
-                if (loginForm) {
-
-                    loginForm.addEventListener(
-                        "submit",
-                        function () {
-
-                            if (loginButton) {
-
-                                loginButton.classList.add(
-                                    "loading"
-                                );
-
-                                loginButton.disabled = true;
-
-                            }
-
-
-                            if (loadingOverlay) {
-
-                                loadingOverlay.classList.add(
-                                    "active"
-                                );
-
-                                loadingOverlay.setAttribute(
-                                    "aria-hidden",
-                                    "false"
-                                );
-
-                            }
-
-                        }
-                    );
-
-                }
-
-
-
-                /* =================================================
-                   KEYBOARD SHORTCUT
-                   CTRL/CMD + SHIFT + D
-                ================================================== */
-
-                document.addEventListener(
-                    "keydown",
-                    function (event) {
-
-                        if (
-                            (event.ctrlKey || event.metaKey) &&
-                            event.shiftKey &&
-                            event.key.toLowerCase() === "d"
-                        ) {
-
-                            event.preventDefault();
-
-
-                            if (themeToggle) {
-
-                                themeToggle.click();
-
-                            }
-
-                        }
-
-                    }
-                );
-
+                themeToggle.setAttribute("aria-label", label);
+                themeToggle.title = label;
             }
-        );
 
+            function restoreTheme() {
+                try {
+                    applyTheme(localStorage.getItem("kounter-theme"), false);
+                } catch (error) {
+                    applyTheme(root.dataset.theme, false);
+                }
+            }
+
+            applyTheme(root.dataset.theme, false);
+
+            themeToggle.addEventListener("click", function () {
+                applyTheme(
+                    root.dataset.theme === "dark" ? "light" : "dark",
+                    true
+                );
+            });
+
+            window.addEventListener("storage", function (event) {
+                if (event.key === "kounter-theme" || event.key === null) {
+                    restoreTheme();
+                }
+            });
+
+            passwordToggle.addEventListener("click", function () {
+                const show = passwordInput.type === "password";
+
+                passwordInput.type = show ? "text" : "password";
+                passwordToggle.setAttribute("aria-pressed", String(show));
+
+                const label = show ? "Hide password" : "Show password";
+                passwordToggle.setAttribute("aria-label", label);
+                passwordToggle.title = label;
+            });
+
+            loginForm.addEventListener("submit", function (event) {
+                if (submitting) {
+                    event.preventDefault();
+                    return;
+                }
+
+                if (!loginForm.checkValidity()) {
+                    event.preventDefault();
+                    loginForm.reportValidity();
+                    return;
+                }
+
+                submitting = true;
+                loginButton.disabled = true;
+                loginButton.classList.add("loading");
+                loginForm.setAttribute("aria-busy", "true");
+                buttonText.textContent = "Signing in...";
+                loadingOverlay.hidden = false;
+                loginPage.inert = true;
+            });
+
+            // Restore controls when returning with the browser Back button.
+            window.addEventListener("pageshow", function () {
+                submitting = false;
+                loginButton.disabled = false;
+                loginButton.classList.remove("loading");
+                loginForm.removeAttribute("aria-busy");
+                buttonText.textContent = "Sign in";
+                loadingOverlay.hidden = true;
+                loginPage.inert = false;
+
+                passwordInput.type = "password";
+                passwordToggle.setAttribute("aria-pressed", "false");
+                passwordToggle.setAttribute("aria-label", "Show password");
+                passwordToggle.title = "Show password";
+
+                restoreTheme();
+            });
+
+            document.addEventListener("keydown", function (event) {
+                if (
+                    !submitting &&
+                    (event.ctrlKey || event.metaKey) &&
+                    event.shiftKey &&
+                    event.key.toLowerCase() === "d"
+                ) {
+                    event.preventDefault();
+                    themeToggle.click();
+                }
+            });
+        })();
     </script>
-
-
 </body>
-
 </html>

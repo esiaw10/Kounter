@@ -5471,7 +5471,7 @@ def custom_logout_view(request):
     )
 
     return redirect(
-        "login"
+        "home"
     )
 
 
