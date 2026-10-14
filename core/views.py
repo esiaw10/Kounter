@@ -5692,3 +5692,15 @@ def bulk_product_upload(request):
 def bulk_product_confirm(request):
     from .bulk_products import confirm_products
     return confirm_products(request)
+
+
+def robots_txt(request):
+    content = """User-agent: *
+Allow: /
+
+Sitemap: https://kounter-pos.onrender.com/sitemap.xml
+"""
+    return HttpResponse(
+        content,
+        content_type="text/plain"
+    )

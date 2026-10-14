@@ -3,8 +3,26 @@ from django.contrib.auth import views as auth_views
 from django.urls import path, reverse_lazy
 from django.views.generic import TemplateView
 
+from django.contrib.sitemaps import Sitemap
+from django.contrib.sitemaps.views import sitemap
+from django.urls import reverse
+
 from core import views
 
+# ============================================================
+# GOOGLE SEO - SITEMAP CONFIGURATION
+# ============================================================
+
+class StaticViewSitemap(Sitemap):
+
+    changefreq = "weekly"
+    priority = 0.8
+
+    def items(self):
+        return ["home"]
+
+    def location(self, item):
+        return reverse(item)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -242,4 +260,18 @@ urlpatterns = [
 
     # Profile
     path("profile/", views.profile, name="profile"),
+
+    path(
+        "sitemap.xml",
+        sitemap,
+        {"sitemaps": {"static": StaticViewSitemap}},
+        name="django_sitemap"
+    ),
+
+    path(
+        "robots.txt",
+        views.robots_txt,
+        name="robots_txt"
+    ),
+
 ]
